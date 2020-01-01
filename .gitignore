@@ -1,6 +1,9 @@
 # NODE FOLDERS & FILES
 /node_modules
-.package-lock.json
+package-lock.json
 
 # ENVIRONMENT FILES
 .env
+
+# MAC System Files
+.DS_Store

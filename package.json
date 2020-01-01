@@ -1,0 +1,64 @@
+{
+  "name": "nbsc-player-tracker",
+  "version": "1.0.0",
+  "description": "Player availability tracker",
+  "main": "project/bin/www",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:build": "npx webpack-cli --config webpack.config.js --no-cache --mode development",
+    "dev:watch": "npx webpack-cli --config webpack.config.js --no-cache --mode development --watch",
+    "dev:start": "webpack-dev-server",
+    "start": "node ./tracker/bin/www"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clayton-herbst/nbsc-availability-tracker.git"
+  },
+  "keywords": [
+    "AvailabilityTracker",
+    "Sports",
+    "React",
+    "Social Plugins",
+    "ExpressJS",
+    "Webpack"
+  ],
+  "author": "Clayton Herbst",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/clayton-herbst/nbsc-availability-tracker/issues"
+  },
+  "homepage": "https://github.com/clayton-herbst/nbsc-availability-tracker#readme",
+  "dependencies": {
+    "bootstrap": "^4.4.1",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "^4.17.1",
+    "http-errors": "~1.6.3",
+    "install": "^0.13.0",
+    "jquery": "^3.4.1",
+    "jstransformer": "^1.0.0",
+    "morgan": "~1.9.1",
+    "npm": "^6.13.4",
+    "popper.js": "^1.16.0",
+    "pug": "^2.0.4",
+    "react": "^16.12.0",
+    "react-bootstrap": "^1.0.0-beta.16",
+    "react-dom": "^16.12.0",
+    "react-facebook": "^8.1.4",
+    "react-router-dom": "^5.1.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.7",
+    "@babel/preset-react": "^7.7.4",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.4.0",
+    "node-sass": "^4.13.0",
+    "sass-loader": "^8.0.0",
+    "style-loader": "^1.1.1",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.3",
+    "webpack": "^4.41.4",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.1"
+  }
+}
