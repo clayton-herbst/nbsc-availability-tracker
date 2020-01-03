@@ -2,12 +2,12 @@
   "name": "nbsc-player-tracker",
   "version": "1.0.0",
   "description": "Player availability tracker",
-  "main": "project/bin/www",
+  "main": "server/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:build": "npx webpack-cli --config webpack.config.js --no-cache --mode development",
     "dev:watch": "npx webpack-cli --config webpack.config.js --no-cache --mode development --watch",
-    "dev:start": "webpack-dev-server",
+    "dev": "webpack-dev-server",
     "start": "node ./tracker/bin/www"
   },
   "repository": {
@@ -30,11 +30,9 @@
   "homepage": "https://github.com/clayton-herbst/nbsc-availability-tracker#readme",
   "dependencies": {
     "bootstrap": "^4.4.1",
-    "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "^4.17.1",
     "http-errors": "~1.6.3",
-    "install": "^0.13.0",
     "jquery": "^3.4.1",
     "jstransformer": "^1.0.0",
     "morgan": "~1.9.1",
@@ -52,7 +50,18 @@
     "@babel/preset-react": "^7.7.4",
     "babel-loader": "^8.0.6",
     "css-loader": "^3.4.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-loader": "^3.0.3",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.17.0",
+    "eslint-plugin-standard": "^4.0.1",
+    "husky": ">=1",
+    "lint-staged": ">=8",
     "node-sass": "^4.13.0",
+    "prettier": "^1.19.1",
     "sass-loader": "^8.0.0",
     "style-loader": "^1.1.1",
     "ts-loader": "^6.2.1",
@@ -60,5 +69,20 @@
     "webpack": "^4.41.4",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,css,json,md}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   }
 }

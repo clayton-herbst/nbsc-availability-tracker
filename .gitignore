@@ -1,9 +1,12 @@
 # NODE FOLDERS & FILES
 /node_modules
-package-lock.json
 
 # ENVIRONMENT FILES
 .env
 
 # MAC System Files
 .DS_Store
+
+# YARN
+.yarn-error.log
+.yarn.lock
