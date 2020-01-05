@@ -17,7 +17,7 @@ export default () => {
 
   return (
     <Container>
-      <Title />
+      <Title title="North Beach Soccer Club" style={{ color: "#800000" }} />
       <p className="text-weight-ligher text-center">
         Welcome to the player availability tracker.
         <br />

@@ -5,8 +5,7 @@ import { FacebookProvider } from "react-facebook";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "jquery";
 import "popper.js";
-import Home from "./pages/Home";
-import Header from "./components/Header";
+import Season from "./pages/Season";
 import Login from "./pages/Login";
 
 const App = props => {
@@ -23,17 +22,9 @@ const App = props => {
             <Route exact path="/admin">
               <h1>ADMIN</h1>
             </Route>
-            <Route
-              path="/player"
-              render={() => {
-                return (
-                  <div>
-                    <Header player="Clayton" />
-                    <Home />
-                  </div>
-                );
-              }}
-            />
+            <Route exact path="/player" component={Season} />
+            <Route path="/player/cup" component={Season} />
+            <Route exact path="/player/availability" component={Season} />
           </Switch>
         </div>
       </HashRouter>
