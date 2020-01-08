@@ -5,10 +5,11 @@ import { FacebookProvider } from "react-facebook";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "jquery";
 import "popper.js";
-import Season from "./pages/Season";
+import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Fixture from "./pages/Fixture";
 
-const App = props => {
+const App = () => {
   let value = true;
 
   return (
@@ -19,12 +20,12 @@ const App = props => {
             <Route exact path="/">
               {value ? <Redirect to="/player" /> : <Login />}
             </Route>
-            <Route exact path="/admin">
+            <Route path="/admin">
               <h1>ADMIN</h1>
             </Route>
-            <Route exact path="/player" component={Season} />
-            <Route path="/player/cup" component={Season} />
-            <Route exact path="/player/availability" component={Season} />
+            <Route exact path="/player" component={Home} />
+            <Route path="/player/cup" component={Home} />
+            <Route exact path="/player/fixture" component={Fixture} />
           </Switch>
         </div>
       </HashRouter>
