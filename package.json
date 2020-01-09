@@ -30,6 +30,7 @@
   "homepage": "https://github.com/clayton-herbst/nbsc-availability-tracker#readme",
   "dependencies": {
     "bootstrap": "^4.4.1",
+    "consola": "^2.11.3",
     "cookie-parser": "^1.4.4",
     "debug": "~2.6.9",
     "express": "^4.17.1",
