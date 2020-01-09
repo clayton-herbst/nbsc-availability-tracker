@@ -7,7 +7,9 @@ mongoose.connect(dbURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
-  useFindAndModify: false
+  useFindAndModify: false,
+  bufferCommands: true,
+  family: 4
 });
 
 mongoose.connection.on("connected", () => {
@@ -28,7 +30,7 @@ function gracefulShutdown(msg, callback) {
 }
 
 process.once("SIGUSR2", () => {
-  gracefulShutdown("nodemon shutdown", () => {
+  gracefulShutdown("shutdown", () => {
     process.kill(process.pid, "SIGUSR2");
   });
 });
@@ -47,4 +49,4 @@ process.on("SIGTERM", () => {
 
 module.exports.mongoose = mongoose.connection;
 
-require("../models/playerSchema");
+require("../models/Club");
