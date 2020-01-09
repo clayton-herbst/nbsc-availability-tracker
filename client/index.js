@@ -10,7 +10,7 @@ import Login from "./pages/Login";
 import Fixture from "./pages/Fixture";
 
 const App = () => {
-  let value = true;
+  let value = false;
 
   return (
     <FacebookProvider appId="474015373186319">
@@ -24,7 +24,7 @@ const App = () => {
               <h1>ADMIN</h1>
             </Route>
             <Route exact path="/player" component={Home} />
-            <Route path="/player/cup" component={Home} />
+            <Route exact path="/player/cup" component={Home} />
             <Route exact path="/player/fixture" component={Fixture} />
           </Switch>
         </div>

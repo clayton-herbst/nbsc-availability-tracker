@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import Header from "../components/Header";
 import SectionTitle from "../components/SectionTitle";
-import SeasonCard from "../components/SeasonCard";
+import SectionCard from "../components/SectionCard";
 import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import Section from "../components/Section";
@@ -39,15 +39,17 @@ export default () => {
           className="text-decoration-none text-dark"
           onClick={() => selectSeason(season)}
         >
-          <SeasonCard key={season.key} meta={season}>
-            <Button
-              variant="outline-danger"
-              size="sm"
-              onClick={() => deleteSeason(season.key)}
-            >
-              DELETE SEASON
-            </Button>
-          </SeasonCard>
+          <SectionCard key={season.key} meta={season}>
+            <div className="d-flex justify-content-around">
+              <Button
+                variant="outline-danger"
+                size="sm"
+                onClick={() => deleteSeason(season.key)}
+              >
+                DELETE SEASON
+              </Button>
+            </div>
+          </SectionCard>
         </div>
       );
   });
@@ -55,7 +57,7 @@ export default () => {
   return (
     <div>
       <Header title="North Beach Soccer Club" />
-      <Container>
+      <Container className="shadow-lg p-3 mb-5 bg-white rounded">
         <ListGroup variant="flush">
           <ListGroup.Item>
             <Section>
@@ -64,8 +66,10 @@ export default () => {
                 className="pt-3"
                 style={{ color: "#17a2b8" }}
               />
-              <div className="d-flex justify-content-start">{seasonList}</div>
-              <div className="mt-3">
+              <div className="d-flex justify-content-sm-start flex-wrap">
+                {seasonList}
+              </div>
+              <div className="d-flex mt-3 justify-content-start">
                 <Button
                   variant="info"
                   onClick={() => addSeason({ title: "New", key: keys + 1 })}
@@ -82,7 +86,9 @@ export default () => {
                 className="pt-3"
                 style={{ color: "#28a745" }}
               />
-              <div className="d-flex justify-content-start">{seasonList}</div>
+              <div className="d-flex justify-content-sm-start flex-wrap">
+                {seasonList}
+              </div>
               <div className="mt-3">
                 <Button
                   style={{ "background-color": "#28a745" }}
@@ -115,7 +121,7 @@ const defaultState = {
 };
 
 const childProps = {
-  SeasonCard: {
+  SectionCard: {
     meta: {
       title: "Title",
       desc: "description",
