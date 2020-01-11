@@ -8,7 +8,7 @@ mongoose.connect(dbURI, {
   useUnifiedTopology: true,
   useCreateIndex: true,
   useFindAndModify: false,
-  bufferCommands: true,
+  bufferCommands: false,
   family: 4
 });
 
@@ -49,4 +49,6 @@ process.on("SIGTERM", () => {
 
 module.exports.mongoose = mongoose.connection;
 
-require("../models/Club");
+require("../models/club");
+require("../models/player");
+require("../models/season");

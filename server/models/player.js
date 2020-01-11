@@ -1,25 +1,37 @@
 const mongoose = require("mongoose");
 
 const playerSchema = new mongoose.Schema({
-  name: {
-    first: {
-      type: String,
-      required: true
-    },
-    last: {
-      type: String,
-      required: true
-    }
-  },
+  firstName: String,
+  lastName: String,
+  fullname: String,
   email: {
     type: String,
-    unique: true,
     required: true
   },
-  seasons: {
-    type: Array
+  social: {
+    facebook: String
   },
-  cups: {
-    type: Array
-  }
+  seasons: {
+    length: Number,
+    ids: Array
+  },
+  availability: [
+    {
+      competition: {
+        title: String,
+        id: Number
+      },
+      length: Number,
+      status: Array,
+      events: {
+        type: Array
+      },
+      empty: {
+        type: Boolean,
+        required: true
+      }
+    }
+  ]
 });
+
+mongoose.model("Player", playerSchema, "players");
