@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
 const playerSchema = new mongoose.Schema({
   firstName: String,
@@ -13,7 +13,7 @@ const playerSchema = new mongoose.Schema({
   },
   seasons: {
     length: Number,
-    ids: Array
+    id: Array
   },
   availability: [
     {
@@ -23,15 +23,13 @@ const playerSchema = new mongoose.Schema({
       },
       length: Number,
       status: Array,
-      events: {
-        type: Array
-      },
+      events: Array,
       empty: {
         type: Boolean,
         required: true
       }
     }
   ]
-});
+})
 
-mongoose.model("Player", playerSchema, "players");
+mongoose.model("Player", playerSchema, "players")

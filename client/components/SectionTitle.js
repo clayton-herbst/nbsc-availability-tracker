@@ -1,7 +1,7 @@
-import React from "react";
+import React from "react"
 
 export default props => {
-  if (typeof props.title === "undefined") props.title = "";
+  if (typeof props.title === "undefined") props.title = ""
 
   return (
     <div className="mt-3">
@@ -12,5 +12,5 @@ export default props => {
         {props.title}
       </h4>
     </div>
-  );
-};
+  )
+}

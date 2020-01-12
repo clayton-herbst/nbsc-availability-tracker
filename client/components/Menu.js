@@ -1,5 +1,5 @@
-import React from "react";
-import Nav from "react-bootstrap/Nav";
+import React from "react"
+import Nav from "react-bootstrap/Nav"
 
 export default () => {
   return (
@@ -15,5 +15,5 @@ export default () => {
         </Nav>
       </div>
     </div>
-  );
-};
+  )
+}

@@ -1,30 +1,30 @@
-import React, { useState } from "react";
-import Container from "react-bootstrap/Container";
-import Header from "../components/Header";
-import Title from "../components/Title";
-import FixtureCard from "../components/FixtureCard";
-import Button from "react-bootstrap/Button";
-import constants from "../constants/constants";
+import React, { useState } from "react"
+import Container from "react-bootstrap/Container"
+import Header from "../components/Header"
+import Title from "../components/Title"
+import FixtureCard from "../components/FixtureCard"
+import Button from "react-bootstrap/Button"
+import { club } from "../constants"
 
-export default props => {
+export default () => {
   // STATE
-  const [fixtures, setFixtures] = useState(defaultState.fixtures);
+  const [fixtures, setFixtures] = useState(defaultState.fixtures)
   // MUTATOR METHOD
 
   const fixturelist = fixtures.map(item => {
-    return <FixtureCard key={item.key} meta={item} />;
-  });
+    return <FixtureCard key={item.key} meta={item} />
+  })
 
   return (
     <div>
-      <Header player="Clayton" title={constants.clubName} />
+      <Header player="Clayton" title={club.name} />
       <Container>
         <Title
           title={defaultState.title.title}
           className="py-3"
           style={defaultState.title.style}
         />
-        <div className="d-flex flex-wrap justify-content-sm-start">
+        <div className="d-flex flex-wrap rounded justify-content-sm-start">
           {fixturelist}
         </div>
       </Container>
@@ -32,8 +32,8 @@ export default props => {
         <Button>ADD NEW</Button>
       </Container>
     </div>
-  );
-};
+  )
+}
 
 const defaultState = {
   keys: [1, 2],
@@ -66,4 +66,4 @@ const defaultState = {
       color: "green"
     }
   }
-};
+}

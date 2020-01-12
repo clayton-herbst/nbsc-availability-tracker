@@ -1,0 +1,14 @@
+[
+  {
+    "title": "North Beach Soccer Club",
+    "shorthand": "nbsc",
+    "logo": "/public/nbsc.png",
+    "seasons": [1, 2]
+  },
+  {
+    "title": "Sorrento Soccer Club",
+    "shorthand": "ssc",
+    "logo": "./public/ssc.png",
+    "seasons": [1, 2]
+  }
+]

@@ -1,12 +1,12 @@
-import React from "react";
-import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/Container";
+import React from "react"
+import Button from "react-bootstrap/Button"
+import Container from "react-bootstrap/Container"
 
 export default props => {
-  console.log(props.style);
+  console.log(props.style)
 
   return (
-    <div className="border rounded-lg m-1 p-2 w-25">
+    <div className="border shadow rounded-lg m-1 p-2 w-25">
       <Container className="text-center p-3">
         <h1>{props.meta.title ? props.meta.title : err.title}</h1>
         <div>
@@ -25,15 +25,15 @@ export default props => {
       </Container>
       {props.children}
     </div>
-  );
-};
+  )
+}
 
 let err = {
   title: "No title",
   date: "Unknown date",
   location: "No location provided",
   button: ""
-};
+}
 
 /**
  Description:

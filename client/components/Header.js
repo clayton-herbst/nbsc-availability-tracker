@@ -1,7 +1,7 @@
-import React from "react";
-import Navbar from "react-bootstrap/Navbar";
-import Container from "react-bootstrap/Container";
-import Menu from "./Menu";
+import React from "react"
+import Navbar from "react-bootstrap/Navbar"
+import Container from "react-bootstrap/Container"
+import Menu from "./Menu"
 
 export default props => {
   return (
@@ -15,5 +15,5 @@ export default props => {
         <Menu />
       </Container>
     </Navbar>
-  );
-};
+  )
+}

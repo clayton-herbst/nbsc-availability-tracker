@@ -1,131 +1,148 @@
-import React, { useState, useEffect } from "react";
-import Container from "react-bootstrap/Container";
-import Header from "../components/Header";
-import SectionTitle from "../components/SectionTitle";
-import SectionCard from "../components/SectionCard";
-import Button from "react-bootstrap/Button";
-import ListGroup from "react-bootstrap/ListGroup";
-import Section from "../components/Section";
+import React, { useState, useEffect } from "react"
+import Container from "react-bootstrap/Container"
+import Header from "../components/Header"
+import SectionTitle from "../components/SectionTitle"
+import SeasonCard from "../components/SeasonCard"
+import CompetitionCard from "../components/CompetitionCard"
+import Button from "react-bootstrap/Button"
+import ListGroup from "react-bootstrap/ListGroup"
+import Section from "../components/Section"
+import axios from "axios"
+import Loading from "../components/Loading"
 
-export default () => {
+export default props => {
   // STATE
-  const [keys, setKeys] = useState(defaultState.keys);
-  const [seasons, setSeasons] = useState(defaultState.seasons);
-  const [selectedSeason, selectSeason] = useState(defaultState.seasons[0]);
+  const [fetch, startFetch] = useState(0)
+  const [seasonMeta, setSeasonMeta] = useState([])
+  const [activeSeason, selectSeason] = useState(0)
+  const [competitions, setCompetitions] = useState([])
+  const [auth, setAuth] = useState(defaultAuth(props.auth))
 
   // MUTATOR METHODS
-  const addSeason = meta => {
-    setSeasons([{ title: meta.title, key: meta.key }, ...seasons]);
-    setKeys([meta.key, ...keys]);
-  };
-
-  const deleteSeason = key => {
-    const newSeasons = seasons.filter(value => value.key !== key);
-    const newKeys = seasons.filter(value => value !== key);
-    setSeasons(newSeasons);
-    setKeys(newKeys);
-  };
+  useEffect(() => {
+    axios
+      .get("/api/season", { params: { type: "ALL" } })
+      .then(res => {
+        setSeasonMeta(res.data)
+      })
+      .catch(err => console.log(err))
+  }, [fetch])
 
   useEffect(() => {
-    const cup = { title: "CUP 1", desc: "Ryder Cup", button: "remove" };
-    console.log(cup);
-  }, [selectedSeason]);
+    // Dynamically update competition list
+    axios
+      .get("/api/season", {
+        params: {
+          seasonId: activeSeason,
+          type: "SINGLE"
+        }
+      })
+      .then(res => {
+        setCompetitions(res.data.competitions)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }, [activeSeason])
 
-  const seasonList = seasons.map(season => {
-    if (typeof season.key == "undefined") return;
-    else
-      return (
-        <div
-          className="text-decoration-none text-dark"
-          onClick={() => selectSeason(season)}
+  const seasonList = seasonMeta.map(s => {
+    console.log(s)
+    return (
+      <div key={s._id} className="d-flex justify-content-around">
+        <SeasonCard
+          className="d-flex justify-content-around"
+          key={s._id}
+          meta={s}
         >
-          <SectionCard key={season.key} meta={season}>
-            <div className="d-flex justify-content-around">
-              <Button
-                variant="outline-danger"
-                size="sm"
-                onClick={() => deleteSeason(season.key)}
-              >
-                DELETE SEASON
-              </Button>
-            </div>
-          </SectionCard>
-        </div>
-      );
-  });
+          <div className="d-flex justify-content-around">
+            <Button
+              className="text-capitalize"
+              variant="outline-secondary"
+              size="sm"
+              onClick={() => selectSeason(s._id)}
+            >
+              select
+            </Button>
+          </div>
+        </SeasonCard>
+      </div>
+    )
+  })
+
+  const competitionList = competitions.map(comp => {
+    return (
+      <div key={comp._id} className="text-decoration-none text-dark">
+        <CompetitionCard key={comp._id} meta={comp}>
+          <div className="d-flex justify-content-around">
+            <Button
+              className="text-capitalize"
+              variant="outline-danger"
+              size="sm"
+              onClick={() => console.log("delete did nothing")}
+            >
+              select
+            </Button>
+          </div>
+        </CompetitionCard>
+      </div>
+    )
+  })
+
+  if (auth === 0) return <p>YOU ARE NOT VALIDATED</p>
 
   return (
     <div>
-      <Header title="North Beach Soccer Club" />
+      <Header title={props.meta.title} />
       <Container className="shadow-lg p-3 mb-5 bg-white rounded">
         <ListGroup variant="flush">
           <ListGroup.Item>
             <Section>
-              <SectionTitle
-                title="Seasons List"
-                className="pt-3"
-                style={{ color: "#17a2b8" }}
-              />
-              <div className="d-flex justify-content-sm-start flex-wrap">
-                {seasonList}
-              </div>
-              <div className="d-flex mt-3 justify-content-start">
-                <Button
-                  variant="info"
-                  onClick={() => addSeason({ title: "New", key: keys + 1 })}
-                >
-                  Add new season
-                </Button>
+              <div>
+                <SectionTitle
+                  title="Season List"
+                  className="pt-3 text-center"
+                  style={{ color: "#17a2b8" }}
+                />
+                <div className="d-flex justify-content-sm-around flex-wrap">
+                  {seasonList.length != 0 ? seasonList : <Loading />}
+                </div>
+                <div className="d-flex mt-3 justify-content-around">
+                  <Button variant="info" className="text-capitalize">
+                    new season
+                  </Button>
+                </div>
               </div>
             </Section>
           </ListGroup.Item>
           <ListGroup.Item>
             <Section>
-              <SectionTitle
-                title="Cups List"
-                className="pt-3"
-                style={{ color: "#28a745" }}
-              />
-              <div className="d-flex justify-content-sm-start flex-wrap">
-                {seasonList}
-              </div>
-              <div className="mt-3">
-                <Button
-                  style={{ "background-color": "#28a745" }}
-                  className="border-0"
-                  onClick={() => addSeason({ title: "New", key: keys + 1 })}
-                >
-                  Add new cup
-                </Button>
+              <div>
+                <div className="d-flex justify-content-around flex-wrap">
+                  {competitionList.length != 0 ? (
+                    competitionList
+                  ) : (
+                    <Loading text="Waiting for selection ..." />
+                  )}
+                </div>
+                <div className="mt-3 d-flex justify-content-around">
+                  <Button
+                    style={{ backgroundColor: "#28a745" }}
+                    className="border-0 text-capitalize"
+                    onClick={() => console.log("add competition")}
+                  >
+                    new competition
+                  </Button>
+                </div>
               </div>
             </Section>
           </ListGroup.Item>
         </ListGroup>
       </Container>
     </div>
-  );
-};
+  )
+}
 
-const defaultState = {
-  keys: [1, 2],
-  seasons: [
-    {
-      title: "Test1",
-      key: 1
-    },
-    {
-      title: "Test2",
-      key: 2
-    }
-  ]
-};
-
-const childProps = {
-  SectionCard: {
-    meta: {
-      title: "Title",
-      desc: "description",
-      button: "delete"
-    }
-  }
-};
+const defaultAuth = auth => {
+  if (typeof auth === "undefined") return 0
+  else return auth
+}

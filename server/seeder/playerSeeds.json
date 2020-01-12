@@ -1,0 +1,30 @@
+[
+  {
+    "firstName": "Clayton",
+    "lastName": "Herbst",
+    "fullname": "Clayton Herbst",
+    "email": "herbsca1@gmail.com",
+    "social": {
+      "facebook": "1232131"
+    },
+    "seasons": {
+      "length": 2,
+      "id": [2, 3]
+    },
+    "availability": [
+      {
+        "empty": true
+      },
+      {
+        "competition": {
+          "title": "Ryder Cup",
+          "id": 12323
+        },
+        "length": 10,
+        "status": ["maybe", "yes", "no"],
+        "events": [0, 1, 2, 0, 1, 2, 3, 1, 2, 3],
+        "empty": false
+      }
+    ]
+  }
+]

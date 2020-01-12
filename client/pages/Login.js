@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import { LoginButton } from "react-facebook";
-import Container from "react-bootstrap/Container";
-import Title from "../components/Title";
+import React, { useState } from "react"
+import { LoginButton } from "react-facebook"
+import Container from "react-bootstrap/Container"
+import Title from "../components/Title"
 
 const handleResponse = data => {
-  console.log(data);
-};
+  console.log(data)
+}
 
 export default () => {
-  const [error, setError] = useState(undefined);
-  const [data, setData] = useState(undefined);
+  const [error, setError] = useState(undefined)
+  const [data, setData] = useState(undefined)
 
-  if (typeof error != "undefined") return <h1>THERE HAS BEEN AN ERROR!</h1>;
+  if (typeof error != "undefined") return <h1>THERE HAS BEEN AN ERROR!</h1>
 
-  console.log(data);
+  console.log(data)
 
   return (
     <Container>
@@ -28,8 +28,8 @@ export default () => {
           className="border-0"
           onError={error => setError(error)}
           onCompleted={data => {
-            handleResponse(data);
-            setData(data);
+            handleResponse(data)
+            setData(data)
           }}
         >
           <div
@@ -43,5 +43,5 @@ export default () => {
         </LoginButton>
       </Container>
     </Container>
-  );
-};
+  )
+}
