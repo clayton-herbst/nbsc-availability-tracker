@@ -9,14 +9,22 @@ const seasonSchema = new mongoose.Schema({
   competitions: [
     {
       title: String,
-      description: String
+      description: String,
+      fixtures: [
+        {
+          title: String,
+          home: String,
+          away: String,
+          location: String,
+          date: Date
+        }
+      ]
     }
   ],
   status: {
     list: Array,
     current: Number
-  },
-  id: Number
+  }
 })
 
 mongoose.model("Season", seasonSchema, "seasons")

@@ -3,12 +3,11 @@
     "title": "North Beach Soccer Club",
     "shorthand": "nbsc",
     "logo": "/public/nbsc.png",
-    "seasons": [1, 2]
+    "activeSeason": "5e19a03a2542db0fc317fa24"
   },
   {
     "title": "Sorrento Soccer Club",
     "shorthand": "ssc",
-    "logo": "./public/ssc.png",
-    "seasons": [1, 2]
+    "logo": "./public/ssc.png"
   }
 ]

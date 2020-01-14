@@ -21,8 +21,9 @@ export default props => {
   // MUTATOR METHODS
   useEffect(() => {
     axios
-      .get("/api/season", { params: { type: "ALL" } })
+      .get("/api/seasons")
       .then(res => {
+        console.log(res.data)
         setSeasonMeta(res.data)
       })
       .catch(err => console.log(err))
@@ -31,12 +32,7 @@ export default props => {
   useEffect(() => {
     // Dynamically update competition list
     axios
-      .get("/api/season", {
-        params: {
-          seasonId: activeSeason,
-          type: "SINGLE"
-        }
-      })
+      .get(`/api/season/${activeSeason}`)
       .then(res => {
         setCompetitions(res.data.competitions)
       })
@@ -71,12 +67,12 @@ export default props => {
 
   const competitionList = competitions.map(comp => {
     return (
-      <div key={comp._id} className="text-decoration-none text-dark">
+      <div key={comp._id} className="d-flex justify-content-around">
         <CompetitionCard key={comp._id} meta={comp}>
           <div className="d-flex justify-content-around">
             <Button
               className="text-capitalize"
-              variant="outline-danger"
+              variant="outline-secondary"
               size="sm"
               onClick={() => console.log("delete did nothing")}
             >
@@ -117,7 +113,7 @@ export default props => {
           <ListGroup.Item>
             <Section>
               <div>
-                <div className="d-flex justify-content-around flex-wrap">
+                <div className="d-flex justify-content-sm-around flex-wrap">
                   {competitionList.length != 0 ? (
                     competitionList
                   ) : (

@@ -7,23 +7,23 @@
     "social": {
       "facebook": "1232131"
     },
-    "seasons": {
-      "length": 2,
-      "id": [2, 3]
-    },
     "availability": [
       {
-        "empty": true
-      },
-      {
-        "competition": {
-          "title": "Ryder Cup",
-          "id": 12323
-        },
-        "length": 10,
-        "status": ["maybe", "yes", "no"],
-        "events": [0, 1, 2, 0, 1, 2, 3, 1, 2, 3],
-        "empty": false
+        "_id": "5e1c4e2a7913770a857e0e2d",
+        "competitions": [
+          {
+            "_id": "5e1c4e2a7913770a857e0e2f",
+            "length": 10,
+            "status": ["maybe", "yes", "no"],
+            "fixtures": [0, 1, 2, 0, 1, 2, 3, 1, 2, 3]
+          },
+          {
+            "_id": "5e1c4e2a7913770a857e0e2e",
+            "length": 10,
+            "status": ["maybe", "yes", "no"],
+            "fixtures": [0, 1, 2, 0, 1, 2, 3, 1, 2, 3]
+          }
+        ]
       }
     ]
   }

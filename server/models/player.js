@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const ObjectId = mongoose.Schema.Types.ObjectId
 
 const playerSchema = new mongoose.Schema({
   firstName: String,
@@ -11,23 +12,17 @@ const playerSchema = new mongoose.Schema({
   social: {
     facebook: String
   },
-  seasons: {
-    length: Number,
-    id: Array
-  },
   availability: [
     {
-      competition: {
-        title: String,
-        id: Number
-      },
-      length: Number,
-      status: Array,
-      events: Array,
-      empty: {
-        type: Boolean,
-        required: true
-      }
+      _id: ObjectId,
+      competitions: [
+        {
+          _id: ObjectId,
+          length: Number,
+          status: Array,
+          fixtures: Array
+        }
+      ]
     }
   ]
 })

@@ -8,7 +8,44 @@
     "competitions": [
       {
         "title": "Ryder Cup",
-        "description": "N/A"
+        "description": "N/A",
+        "fixtures": [
+          {
+            "title": "NBSC vs SSC",
+            "home": "NBSC",
+            "away": "SSC",
+            "location": "North Beach",
+            "date": 14213412
+          },
+          {
+            "title": "NBSC vs STSD",
+            "home": "NBSC",
+            "away": "gfg",
+            "location": "North Beach",
+            "date": 14213412
+          },
+          {
+            "title": "NBSC vs SSC",
+            "home": "NBSC",
+            "away": "dfsa",
+            "location": "North Beach",
+            "date": 14213412
+          },
+          {
+            "title": "NBSC vs sadf",
+            "home": "NBSC",
+            "away": "SSC",
+            "location": "Dwellup",
+            "date": 14213412
+          },
+          {
+            "title": "sadfdsf vs NBSC",
+            "home": "sdfsad",
+            "away": "NBSC",
+            "location": "Wembley Downs",
+            "date": 14213412
+          }
+        ]
       },
       {
         "title": "Taylor Cup",
@@ -18,7 +55,6 @@
     "status": {
       "list": ["ongoing", "expired"],
       "current": 0
-    },
-    "id": "1"
+    }
   }
 ]

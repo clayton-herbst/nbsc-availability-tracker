@@ -21,7 +21,7 @@ const App = () => {
   useEffect(() => {
     axios.get("/api/club", { params: { club: club.id } }).then(res => {
       setMeta(res.data)
-      setActiveSeasons(res.data.seasons.pop())
+      setActiveSeasons(res.data.activeSeason)
     })
   }, [fetch])
 
@@ -47,7 +47,7 @@ const App = () => {
                 <Login />
               )}
             </Route>
-            <Route exact path="/player/fixture">
+            <Route exact path="/fixture/:seasonId/:competitionId">
               <Fixture />
             </Route>
           </Switch>

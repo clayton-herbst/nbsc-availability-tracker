@@ -1,26 +1,23 @@
 import React from "react"
-import Button from "react-bootstrap/Button"
 import Container from "react-bootstrap/Container"
 
 export default props => {
   console.log(props.style)
 
   return (
-    <div className="border shadow rounded-lg m-1 p-2 w-25">
-      <Container className="text-center p-3">
-        <h1>{props.meta.title ? props.meta.title : err.title}</h1>
+    <div className="border shadow rounded-lg m-1 p-2">
+      <Container className="text-center p-2">
+        <h5 className="font-weight-bold">
+          {props.title ? props.title : err.title}
+        </h5>
+        <p className="font-italic">
+          Round: <strong>{props.round}</strong>
+        </p>
         <div>
-          <p>{props.meta.date ? Date(props.meta.date) : err.date}</p>
+          <p>{props.date ? props.date : err.date}</p>
         </div>
         <div>
-          <p>{props.meta.location ? props.meta.location : err.location}</p>
-        </div>
-        <div>
-          {props.meta.button ? (
-            <Button>{props.meta.button}</Button>
-          ) : (
-            err.button
-          )}
+          <p>{props.location ? props.location : err.location}</p>
         </div>
       </Container>
       {props.children}

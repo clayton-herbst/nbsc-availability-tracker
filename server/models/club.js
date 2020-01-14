@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const ObjectId = mongoose.Schema.Types.ObjectId
 
 const clubSchema = new mongoose.Schema({
   title: {
@@ -8,9 +9,7 @@ const clubSchema = new mongoose.Schema({
   logo: {
     type: String
   },
-  seasons: {
-    type: Array
-  }
+  activeSeason: ObjectId
 })
 
 mongoose.model("Club", clubSchema, "clubs")
