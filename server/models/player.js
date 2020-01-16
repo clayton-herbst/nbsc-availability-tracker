@@ -21,7 +21,6 @@ const playerSchema = new mongoose.Schema({
   availability: [
     {
       _id: ObjectId,
-      length: Number,
       status: Array,
       fixtures: Array
     }

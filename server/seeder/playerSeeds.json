@@ -15,14 +15,12 @@
     "availability": [
       {
         "_id": "5e1c4e2a7913770a857e0e2f",
-        "length": 10,
-        "states": ["maybe", "yes", "no"],
+        "status": ["maybe", "yes", "no"],
         "fixtures": [0, 1, 2, 0, 1, 2, 3, 1, 2, 3]
       },
       {
         "_id": "5e1c4e2a7913770a857e0e2e",
-        "length": 10,
-        "states": ["maybe", "yes", "no"],
+        "status": ["maybe", "yes", "no"],
         "fixtures": [0, 1, 2, 0, 1, 2, 3, 1, 2, 3]
       }
     ]
