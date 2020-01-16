@@ -1,0 +1,74 @@
+[
+  {
+    "title": "Ryder Cup",
+    "description": "N/A",
+    "season": "5e1c7394005be11631b30928",
+    "fixtures": [
+      {
+        "title": "NBSC vs SSC",
+        "home": {
+          "title": "NBSC",
+          "_id": "5e1c7394005be11631b30928"
+        },
+        "away": {
+          "title": "SSC",
+          "_id": "5e1c7394005be11631b30928"
+        },
+        "location": "North Beach",
+        "date": 14213412
+      },
+      {
+        "title": "NBSC vs STSD",
+        "home": {
+          "title": "NBSC",
+          "_id": "5e1c7394005be11631b30928"
+        },
+        "away": {
+          "title": "G13sdf",
+          "_id": "5e1c7394005be11631b30928"
+        },
+        "location": "North Beach",
+        "date": 14213412
+      },
+      {
+        "title": "NBSC vs SSC",
+        "home": {
+          "title": "NBSC",
+          "_id": "5e1c7394005be11631b30928"
+        },
+        "away": {
+          "title": "rewreqwr",
+          "_id": "5e1c7394005be11631b30928"
+        },
+        "location": "North Beach",
+        "date": 14213412
+      },
+      {
+        "title": "NBSC vs sadf",
+        "home": {
+          "title": "NBSC",
+          "_id": "5e1c7394005be11631b30928"
+        },
+        "away": {
+          "title": "fcwefdq",
+          "_id": "5e1c7394005be11631b30928"
+        },
+        "location": "Dwellup",
+        "date": 14213412
+      },
+      {
+        "title": "sadfdsf vs NBSC",
+        "home": {
+          "title": "sdfasdf ",
+          "_id": "5e1c7394005be11631b30928"
+        },
+        "away": {
+          "title": "NBSC",
+          "_id": "5e1c7394005be11631b30928"
+        },
+        "location": "Wembley Downs",
+        "date": 14213412
+      }
+    ]
+  }
+]

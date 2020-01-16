@@ -14,12 +14,12 @@ import { club } from "./constants"
 const App = () => {
   const [loggedIn, toggleLogin] = useState(true)
   const [meta, setMeta] = useState("")
-  const [activeSeason, setActiveSeasons] = useState(1)
+  const [activeSeason, setActiveSeasons] = useState(0)
   const [fetch, setFetch] = useState(0) // allows for singular / initial api request
   const [auth, setAuth] = useState("player")
 
   useEffect(() => {
-    axios.get("/api/club", { params: { club: club.id } }).then(res => {
+    axios.get(`/api/club/${club.id}`).then(res => {
       setMeta(res.data)
       setActiveSeasons(res.data.activeSeason)
     })
@@ -28,24 +28,21 @@ const App = () => {
   return (
     <FacebookProvider appId="474015373186319">
       <HashRouter>
-        <div>
+        <div className="h-100 w-100">
           <Switch>
-            <Route exact path="/">
-              {loggedIn ? <Redirect to="/player" /> : <Login />}
-            </Route>
-            <Route path="/admin">
-              <h1>ADMIN</h1>
-            </Route>
-            <Route exact path="/player">
+            <Route exact path={["/", "/:id"]}>
               {loggedIn ? (
                 <Home
                   auth={auth}
                   meta={meta ? meta : defaultHome.meta}
-                  activeSeason={activeSeason ? activeSeason : 1}
+                  activeSeason={activeSeason}
                 />
               ) : (
                 <Login />
               )}
+            </Route>
+            <Route path="/admin">
+              <h1>ADMIN</h1>
             </Route>
             <Route exact path="/fixture/:seasonId/:competitionId">
               <Fixture />

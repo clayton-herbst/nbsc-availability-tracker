@@ -17,7 +17,7 @@ router.get("/test/:id", async function(req, res, next) {
   try {
     if (typeof req.params === "undefined")
       throw new Error("Incorrect paramater")
-    const obj = await Player.findOne({ "availability._id": req.params.id })
+    const obj = await Player.findById(req.params.id)
     console.log(obj)
     res.json(obj.availability.id(req.params.id))
   } catch (err) {
@@ -26,13 +26,13 @@ router.get("/test/:id", async function(req, res, next) {
   }
 })
 
-router.get("/club", async (req, res, next) => {
-  // NEED TO BE UPDATED ... USE URL PARAMATERS
-  if (typeof req.query.club === "undefined")
-    next(Error("Invalid query paramaters"))
+router.get("/club/:id", async (req, res, next) => {
+  // RETRIEVE ALL META DATA ASSOCIATED WITH THE CLUB
+  consola.info(req.params)
+  if (typeof req.params.id === "undefined") next(Error("Invalid request"))
   try {
-    const clubObj = await Club.findById(req.query.club)
-    res.json(clubObj)
+    const doc = await Club.findById(req.params.id)
+    res.json(doc)
   } catch (err) {
     consola.error(err)
     next(err)
@@ -40,12 +40,7 @@ router.get("/club", async (req, res, next) => {
 })
 
 router.get("/seasons", async (req, res, next) => {
-  // NEEDS! TO BE UPDATED TO ONLY GIVE RESULTS FOR ALL
-  /*
-   * Returns stored information about a particular season.
-   * Contains an array of competitions associated with the season. This array
-   * details all information relating to the competition.
-   */
+  // FETCH ALL THE SEASONS SAVED IN THE DATABASE
   try {
     const docs = await Season.find()
     consola.info(docs)
@@ -67,14 +62,15 @@ router.get("/seasons", async (req, res, next) => {
 })
 
 router.get("/season/:seasonId", async (req, res, next) => {
-  // RETRIEVE THE COMPETITIONS WITHIN A PARTICULAR SEASON
+  // RETRIEVE ALL COMPETITIONS ASSOCIATED WITH A PARTICULAR SEASON
   try {
     if (
       typeof req.params === "undefined" ||
       typeof req.params.seasonId === "undefined"
     )
       throw new Error("Incorrect paramaters")
-    else if (req.params.seasonId == "0")
+    else if (req.params.seasonId === "undefined")
+      // INITIAL EMPTY SEASON ID REQUEST
       return res.json({ status: "ERROR", competitions: [] })
 
     const doc = await Season.findById(req.params.seasonId)
@@ -92,7 +88,7 @@ router.get("/season/:seasonId", async (req, res, next) => {
 })
 
 router.get("/competition/:seasonId", async (req, res, next) => {
-  // RETRIEVE A COMPETITION WITHIN A PARTICULAR SEASON
+  // RETRIEVE A SINGULAR COMPETITION WITHIN A PARTICULAR SEASON
   try {
     if (
       typeof req.params === "undefined" ||
@@ -124,6 +120,49 @@ router.get("/fixture/:id", async (req, res, next) => {
     const competition = season.competitions.id(req.query.competitionId)
     consola.info(doc)
     res.json(competition)
+  } catch (err) {
+    consola.error(err)
+    next(err)
+  }
+})
+
+router.post("/fixture/:id", async (req, res, next) => {
+  // UPDATE / SET THE AVAILABILITY OF A PLAYERS
+  try {
+    if (
+      typeof req.params === "undefined" ||
+      typeof req.params.id === "undefined" ||
+      typeof req.query.fixtures === "undefined"
+    )
+      throw new Error("Incorrect parameters")
+    const doc = await Player.findById(req.params.id)
+    if (doc === null) throw new Error("No results")
+    const season = doc.availability.id(req.query.seasonId)
+    if (season !== null) {
+      const competition = season.id(req.query.competitionId, { upsert: true })
+      if (competition !== null) {
+        competition.fixtures = req.query.fixture
+      } else {
+        season.competitions.append({
+          _id: req.query.competitionId,
+          status: req.query.status,
+          fixtures: req.query.fixtures
+        })
+      }
+    } else {
+      doc.availability.push({
+        _id: req.query.seasonId,
+        competitions: [
+          {
+            _id: req.query.competitionId,
+            status: req.query.status,
+            fixtures: req.query.fixtures
+          }
+        ]
+      })
+    }
+    doc.save()
+    res.status(200).json({ mgs: "success" })
   } catch (err) {
     consola.error(err)
     next(err)

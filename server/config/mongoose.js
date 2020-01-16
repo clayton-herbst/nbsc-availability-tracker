@@ -49,6 +49,7 @@ process.on("SIGTERM", () => {
 
 module.exports.mongoose = mongoose.connection
 
+require("../models/competition")
 require("../models/club")
 require("../models/player")
 require("../models/season")

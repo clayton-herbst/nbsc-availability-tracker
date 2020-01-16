@@ -1,5 +1,7 @@
 const mongoose = require("mongoose")
 
+const ObjectId = mongoose.Schema.Types.ObjectId
+
 const seasonSchema = new mongoose.Schema({
   title: String,
   timelines: {
@@ -8,17 +10,7 @@ const seasonSchema = new mongoose.Schema({
   },
   competitions: [
     {
-      title: String,
-      description: String,
-      fixtures: [
-        {
-          title: String,
-          home: String,
-          away: String,
-          location: String,
-          date: Date
-        }
-      ]
+      _id: ObjectId
     }
   ],
   status: {

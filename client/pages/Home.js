@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { useParams } from "react-router-dom"
 import Container from "react-bootstrap/Container"
 import Header from "../components/Header"
 import SectionTitle from "../components/SectionTitle"
@@ -11,10 +12,13 @@ import axios from "axios"
 import Loading from "../components/Loading"
 
 export default props => {
+  // URI LOCATION
+  const { id } = useParams()
+
   // STATE
   const [fetch, startFetch] = useState(0)
   const [seasonMeta, setSeasonMeta] = useState([])
-  const [activeSeason, selectSeason] = useState(0)
+  const [activeSeason, selectSeason] = useState(id)
   const [competitions, setCompetitions] = useState([])
   const [auth, setAuth] = useState(defaultAuth(props.auth))
 
@@ -56,6 +60,7 @@ export default props => {
               variant="outline-secondary"
               size="sm"
               onClick={() => selectSeason(s._id)}
+              href={`#/${s._id}`}
             >
               select
             </Button>
@@ -74,7 +79,7 @@ export default props => {
               className="text-capitalize"
               variant="outline-secondary"
               size="sm"
-              onClick={() => console.log("delete did nothing")}
+              href={`#/fixture/${activeSeason}/${comp._id}`}
             >
               select
             </Button>

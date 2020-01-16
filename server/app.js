@@ -10,6 +10,7 @@ const {
   seedClubs,
   seedPlayers,
   seedSeasons,
+  seedCompetitions,
   seedDB
 } = require("./seeder/index")
 
@@ -18,6 +19,7 @@ if (process.env.NODE_ENV !== "production") {
   seedDB(mongoose, "clubs", seedClubs)
   seedDB(mongoose, "players", seedPlayers)
   seedDB(mongoose, "seasons", seedSeasons)
+  seedDB(mongoose, "competitions", seedCompetitions)
 }
 
 async function start() {
