@@ -9,6 +9,7 @@ const competitionSchema = new mongoose.Schema({
     end: Date
   },
   season: ObjectId,
+  description: String,
   fixtures: [
     {
       title: String,

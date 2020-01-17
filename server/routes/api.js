@@ -62,33 +62,38 @@ router.get("/seasons", async (req, res, next) => {
   }
 })
 
-router.get("/season/:seasonId", async (req, res, next) => {
+router.get("/season/:id", async (req, res, next) => {
   // RETRIEVE ALL COMPETITIONS ASSOCIATED WITH A PARTICULAR SEASON
   try {
     if (
       typeof req.params === "undefined" ||
-      typeof req.params.seasonId === "undefined"
+      typeof req.params.id === "undefined"
     )
       throw new Error("Incorrect paramaters")
-    else if (req.params.seasonId === "undefined")
+    else if (req.params.id === "all")
       // INITIAL EMPTY SEASON ID REQUEST
-      return res.json({ status: "ERROR", competitions: [] })
+      return res.json({ status: "WAIT", competitions: [] })
 
-    const seasonDoc = await Season.findById(req.params.seasonId)
-    consola.info(seasonDoc)
-    if (seasonDoc === null)
-      res.locals.data = { ok: false, msg: "Error processing request" }
+    const compDocuments = await Competition.find({ season: req.params.id })
+    consola.info(compDocuments)
+    if (compDocuments === null)
+      res.locals.data = {
+        ok: false,
+        msg: "Error processing request",
+        competitions: []
+      }
     else {
-      res.locals.data.competitions = seasonDoc.competitions.map(
-        async compId => {
-          const compDoc = await Competition.findById(compId)
-          return {
-            title: compDoc.title,
-            startDate: compDoc.timelines.start,
-            endDate: compDoc.timelines.end
-          }
+      let competitions = compDocuments.map(doc => {
+        return {
+          title: doc.title,
+          startDate: doc.timelines.start,
+          endDate: doc.timelines.start,
+          description: doc.description,
+          id: doc._id
         }
-      )
+      })
+      res.locals.data = { competitions: competitions }
+      consola.info(res.locals.data.competitions)
       if (res.locals.data.competitions.length > 0) res.locals.data.ok = true
       else res.locals.data.ok = false
     }
@@ -112,10 +117,18 @@ router.get("/competition/:id", async (req, res, next) => {
     const compDoc = await Competition.findById(req.params.id)
     consola.info(compDoc)
     if (compDoc === null)
-      res.locals.data = { ok: false, msg: "Error processing request" }
-    else if (compDoc.season !== req.query.season)
-      res.locals.data = { ok: false, msg: "Error processing request" }
-    else {
+      res.locals.data = {
+        ok: false,
+        msg: "Error processing request 1",
+        fixtures: []
+      }
+    else if (compDoc.season._id != req.query.season) {
+      res.locals.data = {
+        ok: false,
+        msg: "Error processing request",
+        fixtures: []
+      }
+    } else {
       res.locals.data = compDoc
     }
     res.status(200).json(res.locals.data)
@@ -133,25 +146,24 @@ router.get("/fixture/:id", async (req, res, next) => {
    * QUERY PARAMS:
    *  - season -- season id
    *  - competition -- competition id
-   *  - num_fixtues -- number of fixtures [DEPRECATED]
+   *  - length -- number of fixtures
    */
   try {
-    if (typeof req.params === "undefined")
+    if (
+      typeof req.params === "undefined" ||
+      typeof req.params.id === "undefined" ||
+      typeof req.query.season === "undefined" ||
+      typeof req.query.competition === "undefined"
+    )
       throw new Error("Incorrect paramater")
     const playerDoc = await Player.findById(req.params.id)
+    consola.info(playerDoc)
     if (playerDoc === null) throw new Error("No results")
     else if (playerDoc.seasons.id(req.query.season) === null) {
-      // SEASON NEEDS TO BE ADDED
-      playerDoc.seasons.push(req.query.season)
-      let fixtures = new Array(parseInt(req.query.num_fixtures))
-      playerDoc.availability.push({
-        _id: req.query.competition,
-        fixtures: fixtures.fill(0), // default to 0 / maybe
-        status: ["maybe", "yes", "no"]
-      })
+      throw new Error("Invalid season")
     } else if (playerDoc.availability.id(req.query.competition) === null) {
       // COMPETITION AVAILABILITY NEEDS TO BE ADDED
-      let fixtures = new Array(parseInt(req.query.num_fixtures))
+      let fixtures = new Array(parseInt(req.query.length))
       playerDoc.availability.push({
         _id: req.query.competition,
         fixtures: fixtures.fill(0), // default to 0 / maybe
@@ -174,7 +186,6 @@ router.post("/fixture/:id", async (req, res, next) => {
    * QUERY PARAMS:
    *  - season -- season id
    *  - competition -- competition id
-   *  - num_fixtures -- number of fixtures in array [DEPRECATED]
    *  - fixtures -- fixture availability (array)
    */
   try {
@@ -182,55 +193,27 @@ router.post("/fixture/:id", async (req, res, next) => {
       throw new Error("Incorrect paramater")
     const playerDoc = await Player.findById(req.params.id)
     if (playerDoc === null) throw new Error("No results")
-    else if (playerDoc.seasons.id(req.query.season) === null) {
-      // SEASON NEEDS TO BE ADDED
-      // SHOULD THIS THROW AN ERROR ?? ... only saving existing document
-      let seasons = playerDoc.seasons
-      seasons.push(req.query.season)
-      let availability = playerDoc.availability
-      availability.push({
-        _id: req.query.competition,
-        fixtures: req.query.fixtures,
-        status: ["maybe", "yes", "no"]
-      })
-      let q = await playerDoc.updateOne({
-        seasons: seasons,
-        availability: availability
-      })
-      consola.info(q)
-      if (q.ok !== 1) throw new Error("Update error occured")
-      else if (q.nModified === 0)
-        res.status(200).json({ ok: true, change: false })
-      else res.status(200).json({ ok: true, change: true })
-    } else if (playerDoc.availability.id(req.query.competition) === null) {
+    else if (playerDoc.seasons.id(req.body.season) === null) {
+      console.log("season not found")
+      res.status(200).json({ ok: false })
+    } else if (playerDoc.availability.id(req.body.competition) === null) {
       // COMPETITION AVAILABILITY NEEDS TO BE ADDED
-      let availability = playerDoc.availability
-      availability.push({
-        _id: req.query.competition,
-        fixtures: req.query.fixtures, // default to 0 / maybe
-        status: ["maybe", "yes", "no"]
-      })
-      let q = await playerDoc.updateOne({ availability: availability })
-      consola.info(q)
-      if (q.ok !== 1) throw new Error("Update error occured")
-      else if (q.nModified === 0)
-        res.status(200).json({ ok: true, change: false })
-      else res.status(200).json({ ok: true, change: true })
+      console.log("competition not found")
+      res.status(200).json({ ok: false })
     } else {
       // UPDATE PLAYER AVAILABILITY
       let availability = playerDoc.availability.map(value => {
-        if (value._id != req.query.competition) return value
+        if (value._id != req.body.competition) return value
         else
           return {
             _id: value._id,
-            fixtures: req.query.fixtures, // update
+            fixtures: req.body.fixtures, // update
             status: value.status
           }
       })
       consola.info(availability)
       const q = await playerDoc.updateOne({ availability: availability })
       //consola.info(doc.availability.id(req.query.competition.fixtures))
-      consola.info(q)
       if (q.ok !== 1) throw new Error("Update error occured")
       else if (q.nModified === 0)
         res.status(200).json({ ok: true, change: false })

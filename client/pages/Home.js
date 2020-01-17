@@ -13,14 +13,16 @@ import Loading from "../components/Loading"
 
 export default props => {
   // URI LOCATION
-  const { id } = useParams()
+  const { season_id } = useParams()
 
   // STATE
   const [fetch, startFetch] = useState(0)
   const [seasonMeta, setSeasonMeta] = useState([])
-  const [activeSeason, selectSeason] = useState(id)
+  const [activeSeason, selectSeason] = useState(season_id)
   const [competitions, setCompetitions] = useState([])
   const [auth, setAuth] = useState(defaultAuth(props.auth))
+  const [seasonList, setSeasonList] = useState([])
+  const [competitionList, setCompetitionList] = useState([])
 
   // MUTATOR METHODS
   useEffect(() => {
@@ -36,7 +38,7 @@ export default props => {
   useEffect(() => {
     // Dynamically update competition list
     axios
-      .get(`/api/season/${activeSeason}`)
+      .get(`/api/season/${activeSeason ? activeSeason : "all"}`)
       .then(res => {
         setCompetitions(res.data.competitions)
       })
@@ -45,49 +47,58 @@ export default props => {
       })
   }, [activeSeason])
 
-  const seasonList = seasonMeta.map(s => {
-    console.log(s)
-    return (
-      <div key={s._id} className="d-flex justify-content-around">
-        <SeasonCard
-          className="d-flex justify-content-around"
-          key={s._id}
-          meta={s}
-        >
-          <div className="d-flex justify-content-around">
-            <Button
-              className="text-capitalize"
-              variant="outline-secondary"
-              size="sm"
-              onClick={() => selectSeason(s._id)}
-              href={`#/${s._id}`}
+  useEffect(() => {
+    setSeasonList(
+      seasonMeta.map(s => {
+        console.log(s)
+        return (
+          <div key={s.id} className="d-flex justify-content-around">
+            <SeasonCard
+              className="d-flex justify-content-around"
+              key={s.id}
+              meta={s}
             >
-              select
-            </Button>
+              <div className="d-flex justify-content-around">
+                <Button
+                  className="text-capitalize"
+                  variant="outline-secondary"
+                  size="sm"
+                  onClick={() => selectSeason(s.id)}
+                  href={`#/season/${s.id}`}
+                >
+                  select
+                </Button>
+              </div>
+            </SeasonCard>
           </div>
-        </SeasonCard>
-      </div>
+        )
+      })
     )
-  })
+  }, [seasonMeta])
 
-  const competitionList = competitions.map(comp => {
-    return (
-      <div key={comp._id} className="d-flex justify-content-around">
-        <CompetitionCard key={comp._id} meta={comp}>
-          <div className="d-flex justify-content-around">
-            <Button
-              className="text-capitalize"
-              variant="outline-secondary"
-              size="sm"
-              href={`#/fixture/${activeSeason}/${comp._id}`}
-            >
-              select
-            </Button>
+  // Render all competitions
+  useEffect(() => {
+    setCompetitionList(
+      competitions.map(comp => {
+        return (
+          <div key={comp.id} className="d-flex justify-content-around">
+            <CompetitionCard key={comp.id} meta={comp}>
+              <div className="d-flex justify-content-around">
+                <Button
+                  className="text-capitalize"
+                  variant="outline-secondary"
+                  size="sm"
+                  href={`#/fixture/${activeSeason}/${comp.id}`}
+                >
+                  select
+                </Button>
+              </div>
+            </CompetitionCard>
           </div>
-        </CompetitionCard>
-      </div>
+        )
+      })
     )
-  })
+  }, [competitions, seasonMeta])
 
   if (auth === 0) return <p>YOU ARE NOT VALIDATED</p>
 

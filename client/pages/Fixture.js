@@ -8,25 +8,27 @@ import { club, player } from "../constants"
 import { useParams } from "react-router-dom"
 import axios from "axios"
 import Toast from "react-bootstrap/Toast"
+import Alert from "react-bootstrap/Alert"
+import { setTimeout } from "timers"
 
 export default () => {
-  const { seasonId, competitionId } = useParams()
-  console.log(`${seasonId} & ${competitionId}`)
+  const { season_id, competition_id } = useParams()
+  console.log(`${season_id} & ${competition_id}`)
 
   // STATE
   const [fixtures, setFixtures] = useState(defaultState.fixtures)
   const [fetch, fetchApi] = useState(0)
   const [availability, setAvailability] = useState([])
   const [fixtureList, setFixtureList] = useState(<p>Loading</p>)
-  const [saveAlert, setSaveAlert] = useState({ success: true, error: false })
+  const [saveAlert, setSaveAlert] = useState({ success: false, error: false })
   const [status, setStatus] = useState(["maybe", "yes", "no"])
 
   // MUTATOR METHOD
   useEffect(() => {
     axios
-      .get(`/api/competition/${seasonId}`, {
+      .get(`/api/competition/${competition_id}`, {
         params: {
-          competitionId: competitionId
+          season: season_id
         }
       })
       .then(res => {
@@ -35,8 +37,9 @@ export default () => {
         axios
           .get(`/api/fixture/${player.id}`, {
             params: {
-              seasonId: seasonId,
-              competitionId: competitionId
+              season: season_id,
+              competition: competition_id,
+              length: res.data.fixtures.length
             }
           })
           .then(res => {
@@ -61,6 +64,7 @@ export default () => {
           day: "2-digit"
         }
         const dateString = `${date.toLocaleDateString(undefined, dateOptions)}`
+        console.log(item)
         return (
           <div key={item._id}>
             <FixtureCard
@@ -75,11 +79,8 @@ export default () => {
                   className="text-capitalize"
                   variant="outline-secondary"
                   onClick={() => {
-                    console.log(availability)
                     availability[index] = (availability[index] + 1) % 3
-                    console.log(availability)
                     setAvailability([...availability])
-                    console.log(status[availability[index]])
                   }}
                 >
                   {status[availability[index]]}
@@ -92,8 +93,29 @@ export default () => {
     )
   }, [fixtures, availability])
 
-  const saveAvailability = () => {
-    console.log("nothing")
+  const saveAvailability = fixt_arr => {
+    console.log(player.id)
+    axios
+      .post(`/api/fixture/${player.id}`, {
+        fixtures: fixt_arr,
+        season: season_id,
+        competition: competition_id,
+        status: ["maybe", "yes", "no"]
+      })
+      .then(resp => {
+        if (typeof resp.data.ok === "undefined") {
+          setSaveAlert({ ...saveAlert, error: true })
+        } else if (resp.data.ok === true) {
+          setSaveAlert({ ...saveAlert, success: true })
+        } else {
+          setSaveAlert({ ...saveAlert, error: true })
+        }
+        setTimeout(setSaveAlert, 2000, { success: false, error: false })
+      })
+      .catch(err => {
+        console.log(err)
+        setSaveAlert({ ...saveAlert, error: true })
+      })
   }
 
   return (
@@ -114,7 +136,7 @@ export default () => {
           <Button
             className="text-capitalize"
             variant="outline-success"
-            onClick={() => console.log("hi")}
+            onClick={() => saveAvailability(availability)}
           >
             save
           </Button>
@@ -122,30 +144,24 @@ export default () => {
       </Container>
       <div className="position-relative">
         <div className="position-absolute" style={{ bottom: 100, right: 10 }}>
-          <Toast
+          <Alert
             show={saveAlert.success}
-            delay="1000"
-            animation="true"
-            autohide="true"
+            onClose={() => setSaveAlert({ ...saveAlert, success: false })}
+            dismissible="true"
+            variant="success"
           >
-            <Toast.Header closeButton="true">
-              <strong className="text-success p-2">Saved your progress!</strong>
-            </Toast.Header>
-          </Toast>
+            <strong className="text-success">Saved your progress!</strong>
+          </Alert>
         </div>
         <div className="position-absolute" style={{ bottom: 100, right: 10 }}>
-          <Toast
+          <Alert
             show={saveAlert.error}
-            delay="1000"
-            animation="true"
-            autohide="true"
+            dismissible="true"
+            onClose={() => setSaveAlert({ ...saveAlert, error: false })}
+            variant="danger"
           >
-            <Toast.Header closeButton="true">
-              <strong className="text-danger p-2">
-                Error saving progress!
-              </strong>
-            </Toast.Header>
-          </Toast>
+            <strong className="text-danger">Error saving progress!</strong>
+          </Alert>
         </div>
       </div>
     </div>

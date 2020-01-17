@@ -5,12 +5,12 @@ export default () => {
   return (
     <div className="d-inline p-2">
       <div>
-        <Nav defaultActiveKey="/home">
-          <Nav.Link href="/home">Active</Nav.Link>
-          <Nav.Link eventKey="link-1">Link</Nav.Link>
-          <Nav.Link eventKey="link-2">Link</Nav.Link>
-          <Nav.Link eventKey="disabled" disabled>
-            Disabled
+        <Nav defaultActiveKey="0">
+          <Nav.Link eventKey="0" href="#/">
+            Home
+          </Nav.Link>
+          <Nav.Link eventKey="1" onClick={() => window.history.back()}>
+            Back
           </Nav.Link>
         </Nav>
       </div>
