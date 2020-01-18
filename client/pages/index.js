@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react"
 import { HashRouter, Switch, Route, Redirect } from "react-router-dom"
-import { FacebookProvider } from "react-facebook"
 import Home from "./Home"
 import Login from "./Login"
 import Fixture from "./Fixture"
 import Error from "./Error"
+import AdminLogin from "./AdminLogin"
 import axios from "axios"
-import { club } from "../constants"
+import { club, facebook } from "../constants"
 
 export default () => {
-  const [loggedIn, toggleLogin] = useState(true)
+  const [loggedIn, toggleLogin] = useState(false)
   const [meta, setMeta] = useState("")
   const [fetch, setFetch] = useState(0) // allows for singular / initial api request
   const [auth, setAuth] = useState("player")
@@ -21,7 +21,7 @@ export default () => {
   }, [fetch])
 
   return (
-    <FacebookProvider appId="474015373186319">
+    <div>
       <HashRouter>
         <div>
           <Switch>
@@ -38,6 +38,9 @@ export default () => {
             <Route exact path="/fixture/:season_id/:competition_id">
               <Fixture />
             </Route>
+            <Route exact path="/admin/login">
+              <AdminLogin />
+            </Route>
             <Route exact path="/error">
               <Error />
             </Route>
@@ -47,7 +50,7 @@ export default () => {
           </Switch>
         </div>
       </HashRouter>
-    </FacebookProvider>
+    </div>
   )
 }
 

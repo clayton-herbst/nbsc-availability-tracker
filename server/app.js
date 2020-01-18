@@ -1,5 +1,4 @@
 const express = require("express")
-const middleware = require("./middleware").middleware
 const consola = require("consola")
 require("dotenv").config()
 
@@ -21,6 +20,8 @@ if (process.env.NODE_ENV !== "production") {
   seedDB(mongoose, "seasons", seedSeasons)
   seedDB(mongoose, "competitions", seedCompetitions)
 }
+
+const middleware = require("./middleware/index").middleware
 
 async function start() {
   const host = "localhost"

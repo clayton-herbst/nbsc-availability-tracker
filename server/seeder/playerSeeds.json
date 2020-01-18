@@ -4,6 +4,10 @@
     "lastName": "Herbst",
     "fullname": "Clayton Herbst",
     "email": "herbsca1@gmail.com",
+    "auth": {
+      "role": "player",
+      "password": ""
+    },
     "social": {
       "facebook": "1232131"
     },

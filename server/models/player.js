@@ -10,6 +10,10 @@ const playerSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  auth: {
+    role: String,
+    password: String
+  },
   social: {
     facebook: String
   },

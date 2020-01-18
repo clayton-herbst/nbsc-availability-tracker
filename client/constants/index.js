@@ -9,4 +9,8 @@ const player = {
   id: "5e2013ae5c59c21aa5394555"
 }
 
-export { club, player }
+const facebook = {
+  id: "474015373186319"
+}
+
+export { club, player, facebook }

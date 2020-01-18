@@ -3,11 +3,14 @@ const logger = require("morgan")
 const path = require("path")
 const express = require("express")
 const createError = require("http-errors")
+const mongoose = require("mongoose")
+const consola = require("consola")
 
 const apiRouter = require("../routes/api")
 const indexRouter = require("../routes/index")
+const authRouter = require("../routes/auth")
 
-module.exports = app => {
+const initApp = app => {
   app.use(cookieParser())
   app.use(logger("dev"))
   app.use(express.json())
@@ -15,6 +18,7 @@ module.exports = app => {
 
   app.use("/", indexRouter)
   app.use("/api", apiRouter)
+  app.use("/user", authRouter)
 
   // catch 404 and forward to error handler
   app.use(function(req, res, next) {
@@ -37,3 +41,5 @@ module.exports = app => {
     })
   })
 }
+
+module.exports.init = initApp
