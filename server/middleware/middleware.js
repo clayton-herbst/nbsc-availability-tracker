@@ -8,7 +8,7 @@ const consola = require("consola")
 
 const apiRouter = require("../routes/api")
 const indexRouter = require("../routes/index")
-const authRouter = require("../routes/auth")
+const authRouter = require("../routes/user")
 
 const initApp = app => {
   app.use(cookieParser())

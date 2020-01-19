@@ -3,9 +3,9 @@ const mongoose = require("mongoose")
 const ObjectId = mongoose.Schema.Types.ObjectId
 
 const playerSchema = new mongoose.Schema({
-  firstName: String,
-  lastName: String,
-  fullname: String,
+  first_name: String,
+  last_name: String,
+  name: String,
   email: {
     type: String,
     required: true

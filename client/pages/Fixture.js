@@ -17,7 +17,6 @@ export default () => {
 
   // STATE
   const [fixtures, setFixtures] = useState(defaultState.fixtures)
-  const [fetch, fetchApi] = useState(0)
   const [availability, setAvailability] = useState([])
   const [fixtureList, setFixtureList] = useState(<p>Loading</p>)
   const [saveAlert, setSaveAlert] = useState({ success: false, error: false })
@@ -50,7 +49,7 @@ export default () => {
           .catch(err => console.log(err))
       })
       .catch(err => console.log(err))
-  }, [fetch])
+  }, [])
 
   // IMPROVEMENT: USE CALLBACK INSTEAD ?? & useEffect once
   useEffect(() => {

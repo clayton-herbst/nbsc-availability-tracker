@@ -18,12 +18,29 @@ const schema = object({
 })
 
 console.log(schema)
-export default () => {
+export default props => {
   return (
     <Container className="my-5 p-5 mx-auto">
       <Formik
         initialValues={{ username: "", password: "" }}
         onSubmit={(values, actions) => {
+          axios
+            .post("/user/admin/register", {
+              email: values.username,
+              password: values.password
+            })
+            .then(response => {
+              console.log(response.data)
+
+              if (!response.data.ok) console.log("error")
+              else {
+                actions.setSubmitting(false)
+                console.log("navigate to home")
+                props.login()
+              }
+            })
+            .catch(err => console.log(err))
+
           setTimeout(() => {
             alert(JSON.stringify(values, null, 2))
             actions.setSubmitting(false)

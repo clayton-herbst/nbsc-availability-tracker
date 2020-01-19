@@ -39,11 +39,7 @@ const createPlayer = async req => {
 const isUser = async (req, res, next) => {
   try {
     // CHECK BODY PARAMATERS
-    if (
-      typeof req.body.firstName === "undefined" ||
-      typeof req.body.lastName === "undefined" ||
-      typeof req.body.email === "undefined"
-    )
+    if (typeof req.body.email === "undefined")
       throw new Error("Missing required fields")
 
     // FIND PLAYER
@@ -57,9 +53,9 @@ const isUser = async (req, res, next) => {
       consola.info(player)
       res.locals.user = {
         id: player._id,
-        firstName: player.firstName,
-        lastName: player.lastName,
-        name: player.fullname,
+        first_name: player.first_name,
+        last_name: player.last_name,
+        name: player.name,
         email: player.email
       }
     }
@@ -82,6 +78,48 @@ const isUser = async (req, res, next) => {
   }
 }
 
+const isAdmin = async (req, res, next) => {
+  try {
+    // CHECK BODY PARAMATERS
+    if (
+      (typeof req.body.email === "undefined",
+      typeof req.body.password === "undefined")
+    )
+      throw new Error("Missing required fields")
+
+    // FIND PLAYER
+    const player = await Player.findOne({ email: req.body.email })
+
+    consola.info(player)
+    if (player === null) {
+      res.locals.user = {}
+      res.locals.status = false
+    } else if (
+      player.auth.role === "administrator" &&
+      player.auth.password === req.body.password
+    ) {
+      consola.info(player)
+      res.locals.user = {
+        id: player._id,
+        first_name: player.first_name,
+        last_name: player.last_name,
+        name: player.name,
+        email: player.email
+      }
+      res.locals.user.role = "admin"
+      res.locals.status = true
+    } else {
+      res.locals.status = false
+    }
+
+    consola.info(res.locals.user)
+    next()
+  } catch (err) {
+    consola.error(err)
+    next(err)
+  }
+}
+
 const validateToken = () =>
   expressJwt({
     secret: process.env.JWT_SECRET,
@@ -90,4 +128,4 @@ const validateToken = () =>
     getToken: req => req.cookies.auth || ""
   })
 
-module.exports = { isUser, createPlayer, validateToken }
+module.exports = { isUser, createPlayer, validateToken, isAdmin }

@@ -20,9 +20,10 @@ export default props => {
   const [seasonMeta, setSeasonMeta] = useState([])
   const [activeSeason, selectSeason] = useState(season_id)
   const [competitions, setCompetitions] = useState([])
-  const [auth, setAuth] = useState(defaultAuth(props.auth))
   const [seasonList, setSeasonList] = useState([])
   const [competitionList, setCompetitionList] = useState([])
+
+  // PERMISSIONS ==> props.admin
 
   // MUTATOR METHODS
   useEffect(() => {
@@ -100,12 +101,11 @@ export default props => {
     )
   }, [competitions, seasonMeta])
 
-  if (auth === 0) return <p>YOU ARE NOT VALIDATED</p>
-
   return (
     <div>
       <Header title={props.meta.title} />
       <Container className="shadow-lg p-3 mb-5 bg-white rounded">
+        {!props.admin ? <p>YOU ARE NOT ADMIN</p> : <p>Admin</p>}
         <ListGroup variant="flush">
           <ListGroup.Item>
             <Section>
