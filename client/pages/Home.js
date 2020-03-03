@@ -10,18 +10,20 @@ import ListGroup from "react-bootstrap/ListGroup"
 import Section from "../components/Section"
 import axios from "axios"
 import Loading from "../components/Loading"
+import Jumbotron from "react-bootstrap/Jumbotron"
+import Card from "react-bootstrap/Card"
+import Carousel from "react-bootstrap/Carousel"
 
 export default props => {
   // URI LOCATION
-  const { season_id } = useParams()
 
   // STATE
-  const [fetch, startFetch] = useState(0)
   const [seasonMeta, setSeasonMeta] = useState([])
-  const [activeSeason, selectSeason] = useState(season_id)
   const [competitions, setCompetitions] = useState([])
   const [seasonList, setSeasonList] = useState([])
+  const [active, setActive] = useState(0)
   const [competitionList, setCompetitionList] = useState([])
+  const [direction, setDirection] = useState()
 
   // PERMISSIONS ==> props.admin
 
@@ -34,50 +36,44 @@ export default props => {
         setSeasonMeta(res.data)
       })
       .catch(err => console.log(err))
-  }, [fetch])
+  }, [])
 
-  useEffect(() => {
+  /*useEffect(() => {
     // Dynamically update competition list
     axios
-      .get(`/api/season/${activeSeason ? activeSeason : "all"}`)
+      .get(`/api/season/${seasonMeta[0].competitions[0].id ? seasonMeta[0].competitions[0].id : "all"}`)
       .then(res => {
         setCompetitions(res.data.competitions)
       })
       .catch(err => {
         console.log(err)
       })
-  }, [activeSeason])
+  }, [activeSeason])*/
 
   useEffect(() => {
     setSeasonList(
-      seasonMeta.map(s => {
+      seasonMeta.map((s, index) => {
         console.log(s)
         return (
-          <div key={s.id} className="d-flex justify-content-around">
-            <SeasonCard
-              className="d-flex justify-content-around"
-              key={s.id}
-              meta={s}
-            >
-              <div className="d-flex justify-content-around">
-                <Button
-                  className="text-capitalize"
-                  variant="outline-secondary"
-                  size="sm"
-                  onClick={() => selectSeason(s.id)}
-                  href={`#/season/${s.id}`}
-                >
-                  select
-                </Button>
-              </div>
-            </SeasonCard>
-          </div>
+          <Container key={index} className="m-2 p-2 w-25">
+            <Card bg="dark" text="white">
+              <Card.Body className="mx-auto text-center">
+                <Card.Title>{s.title}</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted text-capitalize">
+                  {s.status}
+                </Card.Subtitle>
+                <Card.Link href={`#/season/${s.id}/${s.competition}`}>
+                  Select
+                </Card.Link>
+              </Card.Body>
+            </Card>
+          </Container>
         )
       })
     )
   }, [seasonMeta])
 
-  // Render all competitions
+  /* Render all competitions
   useEffect(() => {
     setCompetitionList(
       competitions.map(comp => {
@@ -89,7 +85,7 @@ export default props => {
                   className="text-capitalize"
                   variant="outline-secondary"
                   size="sm"
-                  href={`#/fixture/${activeSeason}/${comp.id}`}
+                  href={`#/season/${activeSeason}`}
                 >
                   select
                 </Button>
@@ -99,14 +95,29 @@ export default props => {
         )
       })
     )
-  }, [competitions, seasonMeta])
+  }, [competitions, seasonMeta])*/
+
+  if (seasonList.length === 0 || seasonMeta.length === 0) return <p>loading</p>
 
   return (
     <div>
       <Header title={props.meta.title} />
-      <Container className="shadow-lg p-3 mb-5 bg-white rounded">
-        {!props.admin ? <p>YOU ARE NOT ADMIN</p> : <p>Admin</p>}
-        <ListGroup variant="flush">
+      <Container className="p-2 h-25">
+        <Jumbotron className="d-flex flex-row no-wrap justify-content-around shadow p-3 rounded">
+          {seasonList.length !== 0 ? seasonList : <p>Loading ...</p>}
+        </Jumbotron>
+      </Container>
+    </div>
+  )
+}
+
+const defaultAuth = auth => {
+  if (typeof auth === "undefined") return 0
+  else return auth
+}
+
+/**
+ * <ListGroup variant="flush">
           <ListGroup.Item>
             <Section>
               <div>
@@ -149,12 +160,27 @@ export default props => {
             </Section>
           </ListGroup.Item>
         </ListGroup>
-      </Container>
-    </div>
-  )
-}
+        -->
+ */
 
-const defaultAuth = auth => {
-  if (typeof auth === "undefined") return 0
-  else return auth
-}
+/**
+  * <div key={s.id} className="d-flex justify-content-around">
+            <SeasonCard
+              className="d-flex justify-content-around"
+              key={s.id}
+              meta={s}
+            >
+              <div className="d-flex justify-content-around">
+                <Button
+                  className="text-capitalize"
+                  variant="outline-secondary"
+                  size="sm"
+                  onClick={() => selectSeason(s.id)}
+                  href={`#/season/${s.id}`}
+                >
+                  select
+                </Button>
+              </div>
+            </SeasonCard>
+          </div>
+  */

@@ -5,7 +5,9 @@ export default props => {
   console.log(props.style)
 
   return (
-    <div className="border shadow rounded-lg m-1 p-2">
+    <div
+      className={`border shadow rounded-lg mb-4 mx-1 p-2 border-${props.color}`}
+    >
       <Container className="text-center p-2">
         <h5 className="font-weight-bold">
           {props.title ? props.title : err.title}

@@ -2,17 +2,17 @@ import React, { useState, useEffect } from "react"
 import { HashRouter, Switch, Route, Redirect } from "react-router-dom"
 import Home from "./Home"
 import Login from "./Login"
-import Fixture from "./Fixture"
+import Season from "./Season"
 import Error from "./Error"
 import AdminLogin from "./AdminLogin"
 import axios from "axios"
-import { club, facebook } from "../constants"
+import { club } from "../constants"
 import EventEmitter from "events"
 
 export default () => {
-  const [loggedIn, toggleLogin] = useState(false)
+  const [loggedIn, toggleLogin] = useState(true)
   const [meta, setMeta] = useState("")
-  const [admin, setAdmin] = useState(undefined)
+  const [admin, setAdmin] = useState(true)
 
   const myEmitter = new EventEmitter()
   myEmitter.on("authorised", (permission = false) => {
@@ -39,7 +39,7 @@ export default () => {
           <Switch>
             <Route exact path={["/", "/season/:id"]}>
               {loggedIn && typeof admin !== "undefined" ? (
-                <Home admin={admin} meta={meta ? meta : defaultHome.meta} />
+                <Season />
               ) : (
                 <Login login={() => myEmitter.emit("authorised")} />
               )}
@@ -47,8 +47,8 @@ export default () => {
             <Route exact path="/admin">
               <h1>ADMIN</h1>
             </Route>
-            <Route exact path="/fixture/:season_id/:competition_id">
-              <Fixture />
+            <Route exact path="/season/:season_id/:competition">
+              <Home admin={admin} meta={meta ? meta : defaultHome.meta} />
             </Route>
             <Route exact path="/admin/login">
               {loggedIn ? (

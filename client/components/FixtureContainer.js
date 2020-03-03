@@ -1,18 +1,38 @@
-import React, { useState, useEffect, useCallback } from "react"
+// CONVERT INTO CONTAINER FOR FIXTURES
+import React from "react"
 import Container from "react-bootstrap/Container"
-import Header from "../components/Header"
-import Title from "../components/Title"
-import FixtureCard from "../components/FixtureCard"
 import Button from "react-bootstrap/Button"
-import { club, player } from "../constants"
-import { useParams } from "react-router-dom"
-import axios from "axios"
-import Toast from "react-bootstrap/Toast"
-import Alert from "react-bootstrap/Alert"
-import { setTimeout } from "timers"
 
-export default () => {
-  const { season_id, competition_id } = useParams()
+export default props => {
+  if (props.children.length === 0 || typeof props.children === "undefined")
+    return props.emptyComponent ? props.emptyComponent : defaultState
+  else
+    return (
+      <div>
+        <Container fluid="true" className={"p-2 mx-auto " + props.className}>
+          <div className="d-lg-flex flex-wrap rounded justify-content-sm-center">
+            {props.children}
+          </div>
+        </Container>
+        <Container className="d-flex justify-content-around">
+          <div className="m-2 p-2">
+            <Button
+              className="text-capitalize"
+              variant="outline-success"
+              onClick={() => props.save()}
+            >
+              save
+            </Button>
+          </div>
+        </Container>
+      </div>
+    )
+}
+
+const defaultState = <p>Loading ....</p>
+
+/**
+ * const { season_id, competition_id } = useParams()
   console.log(`${season_id} & ${competition_id}`)
 
   // STATE
@@ -117,85 +137,4 @@ export default () => {
       })
   }
 
-  return (
-    <div>
-      <Header player="Clayton" title={club.name} />
-      <Container className="h-100 w-75 mx-auto">
-        <Title
-          title={defaultState.title.title}
-          className="my-3 p-2"
-          style={defaultState.title.style}
-        />
-        <div className="d-flex flex-wrap rounded justify-content-sm-center">
-          {fixtureList}
-        </div>
-      </Container>
-      <Container className="d-flex justify-content-around">
-        <div className="m-2 p-2">
-          <Button
-            className="text-capitalize"
-            variant="outline-success"
-            onClick={() => saveAvailability(availability)}
-          >
-            save
-          </Button>
-        </div>
-      </Container>
-      <div className="position-relative">
-        <div className="position-absolute" style={{ bottom: 100, right: 10 }}>
-          <Alert
-            show={saveAlert.success}
-            onClose={() => setSaveAlert({ ...saveAlert, success: false })}
-            dismissible="true"
-            variant="success"
-          >
-            <strong className="text-success">Saved your progress!</strong>
-          </Alert>
-        </div>
-        <div className="position-absolute" style={{ bottom: 100, right: 10 }}>
-          <Alert
-            show={saveAlert.error}
-            dismissible="true"
-            onClose={() => setSaveAlert({ ...saveAlert, error: false })}
-            variant="danger"
-          >
-            <strong className="text-danger">Error saving progress!</strong>
-          </Alert>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const defaultState = {
-  keys: [1, 2],
-  fixtures: [
-    {
-      title: "Test1",
-      key: 1,
-      date: Date.now(),
-      location: "Sorrento",
-      button: "Toggle"
-    },
-    {
-      title: "Test2",
-      key: 2,
-      date: Date.now(),
-      location: "Duncraig",
-      button: "Toggle"
-    }
-  ],
-  fixtureCard: {
-    meta: {
-      title: "Title",
-      desc: "description",
-      button: "delete"
-    }
-  },
-  title: {
-    title: "Fixtures",
-    style: {
-      color: "green"
-    }
-  }
-}
+ */

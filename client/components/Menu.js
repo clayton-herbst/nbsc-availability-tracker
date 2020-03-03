@@ -9,11 +9,14 @@ export default () => {
           <Nav.Link eventKey="0" href="#/">
             Home
           </Nav.Link>
-          <Nav.Link eventKey="1" onClick={() => window.history.back()}>
-            Back
-          </Nav.Link>
         </Nav>
       </div>
     </div>
   )
 }
+
+/*
+  <Nav.Link eventKey="1" onClick={() => window.history.back()}>
+    Back
+  </Nav.Link>
+*/

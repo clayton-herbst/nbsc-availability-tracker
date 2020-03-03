@@ -47,13 +47,17 @@ router.get("/seasons", async (req, res, next) => {
     const docs = await Season.find()
     consola.info(docs)
     res.locals.data = docs.map(doc => {
-      return {
+      let obj = {
         title: doc.title,
         status: doc.status.list[doc.status.current],
         startDate: doc.timelines.start,
         endDate: doc.timelines.end,
         id: doc._id
       }
+      if (doc.competitions.length > 0)
+        obj.competition = doc.competitions[0]._id
+
+      return obj
     })
     res.status(200).json(res.locals.data)
   } catch (err) {
