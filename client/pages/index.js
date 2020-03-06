@@ -9,6 +9,9 @@ import axios from "axios"
 import { club } from "../constants"
 import EventEmitter from "events"
 
+// FOR TESTING:
+import Test from "./Test.js"
+
 export default () => {
   const [loggedIn, toggleLogin] = useState(true)
   const [meta, setMeta] = useState("")
@@ -56,6 +59,9 @@ export default () => {
               ) : (
                 <AdminLogin login={() => myEmitter.emit("authorised", true)} />
               )}
+            </Route>
+            <Route exact path="/test">
+              <Test />
             </Route>
             <Route exact path="/error">
               <Error />

@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"
 import Container from "react-bootstrap/Container"
 import Header from "../components/Header"
-import SectionTitle from "../components/SectionTitle"
-import SeasonCard from "../components/SeasonCard"
-import CompetitionCard from "../components/CompetitionCard"
-import Button from "react-bootstrap/Button"
-import ListGroup from "react-bootstrap/ListGroup"
-import Section from "../components/Section"
 import axios from "axios"
-import Loading from "../components/Loading"
 import Jumbotron from "react-bootstrap/Jumbotron"
 import Card from "react-bootstrap/Card"
-import Carousel from "react-bootstrap/Carousel"
 
 export default props => {
   // URI LOCATION

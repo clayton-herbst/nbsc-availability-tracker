@@ -1,6 +1,9 @@
+/**
+ * DEPRECATED
+ */
 import React, { useEffect, useState } from "react"
-import Tab from "react-bootstrap/Tab"
 import FixtureContainer from "../components/FixtureContainer"
+import Tab from "react-bootstrap/Tab"
 import axios from "axios"
 import { player } from "../constants/index"
 

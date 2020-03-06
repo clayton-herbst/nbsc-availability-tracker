@@ -1,7 +1,8 @@
 const club = {
   name: "North Beach Soccer Club",
   id: "5e1f117b65500311ac6cc7aa",
-  shorthand: "nbsc"
+  shorthand: "nbsc",
+  color: "maroon"
 }
 
 const player = {

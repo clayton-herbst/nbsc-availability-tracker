@@ -6,19 +6,19 @@ import { facebook } from "../constants/index"
 import Loading from "../components/Loading"
 import axios from "axios"
 
-const handleResponse = data => {
+/*const handleResponse = data => {
   console.log(data)
   alert(data)
-}
+}*/
 
 export default props => {
   const [error, setError] = useState(undefined)
   const [data, setData] = useState(undefined)
-  const [facebookSDK, setFacebookSDK] = useState(window.FB) // facebook SDK load state
+  const [facebookSDK, setFacebookSDK] = useState(undefined) // facebook SDK load state
   const [loginState, setLoginState] = useState(undefined)
 
   useEffect(() => {
-    if (typeof facebookSDK !== "undefined") {
+    if (typeof facebookSDK !== "undefined" && facebookSDK === window.FB) {
       window.FB.init({
         appId: facebook.id,
         status: true,
@@ -73,9 +73,19 @@ export default props => {
   // RENDER
   if (typeof error !== "undefined")
     return <h1>THERE HAS BEEN AN ERROR! {error.toString()}</h1>
-  else if (typeof facebookSDK === "undefined")
-    return <Loading text="Loading page ..." />
-  else
+  else if (typeof facebookSDK === "undefined") {
+    setTimeout(() => {
+      setFacebookSDK(window.FB)
+    }, 1000)
+    return (
+      <div>
+        <Container className="my-5 p-5 mx-auto">
+          <Title title="North Beach Soccer Club" style={{ color: "#800000" }} />
+          <Loading text="Loading page ..." />
+        </Container>
+      </div>
+    )
+  } else
     return (
       <Container className="my-5 p-5 mx-auto">
         <Title title="North Beach Soccer Club" style={{ color: "#800000" }} />

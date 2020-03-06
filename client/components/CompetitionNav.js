@@ -4,11 +4,14 @@ import Nav from "react-bootstrap/Nav"
 export default props => {
   const [items, setItems] = useState(defaultState[0])
 
+  // COMMENTS
   console.log("competition nav children:")
   console.log(props.children)
 
   useEffect(() => {
     if (typeof props.children === "undefined") return
+
+    // COMMENTS
     console.log("competition nav children:")
     console.log(props.children)
     setItems(
@@ -38,6 +41,7 @@ export default props => {
   )
 }
 
+// -- TESTING --
 const defaultState = [
   <Nav.Item key="5">
     <Nav.Link eventKey="5">Title</Nav.Link>

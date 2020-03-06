@@ -1,3 +1,6 @@
+/**
+ * Standardised loading component with spinning widget.
+ */
 import React from "react"
 import Container from "react-bootstrap/Container"
 

@@ -11,10 +11,11 @@ import Alert from "react-bootstrap/Alert"
 import Tab from "react-bootstrap/Tab"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
-import EventEmitter from "events"
 import CompetitionNav from "../components/CompetitionNav"
+import { FixtureForm, SeasonForm } from "../components/AdminForms"
+import Modal from "react-bootstrap/Modal"
 
-export default props => {
+export default () => {
   const { id } = useParams()
   console.log(`${id}`)
 
@@ -27,6 +28,8 @@ export default props => {
   const [competitions, setCompetitions] = useState(undefined)
   const [seasons, setSeasons] = useState(undefined)
   const [active, setActive] = useState(undefined)
+  const [addFixtureModal, setAddFixtureModal] = useState(false) // add new fixture pop-up
+  const [addSeasonModal, setAddSeasonModal] = useState(false) // add new season pop-up
   //const [events, setEvents] = useState(new EventEmitter())
 
   const save = () => {
@@ -65,6 +68,7 @@ export default props => {
 
   useEffect(() => {
     // DYNAMICALLY UPDATE LIST OF COMPETITIONS FOR A PARTICULAR SEASON
+    if (typeof id === "undefined") return
 
     let meta = { season: id }
     let functions = { competitions: setCompetitions }
@@ -136,9 +140,79 @@ export default props => {
         <Row>
           <Col sm={3}>
             <CompetitionNav>{competitions}</CompetitionNav>
+            <Container className="mt-2 pt-2 border-top d-flex justify-content-center">
+              <Button
+                size="sm"
+                variant="outline-primary"
+                onClick={() => setAddSeasonModal(true)}
+              >
+                Add Season
+              </Button>
+              <Modal
+                show={addSeasonModal}
+                onHide={() => setAddSeasonModal(false)}
+              >
+                <Modal.Header closeButton={true}>
+                  <Modal.Title
+                    className="ml-auto"
+                    style={{ color: "maroon", paddingLeft: 50 }}
+                  >
+                    Add Season
+                  </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <SeasonForm onClose={() => setAddSeasonModal(false)} />
+                </Modal.Body>
+              </Modal>
+            </Container>
           </Col>
           <Col sm={9}>
-            <FixtureContainer save={save}>{fixtureList}</FixtureContainer>
+            <FixtureContainer fixtures={fixtureList}>
+              <Container className="mb-5">
+                <Row
+                  hidden={false}
+                  className="my-1 d-flex justify-content-sm-center"
+                >
+                  <Button
+                    className="text-capitalize m-1"
+                    variant="outline-success"
+                    onClick={save}
+                    size="sm"
+                  >
+                    save
+                  </Button>
+                </Row>
+                <Row
+                  hidden={false}
+                  className="my-1 d-flex justify-content-sm-center"
+                >
+                  <Button
+                    className="m-1 text-capitalize"
+                    variant="outline-warning"
+                    size="sm"
+                    onClick={() => setAddFixtureModal(true)}
+                  >
+                    Add Fixture
+                  </Button>
+                </Row>
+                <Modal
+                  show={addFixtureModal}
+                  onHide={() => setAddFixtureModal(false)}
+                >
+                  <Modal.Header closeButton={true}>
+                    <Modal.Title
+                      className="ml-auto"
+                      style={{ color: "maroon", paddingLeft: 50 }}
+                    >
+                      Add Fixture
+                    </Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <FixtureForm onClose={() => setAddFixtureModal(false)} />
+                  </Modal.Body>
+                </Modal>
+              </Container>
+            </FixtureContainer>
           </Col>
         </Row>
       </Tab.Container>
@@ -280,5 +354,6 @@ const requestSave = (
     })
 }
 
+// -- CONSTANTS --
 const status = ["maybe", "yes", "no"]
 const availabilityColors = ["warning", "success", "danger"]

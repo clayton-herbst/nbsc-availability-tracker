@@ -1,3 +1,6 @@
+/**
+ * Controls how elements within individual cards are displayed.
+ */
 import React from "react"
 import Container from "react-bootstrap/Container"
 
@@ -33,6 +36,8 @@ let err = {
   location: "No location provided",
   button: ""
 }
+
+// - DEPRECATED --
 
 /**
  Description:

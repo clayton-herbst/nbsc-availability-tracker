@@ -1,4 +1,6 @@
-// CONVERT INTO CONTAINER FOR FIXTURES
+/**
+ * Container of fixture cards and any actions relating to fixtures.
+ */
 import React from "react"
 import Container from "react-bootstrap/Container"
 import Button from "react-bootstrap/Button"
@@ -11,19 +13,11 @@ export default props => {
       <div>
         <Container fluid="true" className={"p-2 mx-auto " + props.className}>
           <div className="d-lg-flex flex-wrap rounded justify-content-sm-center">
-            {props.children}
+            {props.fixtures}
           </div>
         </Container>
         <Container className="d-flex justify-content-around">
-          <div className="m-2 p-2">
-            <Button
-              className="text-capitalize"
-              variant="outline-success"
-              onClick={() => props.save()}
-            >
-              save
-            </Button>
-          </div>
+          {props.children}
         </Container>
       </div>
     )
@@ -31,6 +25,7 @@ export default props => {
 
 const defaultState = <p>Loading ....</p>
 
+// -- DEPRECATED --
 /**
  * const { season_id, competition_id } = useParams()
   console.log(`${season_id} & ${competition_id}`)
