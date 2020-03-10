@@ -23,7 +23,11 @@ const schema = object({
     })
 })
 
-export default props => {
+interface AdminLogin {
+  login: any;
+}
+
+export default function(props: AdminLogin): any {
   // Use the Formik Libraries useFormik instead of the <Formik> component -- props variable overwritten
 
   let formik = useFormik({
@@ -31,13 +35,13 @@ export default props => {
       username: "",
       password: ""
     },
-    onSubmit: (values, actions) => {
+    onSubmit: function(values, actions) {
       axios
         .post("/user/admin/register", {
           email: values.username,
           password: values.password
         })
-        .then(response => {
+        .then(function(response: any): any{
           console.log(response.data)
 
           if (!response.data.ok) console.log("error")
@@ -74,7 +78,7 @@ export default props => {
             onBlur={formik.handleBlur}
             name="username"
             value={formik.values.username}
-            isInvalid={formik.errors.username}
+            isInvalid={formik.errors.username === ""}
           />
           {formik.errors.username && (
             <Form.Control.Feedback type="invalid">
@@ -90,7 +94,7 @@ export default props => {
             name="password"
             onChange={formik.handleChange}
             value={formik.values.password}
-            isInvalid={formik.errors.password}
+            isInvalid={formik.errors.password === ""}
           />
           {formik.errors.password && (
             <Form.Control.Feedback type="invalid">

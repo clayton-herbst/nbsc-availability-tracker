@@ -1,35 +1,38 @@
 import React, { useState, useEffect } from "react"
 import { HashRouter, Switch, Route, Redirect } from "react-router-dom"
-import Home from "./Home"
 import Login from "./Login"
 import Season from "./Season"
 import Error from "./Error"
 import AdminLogin from "./AdminLogin"
 import axios from "axios"
 import { club } from "../constants"
-import EventEmitter from "events"
 
 // FOR TESTING:
-import Test from "./Test.js"
+import Test from "./Test"
 
-export default () => {
-  const [loggedIn, toggleLogin] = useState(true)
-  const [meta, setMeta] = useState("")
+export default function() {
+  const [loggedIn, toggleLogin] = useState(false)
+  const [meta, setMeta] = useState({season: ""})
   const [admin, setAdmin] = useState(true)
 
-  const myEmitter = new EventEmitter()
-  myEmitter.on("authorised", (permission = false) => {
-    if (permission) setAdmin(true)
-    else setAdmin(false)
-
-    toggleLogin(true)
-  })
-
-  myEmitter.on("logout", () => {
+  const logout = function(): void {
     toggleLogin(false)
-  })
+  }
 
-  useEffect(() => {
+  console.log(meta)
+
+  const authorise = function(authorised: boolean, admin: boolean): void {
+    if(authorised) {
+      toggleLogin(true)
+      setAdmin(admin)
+    }
+    else {
+      toggleLogin(false)
+      setAdmin(false)
+    }
+  }
+
+  useEffect(function(): void {
     axios.get(`/api/club/${club.id}`).then(res => {
       setMeta(res.data)
     })
@@ -40,24 +43,21 @@ export default () => {
       <HashRouter>
         <div>
           <Switch>
-            <Route exact path={["/", "/season/:id"]}>
-              {loggedIn && typeof admin !== "undefined" ? (
-                <Season />
+            <Route exact path={["/"]}>
+              {loggedIn ? (
+                <Season defaultSeasonId={meta.season ? meta.season : "5e1f11fb73c95e11de2ea91e"}/>
               ) : (
-                <Login login={() => myEmitter.emit("authorised")} />
+                <Login login={() => authorise(true, false)} />
               )}
             </Route>
             <Route exact path="/admin">
               <h1>ADMIN</h1>
             </Route>
-            <Route exact path="/season/:season_id/:competition">
-              <Home admin={admin} meta={meta ? meta : defaultHome.meta} />
-            </Route>
             <Route exact path="/admin/login">
               {loggedIn ? (
                 <Redirect to="/" />
               ) : (
-                <AdminLogin login={() => myEmitter.emit("authorised", true)} />
+                <AdminLogin login={() => authorise(true, true)} />
               )}
             </Route>
             <Route exact path="/test">
@@ -80,5 +80,4 @@ const defaultHome = {
   meta: {
     title: "loading ..."
   },
-  seasons: []
 }

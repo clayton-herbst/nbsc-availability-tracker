@@ -15,11 +15,17 @@ import CompetitionNav from "../components/CompetitionNav"
 import { FixtureForm, SeasonForm } from "../components/AdminForms"
 import Modal from "react-bootstrap/Modal"
 
-export default () => {
-  const { id } = useParams()
-  console.log(`${id}`)
+
+interface Season {
+  defaultSeasonId: string
+}
+
+export default (props: Season) => {
+  //const { id } = useParams()
+  //console.log(`${id}`)
 
   // STATE
+  const [id, setSeasonId] = useState(props.defaultSeasonId)
   const [fixtures, setFixtures] = useState(undefined)
   const [availability, setAvailability] = useState(undefined)
   const [fixtureList, setFixtureList] = useState(<p>Please select a season</p>)
@@ -27,10 +33,13 @@ export default () => {
   //const [status, setStatus] = useState(["maybe", "yes", "no"])
   const [competitions, setCompetitions] = useState(undefined)
   const [seasons, setSeasons] = useState(undefined)
-  const [active, setActive] = useState(undefined)
+  const [active, setActiveCompetition] = useState(undefined)
   const [addFixtureModal, setAddFixtureModal] = useState(false) // add new fixture pop-up
   const [addSeasonModal, setAddSeasonModal] = useState(false) // add new season pop-up
   //const [events, setEvents] = useState(new EventEmitter())
+
+  console.log(`season id: ${id}`)
+  console.log(`active: ${active}`)
 
   const save = () => {
     if (typeof competitions === "undefined" || typeof active === "undefined")
@@ -44,7 +53,7 @@ export default () => {
     let meta = {
       player: player.id,
       season: id,
-      competition: competitions[active].id,
+      competition: active,
       availability: availability,
       alert: saveAlert
     }
@@ -72,7 +81,7 @@ export default () => {
 
     let meta = { season: id }
     let functions = { competitions: setCompetitions }
-    requestSeasons(meta, functions)
+    requestCompetitions(meta, functions)
   }, [id])
 
   useEffect(() => {
@@ -131,22 +140,32 @@ export default () => {
 
   return (
     <div>
-      <Header player="Clayton" title={club.name} seasons={seasons} />
+      <Header player="Clayton" title={club.name} seasons={seasons} defaultSeasonId={props.defaultSeasonId} onSeasonSelect={(id: string) => {setSeasonId(id)}}/>
       <Tab.Container
-        id="season-comps"
+        id="season_competitions"
         defaultActiveKey="0"
-        onSelect={key => setActive(key)}
+        activeKey={active}
+        onSelect={key => setActiveCompetition(key)}
       >
         <Row>
           <Col sm={3}>
             <CompetitionNav>{competitions}</CompetitionNav>
             <Container className="mt-2 pt-2 border-top d-flex justify-content-center">
               <Button
+                className="m-2"
                 size="sm"
                 variant="outline-primary"
                 onClick={() => setAddSeasonModal(true)}
               >
                 Add Season
+              </Button>
+              <Button
+                className="m-2"
+                size="sm"
+                variant="outline-dark"
+                onClick={() => alert("Enter add competition and fixtures page state change.")}
+              >
+                Add Competition
               </Button>
               <Modal
                 show={addSeasonModal}
@@ -167,52 +186,56 @@ export default () => {
             </Container>
           </Col>
           <Col sm={9}>
-            <FixtureContainer fixtures={fixtureList}>
-              <Container className="mb-5">
-                <Row
-                  hidden={false}
-                  className="my-1 d-flex justify-content-sm-center"
-                >
-                  <Button
-                    className="text-capitalize m-1"
-                    variant="outline-success"
-                    onClick={save}
-                    size="sm"
-                  >
-                    save
-                  </Button>
-                </Row>
-                <Row
-                  hidden={false}
-                  className="my-1 d-flex justify-content-sm-center"
-                >
-                  <Button
-                    className="m-1 text-capitalize"
-                    variant="outline-warning"
-                    size="sm"
-                    onClick={() => setAddFixtureModal(true)}
-                  >
-                    Add Fixture
-                  </Button>
-                </Row>
-                <Modal
-                  show={addFixtureModal}
-                  onHide={() => setAddFixtureModal(false)}
-                >
-                  <Modal.Header closeButton={true}>
-                    <Modal.Title
-                      className="ml-auto"
-                      style={{ color: "maroon", paddingLeft: 50 }}
+            <Tab.Content>
+              <Tab.Pane eventKey="5e1fbe36802ef807df29aa61" transition={false} active={"5e1fbe36802ef807df29aa61" == active}>
+                <FixtureContainer fixtures={fixtureList}>
+                  <Container className="mb-5">
+                    <Row
+                      hidden={false}
+                      className="my-1 d-flex justify-content-sm-center"
                     >
-                      Add Fixture
-                    </Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    <FixtureForm onClose={() => setAddFixtureModal(false)} />
-                  </Modal.Body>
-                </Modal>
-              </Container>
-            </FixtureContainer>
+                      <Button
+                        className="text-capitalize m-1"
+                        variant="outline-success"
+                        onClick={save}
+                        size="sm"
+                      >
+                        save
+                      </Button>
+                    </Row>
+                    <Row
+                      hidden={false}
+                      className="my-1 d-flex justify-content-sm-center"
+                    >
+                      <Button
+                        className="m-1 text-capitalize"
+                        variant="outline-warning"
+                        size="sm"
+                        onClick={() => setAddFixtureModal(true)}
+                      >
+                        Add Fixture
+                      </Button>
+                    </Row>
+                    <Modal
+                      show={addFixtureModal}
+                      onHide={() => setAddFixtureModal(false)}
+                    >
+                      <Modal.Header closeButton={true}>
+                        <Modal.Title
+                          className="ml-auto"
+                          style={{ color: "maroon", paddingLeft: 50 }}
+                        >
+                          Add Fixture
+                        </Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <FixtureForm initialValues={{}} onSave={()=>{alert("saved")}} onClose={() => setAddFixtureModal(false)} />
+                      </Modal.Body>
+                    </Modal>
+                  </Container>
+                </FixtureContainer>
+              </Tab.Pane>
+            </Tab.Content>
           </Col>
         </Row>
       </Tab.Container>
@@ -221,7 +244,7 @@ export default () => {
           <Alert
             show={saveAlert.success}
             onClose={() => setSaveAlert({ ...saveAlert, success: false })}
-            dismissible="true"
+            dismissible={true}
             variant="success"
           >
             <strong className="text-success">Saved your progress!</strong>
@@ -230,7 +253,7 @@ export default () => {
         <div className="position-absolute" style={{ bottom: 100, right: 10 }}>
           <Alert
             show={saveAlert.error}
-            dismissible="true"
+            dismissible={true}
             onClose={() => setSaveAlert({ ...saveAlert, error: false })}
             variant="danger"
           >
@@ -248,9 +271,9 @@ export default () => {
 
   */
 
-const requestSeasons = (
-  meta = { season: undefined },
-  functions = { competitions: undefined }
+const requestCompetitions = (
+  meta: { season: string},
+  functions: { competitions: any }
 ) => {
   if (
     typeof meta.season === "undefined" ||
@@ -269,8 +292,8 @@ const requestSeasons = (
 }
 
 const requestFixture = (
-  param = { competitions: undefined, active: undefined, season: undefined },
-  functions = { availability: undefined, fixtures: undefined }
+  param: { competitions: {id: string}, active: number, season: string },
+  functions: { availability: any, fixtures: any }
 ) => {
   if (
     typeof param.competitions === "undefined" ||
@@ -282,19 +305,19 @@ const requestFixture = (
     return // DO NOTHING
 
   axios
-    .get(`/api/competition/${param.competitions[param.active].id}`, {
+    .get(`/api/competition/${param.active}`, {
       params: {
         season: param.season
       }
     })
     .then(res => {
       console.log(res.data)
-      functions.fixtures(res.data.fixtures)
+      functions.fixtures(res.data.fixtures) // set fixtures for competition
       axios
         .get(`/api/fixture/${player.id}`, {
           params: {
             season: param.season,
-            competition: param.competitions[param.active].id,
+            competition: param.active,
             length: res.data.fixtures.length
           }
         })
@@ -308,15 +331,15 @@ const requestFixture = (
 }
 
 const requestSave = (
-  meta = {
-    player: undefined,
-    season: undefined,
-    competition: undefined,
-    availability: undefined,
-    alert: undefined,
-    status: ["maybe", "yes", "no"]
+  meta: {
+    player: string,
+    season: string,
+    competition: string,
+    availability: number[],
+    alert: {success: boolean, error: boolean},
+    status?: [string, string, string]
   },
-  functions = { alert: undefined }
+  functions: {alert: any}
 ) => {
   if (
     typeof meta.competition === "undefined" ||
@@ -356,4 +379,4 @@ const requestSave = (
 
 // -- CONSTANTS --
 const status = ["maybe", "yes", "no"]
-const availabilityColors = ["warning", "success", "danger"]
+const availabilityColors: ["warning", "success", "danger"] = ["warning", "success", "danger"]

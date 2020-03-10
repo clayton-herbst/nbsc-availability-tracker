@@ -11,13 +11,23 @@ import axios from "axios"
   alert(data)
 }*/
 
-export default props => {
+interface LoginPage {
+  login: any;
+}
+
+declare global {
+  interface Window {
+    FB: any
+  }
+}
+
+export default function(props: LoginPage) {
   const [error, setError] = useState(undefined)
   const [data, setData] = useState(undefined)
   const [facebookSDK, setFacebookSDK] = useState(undefined) // facebook SDK load state
   const [loginState, setLoginState] = useState(undefined)
 
-  useEffect(() => {
+  useEffect(function(): void {
     if (typeof facebookSDK !== "undefined" && facebookSDK === window.FB) {
       window.FB.init({
         appId: facebook.id,
@@ -36,11 +46,11 @@ export default props => {
     }
   }, [facebookSDK])
 
-  useEffect(() => {
+  useEffect(function(): void {
     if (typeof window.FB !== "undefined") setFacebookSDK(window.FB)
   }, [window.FB])
 
-  const handleFacebookLogin = async (userId, tokenId) => {
+  const handleFacebookLogin = async function(userId: string, tokenId: string) {
     try {
       window.FB.api(
         `/${userId}`,

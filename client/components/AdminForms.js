@@ -22,17 +22,68 @@ const fixtureSchema = object({
 })
 
 export const FixtureForm = props => {
+  /**
+   * Paramater's:
+   * {
+   *   edit: ["add" | "edit" ],
+   *   initialValues: object,
+   *   onSave: function, // In addition to the api requests. State management etc.
+   *
+   * }
+   */
+
+  /**
+   * Implement REDUX state manager.
+   * Fields:
+   *  - Button text
+   *  - onSubmit function (api endpoint)
+   *  -
+   */
+
   // Handles the collection of data for a new fixture
 
+  let setFormInitialValues = () => {
+    if (typeof props.initialValues === "undefined") {
+      return {
+        title:
+          typeof props.initialValues.title !== "undefined"
+            ? props.initialValues.title
+            : "",
+        home:
+          typeof props.initialValues.home !== "undefined"
+            ? props.initialValues.home
+            : "",
+        away:
+          typeof props.initialValues.away !== "undefined"
+            ? props.initialValues.away
+            : "",
+        date:
+          typeof props.initialValues.date !== "undefined"
+            ? props.initialValues.date
+            : "",
+        location:
+          typeof props.initialValues.location !== "undefined"
+            ? props.initialValues.location
+            : "",
+        description:
+          typeof props.initialValues.description !== "undefined"
+            ? props.initialValues.description
+            : ""
+      }
+    } else {
+      return {
+        title: "",
+        home: "",
+        away: "",
+        date: "",
+        location: "",
+        description: ""
+      }
+    }
+  }
+
   let formik = useFormik({
-    initialValues: {
-      title: "",
-      home: "",
-      away: "",
-      date: "",
-      location: "",
-      description: ""
-    },
+    initialValues: setFormInitialValues(),
     onSubmit: () => {
       alert("submitted fixture")
     },
@@ -141,19 +192,23 @@ export const FixtureForm = props => {
             )}
           </Form.Row>
         </Form.Group>
-        {props.onSave ? (
-          ""
-        ) : (
+        {typeof props.onSave === "function" ? (
           <Container className="d-flex justify-content-around">
             <Button
               className="p-2"
               size="sm"
               type="submit"
               variant="outline-success"
+              onClick={() => {
+                props.onSave()
+                props.onClose()
+              }}
             >
               Add
             </Button>
           </Container>
+        ) : (
+          ""
         )}
       </Form>
     </Container>
@@ -256,19 +311,23 @@ export const SeasonForm = props => {
           </Form.Row>
         </Form.Group>
         <Container className="d-flex justify-content-around">
-          {props.onSave ? (
-            ""
-          ) : (
+          {typeof props.onSave === "function" ? (
             <Container className="d-flex justify-content-around">
               <Button
                 className="p-2"
                 size="sm"
                 type="submit"
                 variant="outline-success"
+                onClick={() => {
+                  props.onSave()
+                  props.onClose()
+                }}
               >
                 Add
               </Button>
             </Container>
+          ) : (
+            ""
           )}
         </Container>
       </Form>

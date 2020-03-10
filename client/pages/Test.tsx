@@ -1,5 +1,5 @@
 import React from "react"
-import { FixtureForm, SeasonForm } from "../components/AdminForms.js"
+import { FixtureForm, SeasonForm } from "../components/AdminForms"
 
 export default () => {
   return (

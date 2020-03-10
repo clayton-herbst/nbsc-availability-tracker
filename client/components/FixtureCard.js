@@ -5,8 +5,6 @@ import React from "react"
 import Container from "react-bootstrap/Container"
 
 export default props => {
-  console.log(props.style)
-
   return (
     <div
       className={`border shadow rounded-lg mb-4 mx-1 p-2 border-${props.color}`}

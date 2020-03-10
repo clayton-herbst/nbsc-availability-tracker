@@ -1,7 +1,7 @@
 import React from "react"
 import Container from "react-bootstrap/Container"
 
-export default () => {
+export default function(): any {
   return (
     <Container>
       <div className="m-auto p-5">
@@ -10,7 +10,7 @@ export default () => {
         </h2>
         <div>
           <p className="text-secondary text-center text-italic p-2">
-            Please navigate back to the{" "}
+            Please navigate back to the {" "}
             <a href="#/" className="text-no-decoration text-font-bold">
               home
             </a>{" "}

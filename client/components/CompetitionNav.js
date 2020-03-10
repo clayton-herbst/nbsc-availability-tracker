@@ -18,7 +18,7 @@ export default props => {
       props.children.map((value, index) => {
         return (
           <Nav.Item key={index} className="border rounded">
-            <Nav.Link eventKey={index}>{value.title}</Nav.Link>
+            <Nav.Link eventKey={value.id}>{value.title}</Nav.Link>
           </Nav.Item>
         )
       })

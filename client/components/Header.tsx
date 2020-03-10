@@ -8,28 +8,38 @@ import Menu from "./Menu"
 import Dropdown from "react-bootstrap/Dropdown"
 import { DropdownButton } from "react-bootstrap"
 
-export default props => {
-  const [seasons, setSeasons] = useState(props.seasons)
-  const [active, setActive] = useState(0)
+interface Header {
+  onSeasonSelect?: any;
+  defaultSeasonId?: string;
+  seasons: any;
+  title: string;
+  player?: string;
+}
+
+export default function(props: Header): any {
+  const [seasonComponents, setSeasonComponents] = useState()
+  const [active, setActive] = useState(props.defaultSeasonId)
 
   useEffect(() => {
     if (typeof props.seasons === "undefined") return
 
-    setSeasons(
+    setSeasonComponents(
       props.seasons.map((value, index) => (
         <Dropdown.Item
           key={index}
-          href={`#/season/${value.id}`}
-          active={active === index}
+          eventKey={value.id}
+          active={active === value.id}
           onClick={() => {
-            setActive(index)
+            setActive(value.id)
+            if(typeof props.onSeasonSelect !== "undefined")
+              props.onSeasonSelect(value.id)
           }}
         >
           {value.title}
         </Dropdown.Item>
       ))
     )
-  }, [props.seasons])
+  }, [props.seasons, active])
 
   return (
     <Navbar className="w-100" bg="light" variant="light">
@@ -40,9 +50,9 @@ export default props => {
           </h1>
         </div>
         <div className="mx-auto">
-          <DropdownButton variant="outline-secondaray" size="lg" title="Season">
+          <DropdownButton id="season_select" variant="outline-secondary" title="Season">
             <Dropdown drop="down">
-              {seasons}
+              {seasonComponents}
               <Dropdown.Item>another</Dropdown.Item>
               <Dropdown.Item>another</Dropdown.Item>
             </Dropdown>
