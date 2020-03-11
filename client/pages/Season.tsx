@@ -12,8 +12,12 @@ import Tab from "react-bootstrap/Tab"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import CompetitionNav from "../components/CompetitionNav"
-import { FixtureForm, SeasonForm } from "../components/AdminForms"
+import { FixtureForm, SeasonForm, CompetitionForm } from "../components/AdminForms"
 import Modal from "react-bootstrap/Modal"
+import CompetitionSelectStatic from "../components/CompetitionSelectStatic"
+import SeasonSelectStatic from "../components/SeasonSelectStatic"
+import DropdownButton from "react-bootstrap/DropdownButton"
+import Dropdown from "react-bootstrap/Dropdown"
 
 
 interface Season {
@@ -138,9 +142,19 @@ export default (props: Season) => {
     )
   }, [availability, competitions])
 
+  if(typeof id === "undefined" || id === "") {
+    return (
+      <div>
+        <Header player="Clayton" title={club.name} seasons={seasons} onHome={() => setSeasonId("")} defaultSeasonId={props.defaultSeasonId} onSeasonSelect={(id: string) => {setSeasonId(id)}}/>
+        <Container>
+          <SeasonSelectStatic />
+        </Container>
+      </div>
+    )
+  } else
   return (
     <div>
-      <Header player="Clayton" title={club.name} seasons={seasons} defaultSeasonId={props.defaultSeasonId} onSeasonSelect={(id: string) => {setSeasonId(id)}}/>
+      <Header player="Clayton" title={club.name} seasons={seasons} onHome={() => setSeasonId("")} defaultSeasonId={props.defaultSeasonId} onSeasonSelect={(id: string) => {setSeasonId(id)}}/>
       <Tab.Container
         id="season_competitions"
         defaultActiveKey="0"
@@ -150,23 +164,12 @@ export default (props: Season) => {
         <Row>
           <Col sm={3}>
             <CompetitionNav>{competitions}</CompetitionNav>
-            <Container className="mt-2 pt-2 border-top d-flex justify-content-center">
-              <Button
-                className="m-2"
-                size="sm"
-                variant="outline-primary"
-                onClick={() => setAddSeasonModal(true)}
-              >
-                Add Season
-              </Button>
-              <Button
-                className="m-2"
-                size="sm"
-                variant="outline-dark"
-                onClick={() => alert("Enter add competition and fixtures page state change.")}
-              >
-                Add Competition
-              </Button>
+            <Container className="mt-2 pt-2 d-flex justify-content-center">
+              <DropdownButton className="m-1 p-1" drop="down" variant="outline-secondary" title="Admin" id="admin_options">
+                <Dropdown.Item eventKey="add_competition">Add Competition</Dropdown.Item>
+                <Dropdown.Item onClick={() => setAddFixtureModal(true)}>Add Fixture</Dropdown.Item>
+                <Dropdown.Item onClick={() => setAddSeasonModal(true)}>Add Season</Dropdown.Item>
+              </DropdownButton>
               <Modal
                 show={addSeasonModal}
                 onHide={() => setAddSeasonModal(false)}
@@ -180,13 +183,19 @@ export default (props: Season) => {
                   </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                  <SeasonForm onClose={() => setAddSeasonModal(false)} />
+                  <SeasonForm onClose={() => setAddSeasonModal(false)} onSave={() => alert("saved")} />
                 </Modal.Body>
               </Modal>
             </Container>
           </Col>
           <Col sm={9}>
             <Tab.Content>
+              <Tab.Pane eventKey="-1">
+                <CompetitionSelectStatic />
+              </Tab.Pane>
+              <Tab.Pane eventKey="add_competition">
+                <CompetitionForm onSave={() => alert("submitted")} />
+              </Tab.Pane>
               <Tab.Pane eventKey="5e1fbe36802ef807df29aa61" transition={false} active={"5e1fbe36802ef807df29aa61" == active}>
                 <FixtureContainer fixtures={fixtureList}>
                   <Container className="mb-5">
@@ -203,19 +212,6 @@ export default (props: Season) => {
                         save
                       </Button>
                     </Row>
-                    <Row
-                      hidden={false}
-                      className="my-1 d-flex justify-content-sm-center"
-                    >
-                      <Button
-                        className="m-1 text-capitalize"
-                        variant="outline-warning"
-                        size="sm"
-                        onClick={() => setAddFixtureModal(true)}
-                      >
-                        Add Fixture
-                      </Button>
-                    </Row>
                     <Modal
                       show={addFixtureModal}
                       onHide={() => setAddFixtureModal(false)}
@@ -229,7 +225,7 @@ export default (props: Season) => {
                         </Modal.Title>
                       </Modal.Header>
                       <Modal.Body>
-                        <FixtureForm initialValues={{}} onSave={()=>{alert("saved")}} onClose={() => setAddFixtureModal(false)} />
+                        <FixtureForm onSave={()=>{alert("saved")}} onClose={() => setAddFixtureModal(false)} />
                       </Modal.Body>
                     </Modal>
                   </Container>

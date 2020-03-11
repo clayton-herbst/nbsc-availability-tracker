@@ -11,7 +11,7 @@ import { club } from "../constants"
 import Test from "./Test"
 
 export default function() {
-  const [loggedIn, toggleLogin] = useState(false)
+  const [loggedIn, toggleLogin] = useState(true)
   const [meta, setMeta] = useState({season: ""})
   const [admin, setAdmin] = useState(true)
 

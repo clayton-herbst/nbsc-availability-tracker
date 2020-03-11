@@ -6,14 +6,17 @@ import Navbar from "react-bootstrap/Navbar"
 import Container from "react-bootstrap/Container"
 import Menu from "./Menu"
 import Dropdown from "react-bootstrap/Dropdown"
-import { DropdownButton } from "react-bootstrap"
+import DropdownButton from "react-bootstrap/DropdownButton"
+import Nav from "react-bootstrap/Nav"
+import Button from "react-bootstrap/Button"
 
 interface Header {
-  onSeasonSelect?: any;
-  defaultSeasonId?: string;
+  onSeasonSelect?: any; // function
+  defaultSeasonId?: string; // function
   seasons: any;
   title: string;
   player?: string;
+  onHome?: any; // function
 }
 
 export default function(props: Header): any {
@@ -58,7 +61,11 @@ export default function(props: Header): any {
             </Dropdown>
           </DropdownButton>
         </div>
-        <Menu />
+        <div className="d-inline p-2">
+          <Nav.Link className="text-decoration-none text-secondary" onClick={() => {props.onHome(); setActive("")}}>
+            Home
+          </Nav.Link>
+        </div>
       </Container>
     </Navbar>
   )

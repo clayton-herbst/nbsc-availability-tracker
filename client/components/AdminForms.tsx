@@ -8,8 +8,11 @@ import Container from "react-bootstrap/Container"
 import Form from "react-bootstrap/Form"
 import Button from "react-bootstrap/Button"
 import { useFormik } from "formik"
-import { object, string, date } from "yup"
+import { object, string, date, array } from "yup"
 import { club } from "../constants"
+import Row from "react-bootstrap/Row"
+import Col from "react-bootstrap/Col"
+
 
 const fixtureSchema = object({
   title: string().required("Field required"),
@@ -21,7 +24,21 @@ const fixtureSchema = object({
   description: string().notRequired()
 })
 
-export const FixtureForm = props => {
+interface FixtureForm {
+  onSave?: any; // function
+  onClose?: any;
+  initialValues?: {
+    title: string,
+    home: string,
+    away: string,
+    date: string,
+    location: string,
+    description: string
+  };
+  title?: string;
+}
+
+export const FixtureForm = (props: FixtureForm) => {
   /**
    * Paramater's:
    * {
@@ -43,7 +60,7 @@ export const FixtureForm = props => {
   // Handles the collection of data for a new fixture
 
   let setFormInitialValues = () => {
-    if (typeof props.initialValues === "undefined") {
+    if (typeof props.initialValues !== "undefined") {
       return {
         title:
           typeof props.initialValues.title !== "undefined"
@@ -85,7 +102,8 @@ export const FixtureForm = props => {
   let formik = useFormik({
     initialValues: setFormInitialValues(),
     onSubmit: () => {
-      alert("submitted fixture")
+      props.onSave()
+      props.onClose()
     },
     validationSchema: fixtureSchema,
     validateOnBlur: true
@@ -114,7 +132,7 @@ export const FixtureForm = props => {
               name="title"
               value={formik.values.title}
               onChange={formik.handleChange}
-              isInvalid={formik.errors.title}
+              isInvalid={formik.errors.title ? true : false}
               placeholder="Title"
             />
             {formik.errors.title ? (
@@ -130,7 +148,7 @@ export const FixtureForm = props => {
               name="home"
               value={formik.values.home}
               onChange={formik.handleChange}
-              isInvalid={formik.errors.home}
+              isInvalid={formik.errors.home ? true : false}
               placeholder="Home Team"
             />
             {formik.errors.home ? (
@@ -146,7 +164,7 @@ export const FixtureForm = props => {
               name="away"
               value={formik.values.away}
               onChange={formik.handleChange}
-              isInvalid={formik.errors.away}
+              isInvalid={formik.errors.away ? true : false}
               placeholder="Away Team"
             />
             {formik.errors.away ? (
@@ -164,7 +182,7 @@ export const FixtureForm = props => {
               type="date"
               value={formik.values.date}
               onChange={formik.handleChange}
-              isInvalid={formik.errors.date}
+              isInvalid={formik.errors.date ? true : false}
               placeholder="Date"
             />
             {formik.errors.date ? (
@@ -180,7 +198,7 @@ export const FixtureForm = props => {
               name="location"
               value={formik.values.location}
               onChange={formik.handleChange}
-              isInvalid={formik.errors.location}
+              isInvalid={formik.errors.location ? true : false}
               placeholder="Location"
             />
             {formik.errors.location ? (
@@ -199,10 +217,6 @@ export const FixtureForm = props => {
               size="sm"
               type="submit"
               variant="outline-success"
-              onClick={() => {
-                props.onSave()
-                props.onClose()
-              }}
             >
               Add
             </Button>
@@ -223,7 +237,18 @@ const seasonSchema = object({
   // "status" is featured in the schema as a hidden field
 })
 
-export const SeasonForm = props => {
+interface SeasonForm {
+  title?: string;
+  onSave?: any;
+  onClose?: any; 
+  initialValues?: {
+    title: string,
+    start: string,
+    end: string
+  }
+}
+
+export const SeasonForm = (props: SeasonForm) => {
   // Handles the collection of data for a new season
 
   let formik = useFormik({
@@ -233,7 +258,8 @@ export const SeasonForm = props => {
       end: ""
     },
     onSubmit: () => {
-      alert("submitted season")
+      props.onSave()
+      props.onClose()
     },
     validationSchema: seasonSchema,
     validateOnBlur: true
@@ -262,7 +288,7 @@ export const SeasonForm = props => {
               name="title"
               value={formik.values.title}
               onChange={formik.handleChange}
-              isInvalid={formik.errors.title}
+              isInvalid={formik.errors.title ? true : false}
               placeholder="Title"
             />
             {formik.errors.title ? (
@@ -281,7 +307,7 @@ export const SeasonForm = props => {
               type="date"
               value={formik.values.start}
               onChange={formik.handleChange}
-              isInvalid={formik.errors.start}
+              isInvalid={formik.errors.start ? true : false}
             />
             {formik.errors.start ? (
               <Form.Control.Feedback type="invalid">
@@ -299,7 +325,7 @@ export const SeasonForm = props => {
               type="date"
               value={formik.values.end}
               onChange={formik.handleChange}
-              isInvalid={formik.errors.end}
+              isInvalid={formik.errors.end ? true : false}
             />
             {formik.errors.end ? (
               <Form.Control.Feedback type="invalid">
@@ -318,10 +344,6 @@ export const SeasonForm = props => {
                 size="sm"
                 type="submit"
                 variant="outline-success"
-                onClick={() => {
-                  props.onSave()
-                  props.onClose()
-                }}
               >
                 Add
               </Button>
@@ -334,3 +356,126 @@ export const SeasonForm = props => {
     </Container>
   )
 }
+
+interface CompetitionForm {
+  title?: string;
+  onSave: any; // function
+  onClose?: any; // function
+}
+
+const competitionSchema = object({
+  title: string().required("Field required"),
+  description: string().required("Field required"),
+  start: date()
+    .required("Field required"),
+  end: date() // date
+    .required("Field required"),
+  fixtures: array()
+    .of(fixtureSchema)
+    .required("Field required"),
+})
+
+export const CompetitionForm = (props: CompetitionForm) => {
+
+  let titleStyle = {color: "maroon"}
+
+  let formik = useFormik({
+    initialValues: {
+      title: "",
+      description: "",
+      start: "",
+      end: "",
+      fixtures: {}
+    },
+    onSubmit: () => {
+      props.onSave()
+      props.onClose()
+    },
+    validateOnBlur: true,
+    validationSchema: competitionSchema
+  })
+  return (
+    <Container>
+      <div className="mx-auto p-2">
+        <h3 className="text-center" style={titleStyle}>{props.title ? props.title : "Register New Competition"}</h3>
+      </div>
+      <Form onReset={formik.handleReset} onSubmit={formik.handleSubmit}>
+        <Container>
+          <Form.Group>
+            <Form.Row>
+              <Form.Label>Competition Details</Form.Label>
+            </Form.Row>
+            <Form.Row>
+              <div className="d-flex flex-row justify-content-md-start">
+                <Form.Control
+                  className="m-1"
+                  name="title"
+                  as="input"
+                  type="text"
+                  value={formik.values.title}
+                  onChange={formik.handleChange}
+                  isInvalid={formik.errors.title ? true : false}
+                />
+                {formik.errors.title ? (
+                  <Form.Control.Feedback type="invalid">
+                    {formik.errors.title}
+                  </Form.Control.Feedback>
+                ) : "" }
+                <Form.Control
+                  name="start"
+                  as="input"
+                  type="date"
+                  value={formik.values.start}
+                  onChange={formik.handleChange}
+                  isInvalid={formik.errors.start ? true : false}
+                />
+                {formik.errors.start ? (
+                  <Form.Control.Feedback type="invalid">
+                    {formik.errors.start}
+                  </Form.Control.Feedback>
+                ) : "" }
+                <Form.Control
+                  name="end"
+                  as="input"
+                  type="date"
+                  value={formik.values.end}
+                  onChange={formik.handleChange}
+                  isInvalid={formik.errors.end ? true : false}
+                />
+                {formik.errors.end ? (
+                  <Form.Control.Feedback type="invalid">
+                    {formik.errors.end}
+                  </Form.Control.Feedback>
+                ) : "" }
+                <Form.Control
+                  name="description"
+                  as="input"
+                  type="text"
+                  value={formik.values.description}
+                  onChange={formik.handleChange}
+                  isInvalid={formik.errors.description ? true : false}
+                />
+                {formik.errors.description ? (
+                  <Form.Control.Feedback type="invalid">
+                    {formik.errors.description}
+                  </Form.Control.Feedback>
+                ) : "" }
+              </div>
+            </Form.Row>
+          </Form.Group>
+          <Form.Row>
+            <Form.Group>
+
+            </Form.Group>
+          </Form.Row>
+        </Container>
+        <Container>
+          <Row>
+            <Button size="sm" variant="outline-secondary">Add Row</Button>
+          </Row>
+        </Container>
+      </Form>
+    </Container>
+  )
+}
+
