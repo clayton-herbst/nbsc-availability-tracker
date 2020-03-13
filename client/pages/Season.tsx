@@ -16,6 +16,7 @@ import { FixtureForm, SeasonForm, CompetitionForm } from "../components/AdminFor
 import Modal from "react-bootstrap/Modal"
 import CompetitionSelectStatic from "../components/CompetitionSelectStatic"
 import SeasonSelectStatic from "../components/SeasonSelectStatic"
+import BulkFixtures from "../components/BulkFixtures"
 import DropdownButton from "react-bootstrap/DropdownButton"
 import Dropdown from "react-bootstrap/Dropdown"
 
@@ -37,9 +38,10 @@ export default (props: Season) => {
   //const [status, setStatus] = useState(["maybe", "yes", "no"])
   const [competitions, setCompetitions] = useState(undefined)
   const [seasons, setSeasons] = useState(undefined)
-  const [active, setActiveCompetition] = useState(undefined)
+  const [active, setActiveCompetition] = useState(undefined) // active competition
   const [addFixtureModal, setAddFixtureModal] = useState(false) // add new fixture pop-up
   const [addSeasonModal, setAddSeasonModal] = useState(false) // add new season pop-up
+  const [addCompetitionModal, setAddCompetitionModal] = useState(false)
   //const [events, setEvents] = useState(new EventEmitter())
 
   console.log(`season id: ${id}`)
@@ -94,7 +96,7 @@ export default (props: Season) => {
     let info = { competitions: competitions, active: active, season: id }
     let functions = { fixtures: setFixtures, availability: setAvailability }
     requestFixture(info, functions) // update fixtures
-  }, [id, active, competitions])
+  }, [active])
 
   // IMPROVEMENT: USE CALLBACK INSTEAD ?? & useEffect once
   useEffect(() => {
@@ -166,7 +168,7 @@ export default (props: Season) => {
             <CompetitionNav>{competitions}</CompetitionNav>
             <Container className="mt-2 pt-2 d-flex justify-content-center">
               <DropdownButton className="m-1 p-1" drop="down" variant="outline-secondary" title="Admin" id="admin_options">
-                <Dropdown.Item eventKey="add_competition">Add Competition</Dropdown.Item>
+                <Dropdown.Item eventKey="bulk_fixtures" onClick={() => setAddCompetitionModal(true)}>Add Competition</Dropdown.Item>
                 <Dropdown.Item onClick={() => setAddFixtureModal(true)}>Add Fixture</Dropdown.Item>
                 <Dropdown.Item onClick={() => setAddSeasonModal(true)}>Add Season</Dropdown.Item>
               </DropdownButton>
@@ -186,6 +188,22 @@ export default (props: Season) => {
                   <SeasonForm onClose={() => setAddSeasonModal(false)} onSave={() => alert("saved")} />
                 </Modal.Body>
               </Modal>
+              <Modal
+                show={addCompetitionModal}
+                onHide={() => setAddCompetitionModal(false)}
+              >
+                <Modal.Header closeButton={true}>
+                  <Modal.Title
+                    className="ml-auto"
+                    style={{ color: "maroon", paddingLeft: 50 }}
+                  >
+                    Add Competition
+                  </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <CompetitionForm onClose={() => setAddCompetitionModal(false)} onSave={() => alert("saved")} />
+                </Modal.Body>
+              </Modal>
             </Container>
           </Col>
           <Col sm={9}>
@@ -193,8 +211,8 @@ export default (props: Season) => {
               <Tab.Pane eventKey="-1">
                 <CompetitionSelectStatic />
               </Tab.Pane>
-              <Tab.Pane eventKey="add_competition">
-                <CompetitionForm onSave={() => alert("submitted")} />
+              <Tab.Pane eventKey="bulk_fixtures">
+                <BulkFixtures onSave={() => alert("submitted")} title="Add Fixtures" />
               </Tab.Pane>
               <Tab.Pane eventKey="5e1fbe36802ef807df29aa61" transition={false} active={"5e1fbe36802ef807df29aa61" == active}>
                 <FixtureContainer fixtures={fixtureList}>
@@ -288,12 +306,12 @@ const requestCompetitions = (
 }
 
 const requestFixture = (
-  param: { competitions: {id: string}, active: number, season: string },
+  param: { competitions: {id: string}, active: string, season: string },
   functions: { availability: any, fixtures: any }
 ) => {
   if (
     typeof param.competitions === "undefined" ||
-    typeof param.active === "undefined" ||
+    typeof param.active !== "string" ||
     typeof param.season === "undefined" ||
     typeof functions.availability === "undefined" ||
     typeof functions.fixtures === "undefined"

@@ -126,89 +126,87 @@ export const FixtureForm = (props: FixtureForm) => {
         ""
       )}
       <Form onReset={formik.handleReset} onSubmit={formik.handleSubmit}>
-        <Form.Group className="">
-          <Form.Row className="my-2 px-2">
-            <Form.Control
-              name="title"
-              value={formik.values.title}
-              onChange={formik.handleChange}
-              isInvalid={formik.errors.title ? true : false}
-              placeholder="Title"
-            />
-            {formik.errors.title ? (
-              <Form.Control.Feedback type="invalid">
-                {formik.errors.title}
-              </Form.Control.Feedback>
-            ) : (
-              ""
-            )}
-          </Form.Row>
-          <Form.Row className="my-2 px-2">
-            <Form.Control
-              name="home"
-              value={formik.values.home}
-              onChange={formik.handleChange}
-              isInvalid={formik.errors.home ? true : false}
-              placeholder="Home Team"
-            />
-            {formik.errors.home ? (
-              <Form.Control.Feedback type="invalid">
-                {formik.errors.home}
-              </Form.Control.Feedback>
-            ) : (
-              ""
-            )}
-          </Form.Row>
-          <Form.Row className="my-2 px-2">
-            <Form.Control
-              name="away"
-              value={formik.values.away}
-              onChange={formik.handleChange}
-              isInvalid={formik.errors.away ? true : false}
-              placeholder="Away Team"
-            />
-            {formik.errors.away ? (
-              <Form.Control.Feedback type="invalid">
-                {formik.errors.away}
-              </Form.Control.Feedback>
-            ) : (
-              ""
-            )}
-          </Form.Row>
-          <Form.Row className="my-2 px-2">
-            <Form.Control
-              name="date"
-              as="input"
-              type="date"
-              value={formik.values.date}
-              onChange={formik.handleChange}
-              isInvalid={formik.errors.date ? true : false}
-              placeholder="Date"
-            />
-            {formik.errors.date ? (
-              <Form.Control.Feedback type="invalid">
-                {formik.errors.date}
-              </Form.Control.Feedback>
-            ) : (
-              ""
-            )}
-          </Form.Row>
-          <Form.Row className="my-2 px-2">
-            <Form.Control
-              name="location"
-              value={formik.values.location}
-              onChange={formik.handleChange}
-              isInvalid={formik.errors.location ? true : false}
-              placeholder="Location"
-            />
-            {formik.errors.location ? (
-              <Form.Control.Feedback type="invalid">
-                {formik.errors.location}
-              </Form.Control.Feedback>
-            ) : (
-              ""
-            )}
-          </Form.Row>
+        <Form.Group className="my-2 px-2">
+          <Form.Control
+            name="title"
+            value={formik.values.title}
+            onChange={formik.handleChange}
+            isInvalid={formik.errors.title ? true : false}
+            placeholder="Title"
+          />
+          {formik.errors.title ? (
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.title}
+            </Form.Control.Feedback>
+          ) : (
+            ""
+          )}
+        </Form.Group>
+        <Form.Group className="my-2 px-2">
+          <Form.Control
+            name="home"
+            value={formik.values.home}
+            onChange={formik.handleChange}
+            isInvalid={formik.errors.home ? true : false}
+            placeholder="Home Team"
+          />
+          {formik.errors.home ? (
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.home}
+            </Form.Control.Feedback>
+          ) : (
+            ""
+          )}
+        </Form.Group>
+        <Form.Group className="my-2 px-2">
+          <Form.Control
+            name="away"
+            value={formik.values.away}
+            onChange={formik.handleChange}
+            isInvalid={formik.errors.away ? true : false}
+            placeholder="Away Team"
+          />
+          {formik.errors.away ? (
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.away}
+            </Form.Control.Feedback>
+          ) : (
+            ""
+          )}
+        </Form.Group>
+        <Form.Group className="my-2 px-2">
+          <Form.Control
+            name="date"
+            as="input"
+            type="date"
+            value={formik.values.date}
+            onChange={formik.handleChange}
+            isInvalid={formik.errors.date ? true : false}
+            placeholder="Date"
+          />
+          {formik.errors.date ? (
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.date}
+            </Form.Control.Feedback>
+          ) : (
+            ""
+          )}
+        </Form.Group>
+        <Form.Group className="my-2 px-2">
+          <Form.Control
+            name="location"
+            value={formik.values.location}
+            onChange={formik.handleChange}
+            isInvalid={formik.errors.location ? true : false}
+            placeholder="Location"
+          />
+          {formik.errors.location ? (
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.location}
+            </Form.Control.Feedback>
+          ) : (
+            ""
+          )}
         </Form.Group>
         {typeof props.onSave === "function" ? (
           <Container className="d-flex justify-content-around">
@@ -282,59 +280,57 @@ export const SeasonForm = (props: SeasonForm) => {
         ""
       )}
       <Form onReset={formik.handleReset} onSubmit={formik.handleSubmit}>
-        <Form.Group className="mx-auto">
-          <Form.Row className="my-2 px-2">
-            <Form.Control
-              name="title"
-              value={formik.values.title}
-              onChange={formik.handleChange}
-              isInvalid={formik.errors.title ? true : false}
-              placeholder="Title"
-            />
-            {formik.errors.title ? (
-              <Form.Control.Feedback type="invalid">
-                {formik.errors.title}
-              </Form.Control.Feedback>
-            ) : (
-              ""
-            )}
-          </Form.Row>
-          <Form.Row className="my-2 px-2">
-            <Form.Label className="font-weight-bold">Start Date</Form.Label>
-            <Form.Control
-              name="start"
-              as="input"
-              type="date"
-              value={formik.values.start}
-              onChange={formik.handleChange}
-              isInvalid={formik.errors.start ? true : false}
-            />
-            {formik.errors.start ? (
-              <Form.Control.Feedback type="invalid">
-                {formik.errors.start}
-              </Form.Control.Feedback>
-            ) : (
-              ""
-            )}
-          </Form.Row>
-          <Form.Row className="my-2 px-2">
-            <Form.Label className="font-weight-bold">End Date</Form.Label>
-            <Form.Control
-              name="end"
-              as="input"
-              type="date"
-              value={formik.values.end}
-              onChange={formik.handleChange}
-              isInvalid={formik.errors.end ? true : false}
-            />
-            {formik.errors.end ? (
-              <Form.Control.Feedback type="invalid">
-                {formik.errors.end}
-              </Form.Control.Feedback>
-            ) : (
-              ""
-            )}
-          </Form.Row>
+        <Form.Group className="my-2 px-2">
+          <Form.Control
+            name="title"
+            value={formik.values.title}
+            onChange={formik.handleChange}
+            isInvalid={formik.errors.title ? true : false}
+            placeholder="Title"
+          />
+          {formik.errors.title ? (
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.title}
+            </Form.Control.Feedback>
+          ) : (
+            ""
+          )}
+        </Form.Group>
+        <Form.Group className="my-2 px-2">
+          <Form.Label className="font-weight-bold">Start Date</Form.Label>
+          <Form.Control
+            name="start"
+            as="input"
+            type="date"
+            value={formik.values.start}
+            onChange={formik.handleChange}
+            isInvalid={formik.errors.start ? true : false}
+          />
+          {formik.errors.start ? (
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.start}
+            </Form.Control.Feedback>
+          ) : (
+            ""
+          )}
+        </Form.Group>
+        <Form.Group className="my-2 px-2">
+          <Form.Label className="font-weight-bold">End Date</Form.Label>
+          <Form.Control
+            name="end"
+            as="input"
+            type="date"
+            value={formik.values.end}
+            onChange={formik.handleChange}
+            isInvalid={formik.errors.end ? true : false}
+          />
+          {formik.errors.end ? (
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.end}
+            </Form.Control.Feedback>
+          ) : (
+            ""
+          )}
         </Form.Group>
         <Container className="d-flex justify-content-around">
           {typeof props.onSave === "function" ? (
@@ -369,15 +365,13 @@ const competitionSchema = object({
   start: date()
     .required("Field required"),
   end: date() // date
-    .required("Field required"),
-  fixtures: array()
-    .of(fixtureSchema)
-    .required("Field required"),
+    .required("Field required")
 })
 
 export const CompetitionForm = (props: CompetitionForm) => {
 
   let titleStyle = {color: "maroon"}
+  let style = { maxWidth: 300 }
 
   let formik = useFormik({
     initialValues: {
@@ -385,7 +379,6 @@ export const CompetitionForm = (props: CompetitionForm) => {
       description: "",
       start: "",
       end: "",
-      fixtures: {}
     },
     onSubmit: () => {
       props.onSave()
@@ -394,86 +387,94 @@ export const CompetitionForm = (props: CompetitionForm) => {
     validateOnBlur: true,
     validationSchema: competitionSchema
   })
-  return (
-    <Container>
-      <div className="mx-auto p-2">
-        <h3 className="text-center" style={titleStyle}>{props.title ? props.title : "Register New Competition"}</h3>
-      </div>
-      <Form onReset={formik.handleReset} onSubmit={formik.handleSubmit}>
-        <Container>
-          <Form.Group>
-            <Form.Row>
-              <Form.Label>Competition Details</Form.Label>
-            </Form.Row>
-            <Form.Row>
-              <div className="d-flex flex-row justify-content-md-start">
-                <Form.Control
-                  className="m-1"
-                  name="title"
-                  as="input"
-                  type="text"
-                  value={formik.values.title}
-                  onChange={formik.handleChange}
-                  isInvalid={formik.errors.title ? true : false}
-                />
-                {formik.errors.title ? (
-                  <Form.Control.Feedback type="invalid">
-                    {formik.errors.title}
-                  </Form.Control.Feedback>
-                ) : "" }
-                <Form.Control
-                  name="start"
-                  as="input"
-                  type="date"
-                  value={formik.values.start}
-                  onChange={formik.handleChange}
-                  isInvalid={formik.errors.start ? true : false}
-                />
-                {formik.errors.start ? (
-                  <Form.Control.Feedback type="invalid">
-                    {formik.errors.start}
-                  </Form.Control.Feedback>
-                ) : "" }
-                <Form.Control
-                  name="end"
-                  as="input"
-                  type="date"
-                  value={formik.values.end}
-                  onChange={formik.handleChange}
-                  isInvalid={formik.errors.end ? true : false}
-                />
-                {formik.errors.end ? (
-                  <Form.Control.Feedback type="invalid">
-                    {formik.errors.end}
-                  </Form.Control.Feedback>
-                ) : "" }
-                <Form.Control
-                  name="description"
-                  as="input"
-                  type="text"
-                  value={formik.values.description}
-                  onChange={formik.handleChange}
-                  isInvalid={formik.errors.description ? true : false}
-                />
-                {formik.errors.description ? (
-                  <Form.Control.Feedback type="invalid">
-                    {formik.errors.description}
-                  </Form.Control.Feedback>
-                ) : "" }
-              </div>
-            </Form.Row>
-          </Form.Group>
-          <Form.Row>
-            <Form.Group>
 
-            </Form.Group>
-          </Form.Row>
-        </Container>
+  return (
+    <Container style={style}>
+      {props.title ? (
         <Container>
-          <Row>
-            <Button size="sm" variant="outline-secondary">Add Row</Button>
-          </Row>
+          <h4
+            className="mx-auto pt-2 text-center align-middle"
+            style={{ color: club.color }}
+          >
+            Add Season
+          </h4>
         </Container>
+      ) : (
+        ""
+      )}
+      <Form onReset={formik.handleReset} onSubmit={formik.handleSubmit}>
+        <Form.Group className="my-2 px-2">
+          <Form.Control
+            className="my-1"
+            name="title"
+            as="input"
+            type="text"
+            value={formik.values.title}
+            onChange={formik.handleChange}
+            isInvalid={formik.errors.title ? true : false}
+            placeholder="Title"
+          />
+          {formik.errors.title ? (
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.title}
+            </Form.Control.Feedback>
+          ) : "" }
+        </Form.Group>
+        <Form.Group className="my-2 px-2">
+          <Form.Control
+            className="my-1"
+            name="description"
+            as="input"
+            type="text"
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            isInvalid={formik.errors.description ? true : false}
+            placeholder="Short Description"
+            maxLength={200}
+          />
+          {formik.errors.description ? (
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.description}
+            </Form.Control.Feedback>
+          ) : "" }
+        </Form.Group>
+        <Form.Group className="my-2 px-2">
+          <Form.Label className="font-weight-bold">Start Date</Form.Label>
+          <Form.Control
+            className="my-1"
+            name="start"
+            as="input"
+            type="date"
+            value={formik.values.start}
+            onChange={formik.handleChange}
+            isInvalid={formik.errors.start ? true : false}
+          />
+          {formik.errors.start ? (
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.start}
+            </Form.Control.Feedback>
+          ) : "" }
+        </Form.Group>
+        <Form.Group className="my-2 px-2">
+          <Form.Label className="font-weight-bold">End Date</Form.Label>
+          <Form.Control
+            className="my-1"
+            name="end"
+            as="input"
+            type="date"
+            value={formik.values.end}
+            onChange={formik.handleChange}
+            isInvalid={formik.errors.end ? true : false}
+          />
+          {formik.errors.end ? (
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.end}
+            </Form.Control.Feedback>
+          ) : "" }
+        </Form.Group>
+        <Form.Group className="my-3 d-flex justify-content-around">
+          <Button size="sm" variant="outline-success">Save</Button>
+        </Form.Group>
       </Form>
     </Container>
   )
