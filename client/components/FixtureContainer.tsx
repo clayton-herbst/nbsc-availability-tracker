@@ -5,19 +5,32 @@ import React from "react"
 import Container from "react-bootstrap/Container"
 import Button from "react-bootstrap/Button"
 
-export default props => {
-  if (props.children.length === 0 || typeof props.children === "undefined")
-    return props.emptyComponent ? props.emptyComponent : defaultState
-  else
+
+interface FixtureContainer {
+  onSave: any; // function for save
+  fixtures: any;
+  className?: string;
+  emptyComponent?: any
+}
+
+export default (props: FixtureContainer) => {
+
     return (
       <div>
-        <Container fluid="true" className={"p-2 mx-auto " + props.className}>
+        <Container fluid="sm" className={"p-2 mx-auto " + props.className}>
           <div className="d-lg-flex flex-wrap rounded justify-content-sm-center">
             {props.fixtures}
           </div>
         </Container>
-        <Container className="d-flex justify-content-around">
-          {props.children}
+        <Container className="mb-5 my-1 d-flex justify-content-sm-center">
+          <Button
+            className="text-capitalize m-1"
+            variant="outline-success"
+            onClick={props.onSave}
+            size="sm"
+          >
+            Save
+          </Button>
         </Container>
       </div>
     )

@@ -123,21 +123,14 @@ export default (props: Season) => {
               date={dateString}
               title={item.title}
               color={availabilityColors[availability[index]]}
-            >
-              <div className="d-flex justify-content-around">
-                <Button
-                  className="text-capitalize"
-                  variant={availabilityColors[availability[index]]}
-                  onClick={() => {
-                    availability[index] = (availability[index] + 1) % 3
-                    setAvailability([...availability])
-                    console.log(availability)
-                  }}
-                >
-                  {status[availability[index]]}
-                </Button>
-              </div>
-            </FixtureCard>
+              onSearch={() => alert("availability")}
+              onEdit={() => alert("edit")}
+              onChange={() => {
+                availability[index] = (availability[index] + 1) % 3
+                setAvailability([...availability])
+              }}
+              availability={availability[index]}
+            />
           </div>
         )
       })
@@ -169,8 +162,8 @@ export default (props: Season) => {
             <Container className="mt-2 pt-2 d-flex justify-content-center">
               <DropdownButton className="m-1 p-1" drop="down" variant="outline-secondary" title="Admin" id="admin_options">
                 <Dropdown.Item eventKey="bulk_fixtures" onClick={() => setAddCompetitionModal(true)}>Add Competition</Dropdown.Item>
-                <Dropdown.Item onClick={() => setAddFixtureModal(true)}>Add Fixture</Dropdown.Item>
-                <Dropdown.Item onClick={() => setAddSeasonModal(true)}>Add Season</Dropdown.Item>
+                <Dropdown.Item eventKey={active} onClick={() => setAddFixtureModal(true)}>Add Fixture</Dropdown.Item>
+                <Dropdown.Item eventKey={active} onClick={() => setAddSeasonModal(true)}>Add Season</Dropdown.Item>
               </DropdownButton>
               <Modal
                 show={addSeasonModal}
@@ -215,39 +208,23 @@ export default (props: Season) => {
                 <BulkFixtures onSave={() => alert("submitted")} title="Add Fixtures" />
               </Tab.Pane>
               <Tab.Pane eventKey="5e1fbe36802ef807df29aa61" transition={false} active={"5e1fbe36802ef807df29aa61" == active}>
-                <FixtureContainer fixtures={fixtureList}>
-                  <Container className="mb-5">
-                    <Row
-                      hidden={false}
-                      className="my-1 d-flex justify-content-sm-center"
+                <FixtureContainer fixtures={fixtureList} onSave={save} />
+                <Modal
+                  show={addFixtureModal}
+                  onHide={() => setAddFixtureModal(false)}
+                >
+                  <Modal.Header closeButton={true}>
+                    <Modal.Title
+                      className="ml-auto"
+                      style={{ color: "maroon", paddingLeft: 50 }}
                     >
-                      <Button
-                        className="text-capitalize m-1"
-                        variant="outline-success"
-                        onClick={save}
-                        size="sm"
-                      >
-                        save
-                      </Button>
-                    </Row>
-                    <Modal
-                      show={addFixtureModal}
-                      onHide={() => setAddFixtureModal(false)}
-                    >
-                      <Modal.Header closeButton={true}>
-                        <Modal.Title
-                          className="ml-auto"
-                          style={{ color: "maroon", paddingLeft: 50 }}
-                        >
-                          Add Fixture
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <FixtureForm onSave={()=>{alert("saved")}} onClose={() => setAddFixtureModal(false)} />
-                      </Modal.Body>
-                    </Modal>
-                  </Container>
-                </FixtureContainer>
+                      Add Fixture
+                    </Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <FixtureForm onSave={()=>{alert("saved")}} onClose={() => setAddFixtureModal(false)} />
+                  </Modal.Body>
+                </Modal>
               </Tab.Pane>
             </Tab.Content>
           </Col>
