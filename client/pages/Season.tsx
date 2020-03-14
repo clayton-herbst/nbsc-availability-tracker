@@ -19,6 +19,7 @@ import SeasonSelectStatic from "../components/SeasonSelectStatic"
 import BulkFixtures from "../components/BulkFixtures"
 import DropdownButton from "react-bootstrap/DropdownButton"
 import Dropdown from "react-bootstrap/Dropdown"
+import PlayerSearch from "../components/PlayerSearch"
 
 
 interface Season {
@@ -208,7 +209,9 @@ export default (props: Season) => {
                 <BulkFixtures onSave={() => alert("submitted")} title="Add Fixtures" />
               </Tab.Pane>
               <Tab.Pane eventKey="5e1fbe36802ef807df29aa61" transition={false} active={"5e1fbe36802ef807df29aa61" == active}>
-                <FixtureContainer fixtures={fixtureList} onSave={save} />
+                {false ? <FixtureContainer fixtures={fixtureList} onSave={save} /> : 
+                <PlayerSearch fixtureTitle="fixture" seasonTitle="season" competitionTitle="competition" />
+                }
                 <Modal
                   show={addFixtureModal}
                   onHide={() => setAddFixtureModal(false)}
