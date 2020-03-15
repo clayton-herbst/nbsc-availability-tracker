@@ -54,8 +54,7 @@ router.get("/seasons", async (req, res, next) => {
         endDate: doc.timelines.end,
         id: doc._id
       }
-      if (doc.competitions.length > 0)
-        obj.competition = doc.competitions[0]._id
+      if (doc.competitions.length > 0) obj.competition = doc.competitions[0]._id
 
       return obj
     })
@@ -250,6 +249,45 @@ router.post("/admin/club/:id", async (req, res, next) => {
   } catch (err) {
     consola.error(err)
     next(err)
+  }
+})
+
+router.post("/admin/addCompetition", async (req, res, next) => {
+  try {
+    if (
+      (typeof req.body.season === "undefined",
+      typeof req.body.competition.title === "undefined",
+      typeof req.body.competition.fixtures === "undefined",
+      typeof req.body.competition.start === "undefined",
+      typeof req.body.competition.end === "undefined")
+    )
+      throw new Error("Incorrect paramaters: addCompetition")
+
+    let competition = new Competition({
+      title: req.body.competition.title,
+      season: req.body.season,
+      fixtures: new Array(),
+      description:
+        typeof req.body.competition.description !== "undefined"
+          ? req.body.competition.description
+          : "",
+      timelines: {
+        start: req.body.competition.start,
+        end: req.body.competition.end
+      }
+    })
+
+    consola.info(competition)
+
+    let season = await Season.findById(req.body.season)
+    season.competitions.push(competition._id)
+
+    await competition.save()
+    await season.save()
+
+    res.status(200).json({ ok: true, change: true })
+  } catch (err) {
+    consola.error(err), next(err)
   }
 })
 

@@ -1,7 +1,7 @@
 import axios from "axios"
 
 
-export const requestAllSeasons = (functions: {seasonState: any}) => {
+export const requestAllSeasons = (functions: {seasonState: any}): void => {
   axios
     .get("/api/seasons")
     .then(res => {

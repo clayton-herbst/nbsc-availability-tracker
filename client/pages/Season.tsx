@@ -205,7 +205,7 @@ export default (props: Season) => {
                   </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                  <CompetitionForm onClose={() => setAddCompetitionModal(false)} onSave={() => alert("saved")} />
+                  <CompetitionForm season={id} onClose={() => setAddCompetitionModal(false)} onSave={() => alert("saved")} />
                 </Modal.Body>
               </Modal>
             </Container>

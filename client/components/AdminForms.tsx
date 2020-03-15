@@ -12,6 +12,7 @@ import { object, string, date, array } from "yup"
 import { club } from "../constants"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
+import axios from "axios"
 
 
 const fixtureSchema = object({
@@ -357,6 +358,7 @@ interface CompetitionForm {
   title?: string;
   onSave: any; // function
   onClose?: any; // function
+  season: string;
 }
 
 const competitionSchema = object({
@@ -380,9 +382,20 @@ export const CompetitionForm = (props: CompetitionForm) => {
       start: "",
       end: "",
     },
-    onSubmit: () => {
-      props.onSave()
-      props.onClose()
+    onSubmit: values => {
+      let competition = {
+        title: values.title,
+        start: values.start,
+        end: values.end,
+        description: values.description,
+        fixtures: []
+      }
+      requestAddCompetition({competition: competition, season: props.season})
+        .then(() => {
+          props.onSave()
+          props.onClose()
+        })
+        .catch(err=>alert("error"))
     },
     validateOnBlur: true,
     validationSchema: competitionSchema
@@ -473,10 +486,19 @@ export const CompetitionForm = (props: CompetitionForm) => {
           ) : "" }
         </Form.Group>
         <Form.Group className="my-3 d-flex justify-content-around">
-          <Button size="sm" variant="outline-success">Save</Button>
+          <Button size="sm" type="submit" variant="outline-success">Save</Button>
         </Form.Group>
       </Form>
     </Container>
   )
 }
 
+const requestAddCompetition = (meta: {competition: any, season: string}) => {
+  return (
+    axios
+      .post("/api/admin/addCompetition", {
+        competition: meta.competition,
+        season: meta.season
+      })
+  )
+}
