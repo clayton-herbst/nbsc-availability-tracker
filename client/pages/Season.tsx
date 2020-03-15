@@ -20,6 +20,7 @@ import BulkFixtures from "../components/BulkFixtures"
 import DropdownButton from "react-bootstrap/DropdownButton"
 import Dropdown from "react-bootstrap/Dropdown"
 import PlayerSearch from "../components/PlayerSearch"
+import { requestAllSeasons, requestFixture, requestCompetitions, requestSave } from "../functions/requests"
 
 
 interface Season {
@@ -73,13 +74,7 @@ export default (props: Season) => {
   // MUTATOR METHODS
   // NOT IDEAL AS RERENDER MAKES EXTRA CALLS
   useEffect(() => {
-    axios
-      .get("/api/seasons")
-      .then(res => {
-        console.log(res.data)
-        setSeasons(res.data)
-      })
-      .catch(err => console.log(err))
+    requestAllSeasons({seasonState: setSeasons})
   }, [])
 
   useEffect(() => {
@@ -94,17 +89,17 @@ export default (props: Season) => {
   useEffect(() => {
     // RETRIEVE SELECTED COMPETITION FIXTURE DATA AND PLAYER AVAILABILITY
 
-    let info = { competitions: competitions, active: active, season: id }
+    let info = { competitions: competitions, active: active, season: id, player: player }
     let functions = { fixtures: setFixtures, availability: setAvailability }
     requestFixture(info, functions) // update fixtures
   }, [active])
 
-  // IMPROVEMENT: USE CALLBACK INSTEAD ?? & useEffect once
-  useEffect(() => {
-    if (typeof fixtures === "undefined") return
+  const createFixtureComponent = (meta: {fixtures: any, availability: number[], availabilityColors: string[]}, functions: {fixtureState: any, availabilityState: any}): void => {
+    if (typeof meta.fixtures === "undefined")
+      return
 
-    setFixtureList(
-      fixtures.map((item, index) => {
+    functions.fixtureState(
+      meta.fixtures.map((item, index) => {
         const date = new Date(item.date)
         const dateOptions = {
           weekday: "long",
@@ -123,19 +118,34 @@ export default (props: Season) => {
               location={item.location}
               date={dateString}
               title={item.title}
-              color={availabilityColors[availability[index]]}
+              color={meta.availabilityColors[meta.availability[index]]}
               onSearch={() => alert("availability")}
               onEdit={() => alert("edit")}
               onChange={() => {
-                availability[index] = (availability[index] + 1) % 3
-                setAvailability([...availability])
+                meta.availability[index] = (meta.availability[index] + 1) % 3
+                functions.availabilityState([...availability])
               }}
-              availability={availability[index]}
+              availability={meta.availability[index]}
             />
           </div>
         )
       })
     )
+  }
+
+  // IMPROVEMENT: USE CALLBACK INSTEAD ?? & useEffect once
+  useEffect(() => {
+    let meta = {
+      fixtures: fixtures,
+      availability: availability,
+      availabilityColors: availabilityColors
+    }
+    let functions = {
+      fixtureState: setFixtureList,
+      availabilityState: setAvailability
+    }
+
+    createFixtureComponent(meta, functions) // dynamically render new fixtures based on fetched fixtures
   }, [availability, competitions])
 
   if(typeof id === "undefined" || id === "") {
@@ -209,7 +219,7 @@ export default (props: Season) => {
                 <BulkFixtures onSave={() => alert("submitted")} title="Add Fixtures" />
               </Tab.Pane>
               <Tab.Pane eventKey="5e1fbe36802ef807df29aa61" transition={false} active={"5e1fbe36802ef807df29aa61" == active}>
-                {false ? <FixtureContainer fixtures={fixtureList} onSave={save} /> : 
+                {true ? <FixtureContainer fixtures={fixtureList} onSave={save} /> : 
                 <PlayerSearch fixtureTitle="fixture" seasonTitle="season" competitionTitle="competition" />
                 }
                 <Modal
@@ -257,118 +267,6 @@ export default (props: Season) => {
       </div>
     </div>
   )
-}
-
-/*
-<FixturePane season={id} competitions={competitions} active={active}>
-  </FixturePane>
-
-  */
-
-const requestCompetitions = (
-  meta: { season: string},
-  functions: { competitions: any }
-) => {
-  if (
-    typeof meta.season === "undefined" ||
-    typeof functions.competitions === "undefined"
-  )
-    return
-
-  axios
-    .get(`/api/season/${meta.season}`)
-    .then(res => {
-      functions.competitions(res.data.competitions)
-    })
-    .catch(err => {
-      console.log(err)
-    })
-}
-
-const requestFixture = (
-  param: { competitions: {id: string}, active: string, season: string },
-  functions: { availability: any, fixtures: any }
-) => {
-  if (
-    typeof param.competitions === "undefined" ||
-    typeof param.active !== "string" ||
-    typeof param.season === "undefined" ||
-    typeof functions.availability === "undefined" ||
-    typeof functions.fixtures === "undefined"
-  )
-    return // DO NOTHING
-
-  axios
-    .get(`/api/competition/${param.active}`, {
-      params: {
-        season: param.season
-      }
-    })
-    .then(res => {
-      console.log(res.data)
-      functions.fixtures(res.data.fixtures) // set fixtures for competition
-      axios
-        .get(`/api/fixture/${player.id}`, {
-          params: {
-            season: param.season,
-            competition: param.active,
-            length: res.data.fixtures.length
-          }
-        })
-        .then(res => {
-          console.log(res.data)
-          functions.availability(res.data.fixtures)
-        })
-        .catch(err => console.log(err))
-    })
-    .catch(err => console.log(err))
-}
-
-const requestSave = (
-  meta: {
-    player: string,
-    season: string,
-    competition: string,
-    availability: number[],
-    alert: {success: boolean, error: boolean},
-    status?: [string, string, string]
-  },
-  functions: {alert: any}
-) => {
-  if (
-    typeof meta.competition === "undefined" ||
-    typeof meta.player === "undefined" ||
-    typeof meta.season === "undefined" ||
-    typeof meta.availability === "undefined" ||
-    typeof meta.alert === "undefined" ||
-    typeof functions.alert === "undefined"
-  ) {
-    console.log(meta)
-    return // DO NOTHING
-  }
-
-  console.log("made request")
-  axios
-    .post(`/api/fixture/${meta.player}`, {
-      fixtures: meta.availability,
-      season: meta.season,
-      competition: meta.competition,
-      status: meta.status
-    })
-    .then(resp => {
-      if (typeof resp.data.ok === "undefined") {
-        functions.alert({ ...meta.alert, error: true })
-      } else if (resp.data.ok === true) {
-        functions.alert({ ...meta.alert, success: true })
-      } else {
-        functions.alert({ ...meta.alert, error: true })
-      }
-      setTimeout(functions.alert, 2000, { success: false, error: false })
-    })
-    .catch(err => {
-      console.log(err)
-      functions.alert({ ...meta.alert, error: true })
-    })
 }
 
 // -- CONSTANTS --
