@@ -26,8 +26,9 @@ const fixtureSchema = object({
 })
 
 interface FixtureForm {
-  onSave?: any; // function
-  onClose?: any;
+  onSave: any; // alert and state management
+  onError: any; // alert and state management
+  onClose?: any; // visibility management
   initialValues?: {
     title: string,
     home: string,
@@ -38,7 +39,6 @@ interface FixtureForm {
   };
   title?: string;
   competition: string;
-  onSaveError?: any;
 }
 
 export const FixtureForm = (props: FixtureForm) => {
@@ -106,13 +106,20 @@ export const FixtureForm = (props: FixtureForm) => {
     initialValues: setFormInitialValues(),
     onSubmit: (values) => {
       requestAddFixture({competition: props.competition, fixture: values})
-        .then(() => {
-          props.onSave()
-          props.onClose()
+        .then(resp => {
+          if (typeof resp.data.ok === "undefined") {
+            props.onError()
+          } else if (resp.data.ok === true) {
+            props.onSave()
+            if(typeof props.onClose !== "undefined")
+              props.onClose()
+          } else {
+            props.onError()
+          }
         })
-      .catch(() => {
-        props.onSaveError ? props.onSaveError() : null
-      })
+        .catch(() => {
+          props.onError()
+        })
     },
     validationSchema: fixtureSchema,
     validateOnBlur: true,
@@ -247,8 +254,9 @@ const seasonSchema = object({
 
 interface SeasonForm {
   title?: string;
-  onSave?: any;
-  onClose?: any; 
+  onSave: any; // alert and visibility management
+  onError: any; // alert and visibility managment
+  onClose?: any; // visibility management
   initialValues?: {
     title: string,
     start: string,
@@ -265,12 +273,26 @@ export const SeasonForm = (props: SeasonForm) => {
       start: "",
       end: ""
     },
-    onSubmit: () => {
-      props.onSave()
-      props.onClose()
+    onSubmit: (values) => {
+      requestAddSeason({season: values})
+        .then(resp => {
+          if (typeof resp.data.ok === "undefined") {
+            props.onError()
+          } else if (resp.data.ok === true) {
+            props.onSave()
+            if(typeof props.onClose !== "undefined")
+              props.onClose()
+          } else {
+            props.onError()
+          }
+        })
+        .catch(() => {
+          props.onError()
+        })
     },
     validationSchema: seasonSchema,
-    validateOnBlur: true
+    validateOnBlur: true,
+    validateOnChange: false
   })
 
   let style = { maxWidth: 300 }
@@ -365,8 +387,9 @@ export const SeasonForm = (props: SeasonForm) => {
 
 interface CompetitionForm {
   title?: string;
-  onSave: any; // function
-  onClose?: any; // function
+  onSave: any; // alert and visibility management
+  onError: any; // alert and visibility management
+  onClose?: any; // visibility management
   season: string;
 }
 
@@ -400,13 +423,23 @@ export const CompetitionForm = (props: CompetitionForm) => {
         fixtures: []
       }
       requestAddCompetition({competition: competition, season: props.season})
-        .then(() => {
-          props.onSave()
-          props.onClose()
+        .then(resp => {
+          if (typeof resp.data.ok === "undefined") {
+            props.onError()
+          } else if (resp.data.ok === true) {
+            props.onSave()
+            if(typeof props.onClose !== "undefined")
+              props.onClose()
+          } else {
+            props.onError()
+          }
         })
-        .catch(err=>alert("error"))
+        .catch(() => {
+          props.onError()
+        })
     },
     validateOnBlur: true,
+    validateOnChange: false,
     validationSchema: competitionSchema
   })
 

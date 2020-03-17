@@ -5,13 +5,18 @@ import React from "react"
 import Container from "react-bootstrap/Container"
 import Button from "react-bootstrap/Button"
 import Loading from "./Loading"
+import BulkFixtures from "./BulkFixtures"
 
 
 interface FixtureContainer {
-  onSave: any; // function for save
+  onAvailabilitySave: any; // function for save
+  onClose: any;
   fixtures: any;
   className?: string;
-  emptyComponent?: any
+  emptyComponent?: any;
+  admin: boolean;
+  competition: string;
+  alert?: any;
 }
 
 export default (props: FixtureContainer) => {
@@ -22,10 +27,26 @@ export default (props: FixtureContainer) => {
         <Loading text="Loading resources." />
       </Container>
     )
-  else if(props.fixtures.length === 0)
+  else if(props.fixtures.length === 0 && !props.admin)
     return (
       <Container className="text-center font-italic p-2">
-        No fixtures could be found
+        No fixtures have been set
+      </Container>
+    )
+  else if(props.fixtures.length === 0 && props.admin)
+    return (
+      <Container className="p-2">
+        <BulkFixtures competition={props.competition}
+          onError={() => {
+            props.alert({success: false, error: true})
+            setTimeout(props.alert, 2000, { success: false, error: false })
+          }}
+          onSave={() => {
+            props.alert({success: true, error: false})
+            setTimeout(props.alert, 2000, { success: false, error: false })
+            props.onClose()
+          }}
+          title="Add Fixtures" />
       </Container>
     )
   else
@@ -40,7 +61,7 @@ export default (props: FixtureContainer) => {
           <Button
             className="text-capitalize m-1"
             variant="outline-success"
-            onClick={props.onSave}
+            onClick={props.onAvailabilitySave}
           >
             Save
           </Button>

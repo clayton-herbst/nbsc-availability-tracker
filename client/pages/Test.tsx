@@ -4,7 +4,7 @@ import { FixtureForm, SeasonForm } from "../components/AdminForms"
 export default () => {
   return (
     <div>
-      <SeasonForm />
+      Test
     </div>
   )
 }

@@ -2,24 +2,24 @@ import React, { useEffect, useState } from "react"
 import Nav from "react-bootstrap/Nav"
 
 interface CompetitionNav {
-  children?: any;
+  competitions: any[];
 }
 
 export default (props: CompetitionNav) => {
-  const [items, setItems] = useState(defaultState[0])
+  const [items, setItems] = useState(undefined)
 
   // COMMENTS
   console.log("competition nav children:")
-  console.log(props.children)
+  console.log(props.competitions)
 
   useEffect(() => {
-    if (typeof props.children === "undefined") return
+    if (typeof props.competitions === "undefined") return
 
     // COMMENTS
     console.log("competition nav children:")
-    console.log(props.children)
+    console.log(props.competitions)
     setItems(
-      props.children.map((value, index) => {
+      props.competitions.map((value, index) => {
         return (
           <Nav.Item key={index} className="rounded p-1 my-1 mx-auto w-75">
             <Nav.Link eventKey={value.id}>{value.title}</Nav.Link>
@@ -27,7 +27,7 @@ export default (props: CompetitionNav) => {
         )
       })
     )
-  }, [props.children])
+  }, [props.competitions])
 
   return (
     <Nav
@@ -38,16 +38,6 @@ export default (props: CompetitionNav) => {
       className="d-flex flex-column"
     >
       {items}
-      <Nav.Item className="rounded p-1 my-1 mx-auto w-75">
-        <Nav.Link eventKey="2">Test Item</Nav.Link>
-      </Nav.Item>
     </Nav>
   )
 }
-
-// -- TESTING --
-const defaultState = [
-  <Nav.Item key="5">
-    <Nav.Link eventKey="5">Title</Nav.Link>
-  </Nav.Item>
-]

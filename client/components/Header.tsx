@@ -56,8 +56,6 @@ export default function(props: Header): any {
           <DropdownButton id="season_select" variant="outline-secondary" title="Season">
             <Dropdown drop="down">
               {seasonComponents}
-              <Dropdown.Item>another</Dropdown.Item>
-              <Dropdown.Item>another</Dropdown.Item>
             </Dropdown>
           </DropdownButton>
         </div>

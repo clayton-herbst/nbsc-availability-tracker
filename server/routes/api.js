@@ -377,4 +377,41 @@ router.post("/admin/addSeason", async (req, res, next) => {
   }
 })
 
+router.post("/admin/addBulkFixtures", async (req, res, next) => {
+  try {
+    if (
+      typeof req.body.competition === "undefined" ||
+      typeof req.body.fixtures === "undefined" ||
+      typeof req.body.fixtures !== "object"
+    )
+      throw new Error("Incorrect paramaters: addBulkFixtures")
+
+    let competition = await Competition.findById(req.body.competition)
+    consola.info(competition)
+
+    let fixtures = req.body.fixtures.map(value => {
+      return {
+        title: value.title,
+        home: {
+          title: value.home
+        },
+        away: {
+          title: value.away
+        },
+        date: value.date,
+        location: value.location
+      }
+    })
+    consola.info(fixtures)
+    competition.fixtures = competition.fixtures.concat(fixtures)
+
+    let doc = await competition.save()
+    consola.info(doc)
+
+    res.status(200).json({ ok: true, change: true })
+  } catch (err) {
+    consola.error(err)
+    next(err)
+  }
+})
 module.exports = router

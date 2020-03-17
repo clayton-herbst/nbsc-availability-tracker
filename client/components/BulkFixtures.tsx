@@ -10,11 +10,13 @@ import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Loading from "./Loading"
 import Badge from "react-bootstrap/Badge"
+import axios from "axios"
 
 interface BulkFixtures {
-  title?: string,
-  onClose?: any,
-  onSave: any
+  title?: string; // display default title formating
+  onError: any; // alert state management
+  onSave: any; // alert & visibility state management
+  competition: string
 }
 
 const fixtureSchema = object().shape({
@@ -37,13 +39,25 @@ export default (props: BulkFixtures) => {
   
   let formik = useFormik({
     initialValues: {
-      row: [{title: "", home: "", away: "", date: undefined, location: ""}]
+      row: [{title: "", home: "", away: "", date: "", location: ""}]
     },
-    onSubmit: () => {
-      alert(formik.values.row)
-      props.onSave()
+    onSubmit: (values) => {
+      requestAddBulkFixtures({competition: props.competition, fixtures: values.row})
+        .then(resp => {
+          if (typeof resp.data.ok === "undefined") {
+            props.onError()
+          } else if (resp.data.ok === true) {
+            props.onSave()
+          } else {
+            props.onError()
+          }
+        })
+        .catch(() => {
+          props.onError()
+        })
     },
     validateOnBlur: true,
+    validateOnChange: false,
     validationSchema: bulkFixturesSchema
   })
 
@@ -58,51 +72,61 @@ export default (props: BulkFixtures) => {
             <div className="my-auto">
               <Badge className="align-middle" variant="secondary">{index+1}</Badge>
             </div>
-            <Col>
+            <Col sm="3">
               <Form.Control
+                className="my-1"
                 name={`row.${index}.title`}
                 as="input"
                 type="text"
                 value={formik.values.row[index].title}
+                size="sm"
                 onChange={formik.handleChange}
                 placeholder="Title"
               />
             </Col>
-            <Col>
+            <Col sm="2">
               <Form.Control
+                className="my-1"
                 name={`row.${index}.home`}
                 as="input"
                 type="text"
+                size="sm"
                 value={formik.values.row[index].home}
                 onChange={formik.handleChange}
                 placeholder="Home Team"
               />
             </Col>
-            <Col>
+            <Col sm="2">
               <Form.Control
+                className="my-1"
                 name={`row.${index}.away`}
                 as="input"
                 type="text"
+                size="sm"
                 value={formik.values.row[index].away}
                 onChange={formik.handleChange}
                 placeholder="Away Team"
               />
             </Col>
-            <Col>
+            <Col sm="2">
               <Form.Control
+                className="my-1"
                 name={`row.${index}.date`}
                 as="input"
                 type="date"
+                size="sm"
                 value={formik.values.row[index].date}
                 onChange={formik.handleChange}
                 placeholder="Date"
               />
             </Col>
-            <Col>
+            <Col sm="2">
               <Form.Control
+                className="my-1"
                 name={`row.${index}.location`}
                 value={formik.values.row[index].location}
                 onChange={formik.handleChange}
+                size="sm"
                 placeholder="Location"
               />
             </Col>
@@ -145,5 +169,15 @@ export default (props: BulkFixtures) => {
         </Container>
       </Form>
     </Container>
+  )
+}
+
+const requestAddBulkFixtures = (meta: {competition: string, fixtures: object[]}) => {
+  return (
+    axios
+      .post("/api/admin/addBulkFixtures", {
+        competition: meta.competition,
+        fixtures: meta.fixtures
+      })
   )
 }
