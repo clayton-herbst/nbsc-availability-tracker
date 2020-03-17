@@ -54,7 +54,8 @@ router.get("/seasons", async (req, res, next) => {
         endDate: doc.timelines.end,
         id: doc._id
       }
-      if (doc.competitions.length > 0) obj.competition = doc.competitions[0]._id
+      if (doc.competitions.length > 0)
+        obj["competition"] = doc.competitions[0]._id
 
       return obj
     })
@@ -161,10 +162,12 @@ router.get("/fixture/:id", async (req, res, next) => {
       throw new Error("Incorrect paramater")
     const playerDoc = await Player.findById(req.params.id)
     consola.info(playerDoc)
+    let fixtures = playerDoc.availability.id(req.query.competition).fixtures
     if (playerDoc === null) throw new Error("No results")
-    else if (playerDoc.seasons.id(req.query.season) === null) {
-      throw new Error("Invalid season")
-    } else if (playerDoc.availability.id(req.query.competition) === null) {
+    if (playerDoc.seasons.id(req.query.season) === null) {
+      playerDoc.seasons.push(req.query.season)
+    }
+    if (playerDoc.availability.id(req.query.competition) === null) {
       // COMPETITION AVAILABILITY NEEDS TO BE ADDED
       let fixtures = new Array(parseInt(req.query.length))
       playerDoc.availability.push({
@@ -172,8 +175,12 @@ router.get("/fixture/:id", async (req, res, next) => {
         fixtures: fixtures.fill(0), // default to 0 / maybe
         status: ["maybe", "yes", "no"]
       })
+    } else if (fixtures.length < req.query.length) {
+      let difference = req.query.length - fixtures.length
+      for (let i = 0; i < difference; i++) fixtures.push(0)
     }
-    const doc = await playerDoc.save()
+    playerDoc.availability.id(req.query.competition).fixtures = fixtures
+    let doc = await playerDoc.save()
     res.status(200).json(doc.availability.id(req.query.competition))
   } catch (err) {
     consola.error(err)
@@ -255,11 +262,11 @@ router.post("/admin/club/:id", async (req, res, next) => {
 router.post("/admin/addCompetition", async (req, res, next) => {
   try {
     if (
-      (typeof req.body.season === "undefined",
-      typeof req.body.competition.title === "undefined",
-      typeof req.body.competition.fixtures === "undefined",
-      typeof req.body.competition.start === "undefined",
-      typeof req.body.competition.end === "undefined")
+      typeof req.body.season === "undefined" ||
+      typeof req.body.competition.title === "undefined" ||
+      typeof req.body.competition.fixtures === "undefined" ||
+      typeof req.body.competition.start === "undefined" ||
+      typeof req.body.competition.end === "undefined"
     )
       throw new Error("Incorrect paramaters: addCompetition")
 
@@ -287,7 +294,44 @@ router.post("/admin/addCompetition", async (req, res, next) => {
 
     res.status(200).json({ ok: true, change: true })
   } catch (err) {
-    consola.error(err), next(err)
+    consola.error(err)
+    next(err)
+  }
+})
+
+router.post("/admin/addFixture", async (req, res, next) => {
+  try {
+    if (
+      typeof req.body.competition === "undefined" ||
+      typeof req.body.fixture.title === "undefined" ||
+      typeof req.body.fixture.home === "undefined" ||
+      typeof req.body.fixture.away === "undefined" ||
+      typeof req.body.fixture.date === "undefined" ||
+      typeof req.body.fixture.location === "undefined"
+    )
+      throw new Error("Incorrect paramaters: addFixture")
+
+    let competition = await Competition.findById(req.body.competition)
+
+    let fixtureDoc = {
+      title: req.body.fixture.title,
+      home: {
+        title: req.body.fixture.home
+      },
+      away: {
+        title: req.body.fixture.away
+      },
+      date: req.body.fixture.date,
+      location: req.body.fixture.location
+    }
+    competition.fixtures.push(fixtureDoc)
+
+    await competition.save()
+
+    res.status(200).json({ ok: true, change: true })
+  } catch (err) {
+    consola.error(err)
+    next(err)
   }
 })
 

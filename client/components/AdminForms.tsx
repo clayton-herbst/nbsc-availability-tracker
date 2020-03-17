@@ -37,6 +37,8 @@ interface FixtureForm {
     description: string
   };
   title?: string;
+  competition: string;
+  onSaveError?: any;
 }
 
 export const FixtureForm = (props: FixtureForm) => {
@@ -102,12 +104,19 @@ export const FixtureForm = (props: FixtureForm) => {
 
   let formik = useFormik({
     initialValues: setFormInitialValues(),
-    onSubmit: () => {
-      props.onSave()
-      props.onClose()
+    onSubmit: (values) => {
+      requestAddFixture({competition: props.competition, fixture: values})
+        .then(() => {
+          props.onSave()
+          props.onClose()
+        })
+      .catch(() => {
+        props.onSaveError ? props.onSaveError() : null
+      })
     },
     validationSchema: fixtureSchema,
-    validateOnBlur: true
+    validateOnBlur: true,
+    validateOnChange: false
   })
 
   let style = { maxWidth: 300 }
@@ -499,6 +508,16 @@ const requestAddCompetition = (meta: {competition: any, season: string}) => {
       .post("/api/admin/addCompetition", {
         competition: meta.competition,
         season: meta.season
+      })
+  )
+}
+
+const requestAddFixture = (meta: {competition: string, fixture: any}) => {
+  return (
+    axios
+      .post("/api/admin/addFixture", {
+        competition: meta.competition,
+        fixture: meta.fixture
       })
   )
 }

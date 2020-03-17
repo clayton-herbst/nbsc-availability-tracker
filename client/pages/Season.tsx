@@ -35,7 +35,7 @@ export default (props: Season) => {
   const [id, setSeasonId] = useState(props.defaultSeasonId)
   const [fixtures, setFixtures] = useState(undefined)
   const [availability, setAvailability] = useState(undefined)
-  const [fixtureList, setFixtureList] = useState(<p>Please select a season</p>)
+  const [fixtureList, setFixtureList] = useState(undefined)
   const [saveAlert, setSaveAlert] = useState({ success: false, error: false })
   //const [status, setStatus] = useState(["maybe", "yes", "no"])
   const [competitions, setCompetitions] = useState(undefined)
@@ -44,6 +44,7 @@ export default (props: Season) => {
   const [addFixtureModal, setAddFixtureModal] = useState(false) // add new fixture pop-up
   const [addSeasonModal, setAddSeasonModal] = useState(false) // add new season pop-up
   const [addCompetitionModal, setAddCompetitionModal] = useState(false)
+  const [competitionPane, setCompetitionPane] = useState(undefined)
   //const [events, setEvents] = useState(new EventEmitter())
 
   console.log(`season id: ${id}`)
@@ -135,6 +136,9 @@ export default (props: Season) => {
 
   // IMPROVEMENT: USE CALLBACK INSTEAD ?? & useEffect once
   useEffect(() => {
+    if(typeof fixtures === "undefined" || typeof availability === "undefined")
+      return
+    
     let meta = {
       fixtures: fixtures,
       availability: availability,
@@ -146,7 +150,22 @@ export default (props: Season) => {
     }
 
     createFixtureComponent(meta, functions) // dynamically render new fixtures based on fetched fixtures
-  }, [availability, competitions])
+  }, [availability, fixtures])
+
+  useEffect(() => {
+    if(typeof fixtureList === "undefined" || typeof competitions === "undefined") 
+      return
+    
+    setCompetitionPane(
+      fixtureList.map((value, index) => {
+        <Tab.Pane key={index} eventKey={value} transition={false} active={value == active}>
+          {true ? <FixtureContainer fixtures={fixtureList} onSave={save} /> : 
+          <PlayerSearch fixtureTitle="fixture" seasonTitle="season" competitionTitle="competition" />
+          }
+        </Tab.Pane>
+      })
+    )
+  }, [fixtureList])
 
   if(typeof id === "undefined" || id === "") {
     return (
@@ -165,7 +184,7 @@ export default (props: Season) => {
         id="season_competitions"
         defaultActiveKey="0"
         activeKey={active}
-        onSelect={key => setActiveCompetition(key)}
+        onSelect={key => {setFixtureList(undefined); setActiveCompetition(key)}}
       >
         <Row>
           <Col sm={3}>
@@ -173,8 +192,8 @@ export default (props: Season) => {
             <Container className="mt-2 pt-2 d-flex justify-content-center">
               <DropdownButton className="m-1 p-1" drop="down" variant="outline-secondary" title="Admin" id="admin_options">
                 <Dropdown.Item eventKey="bulk_fixtures" onClick={() => setAddCompetitionModal(true)}>Add Competition</Dropdown.Item>
-                <Dropdown.Item eventKey={active} onClick={() => setAddFixtureModal(true)}>Add Fixture</Dropdown.Item>
-                <Dropdown.Item eventKey={active} onClick={() => setAddSeasonModal(true)}>Add Season</Dropdown.Item>
+                <Dropdown.Item eventKey="1" onClick={() => setAddFixtureModal(true)}>Add Fixture</Dropdown.Item>
+                <Dropdown.Item eventKey="1" onClick={() => setAddSeasonModal(true)}>Add Season</Dropdown.Item>
               </DropdownButton>
               <Modal
                 show={addSeasonModal}
@@ -218,27 +237,27 @@ export default (props: Season) => {
               <Tab.Pane eventKey="bulk_fixtures">
                 <BulkFixtures onSave={() => alert("submitted")} title="Add Fixtures" />
               </Tab.Pane>
-              <Tab.Pane eventKey="5e1fbe36802ef807df29aa61" transition={false} active={"5e1fbe36802ef807df29aa61" == active}>
+              <Container>
                 {true ? <FixtureContainer fixtures={fixtureList} onSave={save} /> : 
                 <PlayerSearch fixtureTitle="fixture" seasonTitle="season" competitionTitle="competition" />
                 }
-                <Modal
-                  show={addFixtureModal}
-                  onHide={() => setAddFixtureModal(false)}
-                >
-                  <Modal.Header closeButton={true}>
-                    <Modal.Title
-                      className="ml-auto"
-                      style={{ color: "maroon", paddingLeft: 50 }}
-                    >
-                      Add Fixture
-                    </Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    <FixtureForm onSave={()=>{alert("saved")}} onClose={() => setAddFixtureModal(false)} />
-                  </Modal.Body>
-                </Modal>
-              </Tab.Pane>
+              </Container>
+              <Modal
+                show={addFixtureModal}
+                onHide={() => setAddFixtureModal(false)}
+              >
+                <Modal.Header closeButton={true}>
+                  <Modal.Title
+                    className="ml-auto"
+                    style={{ color: "maroon", paddingLeft: 50 }}
+                  >
+                    Add Fixture
+                  </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <FixtureForm competition={active} onSaveError={() => alert("error")} onSave={()=>{alert("saved")}} onClose={() => setAddFixtureModal(false)} />
+                </Modal.Body>
+              </Modal>
             </Tab.Content>
           </Col>
         </Row>

@@ -49,6 +49,7 @@ export default (props: FixtureCard) => {
             className="text-capitalize"
             variant={availabilityColors[props.availability]}
             onClick={props.onChange}
+            size="sm"
           >
             {status[props.availability]}
           </Button>

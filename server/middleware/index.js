@@ -1,2 +1,2 @@
 module.exports.error = require("./error")
-module.exports.middleware = require("./middleware").init
+module.exports.middleware = require("./middleware.js").init

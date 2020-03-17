@@ -4,6 +4,7 @@
 import React from "react"
 import Container from "react-bootstrap/Container"
 import Button from "react-bootstrap/Button"
+import Loading from "./Loading"
 
 
 interface FixtureContainer {
@@ -15,6 +16,19 @@ interface FixtureContainer {
 
 export default (props: FixtureContainer) => {
 
+  if(typeof props.fixtures !== "object")
+    return (
+      <Container className="p-2 m-1">
+        <Loading text="Loading resources." />
+      </Container>
+    )
+  else if(props.fixtures.length === 0)
+    return (
+      <Container className="text-center font-italic p-2">
+        No fixtures could be found
+      </Container>
+    )
+  else
     return (
       <div>
         <Container fluid="sm" className={"p-2 mx-auto " + props.className}>
@@ -27,7 +41,6 @@ export default (props: FixtureContainer) => {
             className="text-capitalize m-1"
             variant="outline-success"
             onClick={props.onSave}
-            size="sm"
           >
             Save
           </Button>
