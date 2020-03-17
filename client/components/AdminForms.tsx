@@ -521,3 +521,18 @@ const requestAddFixture = (meta: {competition: string, fixture: any}) => {
       })
   )
 }
+
+const requestAddSeason = (meta: {
+  season: {
+    title: string,
+    start?: date,
+    end?: date
+  }
+}) => {
+  return (
+    axios
+      .post("api/admin/addSeason", {
+        season: meta.season
+      })
+  )
+}

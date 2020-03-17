@@ -160,10 +160,12 @@ router.get("/fixture/:id", async (req, res, next) => {
       typeof req.query.competition === "undefined"
     )
       throw new Error("Incorrect paramater")
+
     const playerDoc = await Player.findById(req.params.id)
     consola.info(playerDoc)
-    let fixtures = playerDoc.availability.id(req.query.competition).fixtures
-    if (playerDoc === null) throw new Error("No results")
+    if (playerDoc === null) {
+      throw new Error("No results")
+    }
     if (playerDoc.seasons.id(req.query.season) === null) {
       playerDoc.seasons.push(req.query.season)
     }
@@ -175,11 +177,18 @@ router.get("/fixture/:id", async (req, res, next) => {
         fixtures: fixtures.fill(0), // default to 0 / maybe
         status: ["maybe", "yes", "no"]
       })
-    } else if (fixtures.length < req.query.length) {
+    } else if (
+      playerDoc.availability.id(req.query.competition).fixtures.length <
+      req.query.length
+    ) {
+      let fixtures = playerDoc.availability
+        .id(req.query.competition)
+        .get("fixtures")
+
       let difference = req.query.length - fixtures.length
       for (let i = 0; i < difference; i++) fixtures.push(0)
+      playerDoc.availability.id(req.query.competition).fixtures = fixtures // update the database
     }
-    playerDoc.availability.id(req.query.competition).fixtures = fixtures
     let doc = await playerDoc.save()
     res.status(200).json(doc.availability.id(req.query.competition))
   } catch (err) {
@@ -331,6 +340,39 @@ router.post("/admin/addFixture", async (req, res, next) => {
     res.status(200).json({ ok: true, change: true })
   } catch (err) {
     consola.error(err)
+    next(err)
+  }
+})
+
+router.post("/admin/addSeason", async (req, res, next) => {
+  try {
+    if (typeof req.body.season.title === "undefined")
+      throw new Error("Incorrect paramaters: addSeason")
+
+    let season = new Season({
+      title: req.body.season.title,
+      timelines: {
+        start:
+          typeof req.body.season.start !== "undefined"
+            ? req.body.season.start
+            : "",
+        end:
+          typeof req.body.season.end !== "undefined" ? req.body.season.end : ""
+      },
+      competitions: new Array(),
+      status: {
+        list: ["ongoing", "expired"],
+        current: 0
+      }
+    })
+
+    consola.info(season)
+
+    await season.save()
+
+    res.status(200).json({ ok: true, change: true })
+  } catch (err) {
+    consola.err(err)
     next(err)
   }
 })

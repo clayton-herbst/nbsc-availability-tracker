@@ -192,8 +192,8 @@ export default (props: Season) => {
             <Container className="mt-2 pt-2 d-flex justify-content-center">
               <DropdownButton className="m-1 p-1" drop="down" variant="outline-secondary" title="Admin" id="admin_options">
                 <Dropdown.Item eventKey="bulk_fixtures" onClick={() => setAddCompetitionModal(true)}>Add Competition</Dropdown.Item>
-                <Dropdown.Item eventKey="1" onClick={() => setAddFixtureModal(true)}>Add Fixture</Dropdown.Item>
-                <Dropdown.Item eventKey="1" onClick={() => setAddSeasonModal(true)}>Add Season</Dropdown.Item>
+                <Dropdown.Item eventKey={active} onClick={() => setAddFixtureModal(true)}>Add Fixture</Dropdown.Item>
+                <Dropdown.Item eventKey={active} onClick={() => setAddSeasonModal(true)}>Add Season</Dropdown.Item>
               </DropdownButton>
               <Modal
                 show={addSeasonModal}
