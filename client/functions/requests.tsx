@@ -1,29 +1,31 @@
 import axios from "axios"
 
 
-export const requestAllSeasons = (functions: {seasonState: any}): void => {
+export const requestAllSeasons = (functions: {setSeasons: any}): void => {
   axios
     .get("/api/seasons")
     .then(res => {
       console.log(res.data)
-      functions.seasonState(res.data)
+      functions.setSeasons(res.data)
     })
     .catch(err => console.log(err))
 }
+
+
 export const requestCompetitions = (
   meta: { season: string},
-  functions: { competitions: any }
+  functions: { setCompetitions: any }
 ) => {
   if (
     typeof meta.season === "undefined" ||
-    typeof functions.competitions === "undefined"
+    typeof functions.setCompetitions === "undefined"
   )
     return
 
   axios
     .get(`/api/season/${meta.season}`)
     .then(res => {
-      functions.competitions(res.data.competitions)
+      functions.setCompetitions(res.data.competitions)
     })
     .catch(err => {
       console.log(err)
@@ -31,38 +33,38 @@ export const requestCompetitions = (
 }
 
 export const requestFixture = (
-  param: { competitions: {id: string}, active: string, season: string, player: {id: string} },
-  functions: { availability: any, fixtures: any }
+  param: { competitions: {id: string}, competition: string, season: string, player: {id: string} },
+  functions: { setAvailability: any, setFixtures: any }
 ) => {
   if (
     typeof param.competitions === "undefined" ||
-    typeof param.active !== "string" ||
+    typeof param.competition !== "string" ||
     typeof param.season === "undefined" ||
-    typeof functions.availability === "undefined" ||
-    typeof functions.fixtures === "undefined"
+    typeof functions.setAvailability === "undefined" ||
+    typeof functions.setFixtures === "undefined"
   )
     return // DO NOTHING
 
   axios
-    .get(`/api/competition/${param.active}`, {
+    .get(`/api/competition/${param.competition}`, {
       params: {
         season: param.season
       }
     })
     .then(res => {
       console.log(res.data)
-      functions.fixtures(res.data.fixtures) // set fixtures for competition
+      functions.setFixtures(res.data.fixtures) // set fixtures for competition
       axios
         .get(`/api/fixture/${param.player.id}`, {
           params: {
             season: param.season,
-            competition: param.active,
+            competition: param.competition,
             length: res.data.fixtures.length
           }
         })
         .then(res => {
           console.log(res.data)
-          functions.availability(res.data.fixtures)
+          functions.setAvailability(res.data.fixtures)
         })
         .catch(err => console.log(err))
     })
@@ -75,18 +77,18 @@ export const requestSave = (
     season: string,
     competition: string,
     availability: number[],
-    alert: {success: boolean, error: boolean},
     status?: [string, string, string]
   },
-  functions: {alert: any}
+  functions: {success: any, error: any, reset: any}
 ) => {
   if (
     typeof meta.competition === "undefined" ||
     typeof meta.player === "undefined" ||
     typeof meta.season === "undefined" ||
     typeof meta.availability === "undefined" ||
-    typeof meta.alert === "undefined" ||
-    typeof functions.alert === "undefined"
+    typeof functions.success === "undefined" ||
+    typeof functions.error === "undefined" ||
+    typeof functions.reset === "undefined"
   ) {
     console.log(meta)
     return // DO NOTHING
@@ -102,16 +104,16 @@ export const requestSave = (
     })
     .then(resp => {
       if (typeof resp.data.ok === "undefined") {
-        functions.alert({ ...meta.alert, error: true })
+        functions.error()
       } else if (resp.data.ok === true) {
-        functions.alert({ ...meta.alert, success: true })
+        functions.success()
       } else {
-        functions.alert({ ...meta.alert, error: true })
+        functions.error()
       }
-      setTimeout(functions.alert, 2000, { success: false, error: false })
+      setTimeout(functions.reset, 2000)
     })
     .catch(err => {
       console.log(err)
-      functions.alert({ ...meta.alert, error: true })
+      functions.error()
     })
 }

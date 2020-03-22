@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useReducer } from "react"
 import Container from "react-bootstrap/Container"
 import Header from "../components/Header"
 import FixtureContainer from "../components/FixtureContainer"
@@ -27,50 +27,103 @@ interface Season {
   defaultSeasonId: string;
 }
 
+
+const reducerSeason = (state, action) => {
+  switch(action.type) {
+    case "setSeason": {
+      if(typeof action.payload === "undefined")
+        throw new Error("No action payload specified!: seasonSelect")
+      return {...state, season: action.payload}
+    }
+    case "setCompetition": {
+      if(typeof action.payload === "undefined")
+        throw new Error("No action payload specified!: competitionSelect")
+      return {...state, competition: action.payload}
+    }
+    case "alertSuccess": {
+      return {...state, success: true}
+    }
+    case "alertError": {
+      return {...state, error: true}
+    }
+    case "clearAlert": {
+      return {...state, success: false, error: false}
+    }
+    case "view": {
+      // set what pane is visible
+      if(typeof action.payload === "undefined")
+        throw new Error("No action payload specified! :: view")
+      return {...state, pane: action.payload}
+    }
+    case "updateSeasons": {
+      if(typeof action.payload === "undefined")
+        throw new Error("No action payload specified :: updateSeasons")
+      return {...state, seasons: action.payload}
+    }
+    case "updateCompetitions": {
+      if(typeof action.payload === "undefined")
+        throw new Error("No action payload specified :: updateCompetitionss")
+      return {...state, competitions: action.payload}
+    }
+    case "updateFixtures": {
+      if(typeof action.payload === "undefined")
+        throw new Error("No action payload specified :: updateFixtures")
+      return {...state, fixtures: action.payload}
+    }
+    case "reset": {
+      return initState(action.payload)
+    }
+    default: throw new Error("dispatch action error: season reducer. " + action.type)
+  }
+}
+
+const initState = (values: {season?: string, competition?: string, seasons?: object, competitions?: object, fixtures?: object, pane?: string}) => {
+  return {
+    season: values.season,
+    competition: values.competition,
+    fixtures: values.fixtures,
+    competitions: values.competitions,
+    seasons: values.seasons,
+    pane: values.pane,
+    success: false,
+    error: false
+  }
+}
+
 export default (props: Season) => {
-  //const { id } = useParams()
-  //console.log(`${id}`)
 
   // STATE
-  const [id, setSeasonId] = useState(props.defaultSeasonId)
+  const [state, dispatch] = useReducer(reducerSeason, {}, initState)
   const [fetchSeasons, toggleFetchSeasons] = useState(true)
-  const [fixtures, setFixtures] = useState(undefined)
   const [availability, setAvailability] = useState(undefined)
   const [fixtureList, setFixtureList] = useState(undefined)
-  const [saveAlert, setSaveAlert] = useState({ success: false, error: false })
-  //const [status, setStatus] = useState(["maybe", "yes", "no"])
-  const [competitions, setCompetitions] = useState(undefined)
-  const [seasons, setSeasons] = useState(undefined)
-  const [active, setActiveCompetition] = useState(undefined) // active competition
   const [fetchCompetitions, toggleFetchCompetitions] = useState(true)
   const [fetchFixtures, toggleFetchFixtures] = useState(true)
   const [addFixtureModal, setAddFixtureModal] = useState(false) // add new fixture pop-up
   const [addSeasonModal, setAddSeasonModal] = useState(false) // add new season pop-up
   const [addCompetitionModal, setAddCompetitionModal] = useState(false)
-  const [paneType, setPaneType] = useState("fixtures")
-  //const [events, setEvents] = useState(new EventEmitter())
 
-  console.log(`season id: ${id}`)
-  console.log(`active: ${active}`)
+  console.log(`season id: ${state.season}`)
+  console.log(`active: ${state.competition}`)
 
   const save = () => {
-    if (typeof competitions === "undefined" || typeof active === "undefined")
+    if (typeof state.competitions === "undefined" || typeof state.competition === "undefined")
       return
 
     console.log("save function meta:")
-    console.log("competitions:" + competitions)
-    console.log(`active: ${active}`)
+    console.log("competitions:" + state.competitions)
+    console.log(`active: ${state.competition}`)
 
     // SAVE EVENT
     let meta = {
       player: player.id,
-      season: id,
-      competition: active,
+      season: state.season,
+      competition: state.competition,
       availability: availability,
-      alert: saveAlert
+      alert: {success: state.success, error: state.error}
     }
 
-    let functions = { alert: setSaveAlert }
+    let functions = {success: () => dispatch({type: "alertSuccess"}), error: () => dispatch({type: "alertError"}), reset: () => dispatch({type: "clearAlert"})} // replace with reducer state
 
     requestSave(meta, functions)
   }
@@ -78,32 +131,32 @@ export default (props: Season) => {
   // MUTATOR METHODS
   // NOT IDEAL AS RERENDER MAKES EXTRA CALLS
   useEffect(() => {
-    requestAllSeasons({seasonState: setSeasons})
+    requestAllSeasons({setSeasons: (payload: object) => dispatch({type: "updateSeasons", payload: payload})})
   }, [fetchSeasons])
 
   useEffect(() => {
     // DYNAMICALLY UPDATE LIST OF COMPETITIONS FOR A PARTICULAR SEASON
-    if (typeof id === "undefined")
-      return
+    if (typeof state.season === "undefined")
+      return // noop
 
-    let meta = { season: id }
-    let functions = { competitions: setCompetitions }
+    let meta = { season: state.season }
+    let functions = {setCompetitions: (payload: object) => dispatch({type: "updateCompetitions", payload: payload})}
     requestCompetitions(meta, functions)
-  }, [id, fetchCompetitions])
+  }, [state.season, fetchCompetitions])
 
   useEffect(() => {
     // RETRIEVE SELECTED COMPETITION FIXTURE DATA AND PLAYER AVAILABILITY
 
-    let info = { competitions: competitions, active: active, season: id, player: player }
-    let functions = { fixtures: setFixtures, availability: setAvailability }
+    let info = { competitions: state.competitions, competition: state.competition, season: state.season, player: player }
+    let functions = {setFixtures: (payload: object) => dispatch({type: "updateFixtures", payload: payload}), setAvailability: setAvailability }
     requestFixture(info, functions) // update fixtures
-  }, [active, fetchFixtures])
+  }, [state.competition, fetchFixtures])
 
-  const createFixtureComponent = (meta: {fixtures: any, availability: number[], availabilityColors: string[]}, functions: {fixtureState: any, availabilityState: any, onSearch: any, onEdit: any}): void => {
+  const createFixtureComponent = (meta: {fixtures: any, availability: number[], availabilityColors: string[]}, functions: {setFixtureList: any, setAvailability: any, onSearch: any, onEdit: any}): void => {
     if (typeof meta.fixtures === "undefined")
       return
 
-    functions.fixtureState(
+    functions.setFixtureList(
       meta.fixtures.map((item, index) => {
         const date = new Date(item.date)
         const dateOptions = {
@@ -128,7 +181,7 @@ export default (props: Season) => {
               onEdit={functions.onEdit}
               onChange={() => {
                 meta.availability[index] = (meta.availability[index] + 1) % 3
-                functions.availabilityState([...availability])
+                functions.setAvailability([...availability])
               }}
               availability={meta.availability[index]}
             />
@@ -140,28 +193,28 @@ export default (props: Season) => {
 
   // IMPROVEMENT: USE CALLBACK INSTEAD ?? & useEffect once
   useEffect(() => {
-    if(typeof fixtures === "undefined" || typeof availability === "undefined")
+    if(typeof state.fixtures === "undefined" || typeof availability === "undefined")
       return
     
     let meta = {
-      fixtures: fixtures,
+      fixtures: state.fixtures,
       availability: availability,
       availabilityColors: availabilityColors
     }
     let functions = {
-      fixtureState: setFixtureList,
-      availabilityState: setAvailability,
-      onSearch: () => setPaneType("search"),
+      setFixtureList: setFixtureList,
+      setAvailability: setAvailability,
+      onSearch: () => dispatch({type: "view", payload: "search"}),
       onEdit: () => alert("edit")
     }
 
     createFixtureComponent(meta, functions) // dynamically render new fixtures based on fetched fixtures
-  }, [availability, fixtures])
+  }, [availability, state.fixtures])
 
-  if(typeof id === "undefined" || id === "") {
+  if(typeof state.season === "undefined" || state.season === "") {
     return (
       <div>
-        <Header player="Clayton" title={club.name} seasons={seasons} onHome={() => setSeasonId("")} defaultSeasonId={props.defaultSeasonId} onSeasonSelect={(id: string) => {setSeasonId(id)}}/>
+        <Header player="Clayton" title={club.name} seasons={state.seasons} onHome={() => dispatch({type: "reset", payload: {seasons: state.seasons}})} defaultSeasonId={props.defaultSeasonId} onSeasonSelect={(id: string) => dispatch({type: "setSeason", payload: id})}/>
         <Container>
           <SeasonSelectStatic />
         </Container>
@@ -170,30 +223,30 @@ export default (props: Season) => {
   } else
   return (
     <div>
-      <Header player="Clayton" title={club.name} seasons={seasons} onHome={() => setSeasonId("")} defaultSeasonId={props.defaultSeasonId}
+      <Header player="Clayton" title={club.name} seasons={state.seasons} onHome={() => dispatch({type: "reset", payload: {seasons: state.seasons}})} defaultSeasonId={props.defaultSeasonId}
         onSeasonSelect={(id: string) => {
-          setSeasonId(id)
-          setActiveCompetition("0")
-          setPaneType("")
+          dispatch({type: "setSeason", payload: id})
+          dispatch({type: "setCompetition", payload: "0"}) // don't pre-select :: => action.type: competitionPage?
+          dispatch({type: "view", payload: "none"})
         }}
       />
       <Tab.Container
         id="season_competitions"
         defaultActiveKey="0"
-        activeKey={active}
+        activeKey={state.competition}
         onSelect={key => {
-          setActiveCompetition(key)
-          setPaneType("fixtures")
+          dispatch({type: "setCompetition", payload: key})
+          dispatch({type: "view", payload: "fixtures"})
         }}
       >
         <Row>
           <Col sm={3}>
-            <CompetitionNav competitions={competitions} />
+            <CompetitionNav competitions={state.competitions} />
             <Container className="mt-2 pt-2 d-flex justify-content-center">
               <DropdownButton className="m-1 p-1" drop="down" variant="outline-secondary" title="Admin" id="admin_options">
-                <Dropdown.Item eventKey={active} onClick={() => setAddCompetitionModal(true)}>Add Competition</Dropdown.Item>
-                <Dropdown.Item eventKey={active} onClick={() => setAddFixtureModal(true)}>Add Fixture</Dropdown.Item>
-                <Dropdown.Item eventKey={active} onClick={() => setAddSeasonModal(true)}>Add Season</Dropdown.Item>
+                <Dropdown.Item eventKey={state.competition} onClick={() => setAddCompetitionModal(true)}>Add Competition</Dropdown.Item>
+                <Dropdown.Item eventKey={state.competition} onClick={() => setAddFixtureModal(true)}>Add Fixture</Dropdown.Item>
+                <Dropdown.Item eventKey={state.competition} onClick={() => setAddSeasonModal(true)}>Add Season</Dropdown.Item>
               </DropdownButton>
             </Container>
           </Col>
@@ -202,11 +255,11 @@ export default (props: Season) => {
               <Tab.Pane eventKey="0">
                 <CompetitionSelectStatic />
               </Tab.Pane>
-              <Container hidden={paneType !== "search"}>
+              <Container hidden={state.pane !== "search"}>
                 <PlayerSearch fixtureTitle="fixture" seasonTitle="season" competitionTitle="competition" />
               </Container>
-              <Container hidden={paneType !== "fixtures"}>
-                <FixtureContainer admin={true} fixtures={fixtureList} onAvailabilitySave={save} competition={active} onClose={() => toggleFetchFixtures(!fetchFixtures)} alert={(param:{success: boolean, error: boolean}) => setSaveAlert({...saveAlert, success: param.success, error: param.error})} />
+              <Container hidden={state.pane !== "fixtures"}>
+                <FixtureContainer admin={true} fixtures={fixtureList} onAvailabilitySave={save} competition={state.competition} onClose={() => toggleFetchFixtures(!fetchFixtures)} reset={() => dispatch({type: "clearAlert"})} success={() => dispatch({type: "alertSuccess"})} error={() => dispatch({type: "alertError"})} />
               </Container>
             </Tab.Content>
           </Col>
@@ -225,16 +278,16 @@ export default (props: Season) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FixtureForm competition={active}
+          <FixtureForm competition={state.competition}
             onSave={() => {
-              setSaveAlert({...saveAlert, success: true})
-              setTimeout(setSaveAlert, 2000, { success: false, error: false })
+              dispatch({type: "alertSuccess"})
+              setTimeout(() => dispatch({type: "clearAlert"}), 2000)
               setAddFixtureModal(false)
             }}
             onClose={() => toggleFetchFixtures(!fetchFixtures)}
             onError={() => {
-              setSaveAlert({...saveAlert, error: true})
-              setTimeout(setSaveAlert, 2000, { success: false, error: false })
+              dispatch({type: "alertError"})
+              setTimeout(() => dispatch({type: "clearAlert"}), 2000)
             }}
           />
         </Modal.Body>
@@ -254,14 +307,14 @@ export default (props: Season) => {
         <Modal.Body>
           <SeasonForm
             onSave={() => {
-              setSaveAlert({...saveAlert, success: true})
-              setTimeout(setSaveAlert, 2000, { success: false, error: false })
+              dispatch({type: "alertSuccess"})
+              setTimeout(() => dispatch({type: "clearAlert"}), 2000)
               setAddSeasonModal(false)
             }}
             onClose={() => toggleFetchSeasons(!fetchSeasons)}
             onError={() => {
-              setSaveAlert({...saveAlert, error: true})
-              setTimeout(setSaveAlert, 2000, { success: false, error: false })
+              dispatch({type: "alertError"})
+              setTimeout(() => dispatch({type: "clearAlert"}), 2000)
             }}
           />
         </Modal.Body>
@@ -279,16 +332,16 @@ export default (props: Season) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <CompetitionForm season={id} 
+          <CompetitionForm season={state.season} 
             onSave={() => {
-              setSaveAlert({...saveAlert, success: true})
-              setTimeout(setSaveAlert, 2000, { success: false, error: false })
+              dispatch({type: "alertSuccess"})
+              setTimeout(() => dispatch({type: "clearAlert"}), 2000)
               setAddCompetitionModal(false)
             }}
             onClose={() => toggleFetchCompetitions(!fetchCompetitions)}
             onError={() => {
-              setSaveAlert({...saveAlert, error: true})
-              setTimeout(setSaveAlert, 2000, { success: false, error: false })
+              dispatch({type: "alertError"})
+              setTimeout(() => dispatch({type: "clearAlert"}), 2000)
             }}
           />
         </Modal.Body>
@@ -296,8 +349,8 @@ export default (props: Season) => {
       <div className="position-relative">
         <div className="position-absolute" style={{ bottom: 100, right: 10 }}>
           <Alert
-            show={saveAlert.success}
-            onClose={() => setSaveAlert({ ...saveAlert, success: false })}
+            show={state.success}
+            onClose={() => dispatch({type: "clearAlert"})}
             dismissible={true}
             variant="success"
           >
@@ -306,9 +359,9 @@ export default (props: Season) => {
         </div>
         <div className="position-absolute" style={{ bottom: 100, right: 10 }}>
           <Alert
-            show={saveAlert.error}
+            show={state.error}
             dismissible={true}
-            onClose={() => setSaveAlert({ ...saveAlert, error: false })}
+            onClose={() => dispatch({type: "clearAlert"})}
             variant="danger"
           >
             <strong className="text-danger">Error saving progress!</strong>

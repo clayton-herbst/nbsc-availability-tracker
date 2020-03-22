@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useReducer } from "react"
 import { HashRouter, Switch, Route, Redirect } from "react-router-dom"
 import Login from "./Login"
 import Season from "./Season"
@@ -10,32 +10,41 @@ import { club } from "../constants"
 // FOR TESTING:
 import Test from "./Test"
 
+
+const reducerHome = (state, action) => {
+  switch(action.type) {
+    case "login": {
+      return { ...state, loggedIn: true, admin: action.payload.admin}
+    }
+    case "logout": {
+      return { ...state, loggedIn: false, admin: false}
+    }
+    case "setMeta": {
+      return { ...state, meta: action.payload}
+    }
+  }
+}
+
 export default function() {
-  const [loggedIn, toggleLogin] = useState(true)
-  const [meta, setMeta] = useState({season: ""})
-  const [admin, setAdmin] = useState(true)
+  const [state, dispatch] = useReducer(reducerHome, {loggedIn: false, meta: {}, admin: false})
 
   const logout = function(): void {
-    toggleLogin(false)
+    dispatch({type: "logout", payload: {admin: false}})
   }
 
-  console.log(meta)
-
   const authorise = function(authorised: boolean, admin: boolean): void {
-    if(authorised) {
-      toggleLogin(true)
-      setAdmin(admin)
-    }
+    if(authorised)
+      dispatch({type: "login", payload: {admin: admin}})
     else {
-      toggleLogin(false)
-      setAdmin(false)
+      dispatch({type: "logout"})
     }
   }
 
   useEffect(function(): void {
-    axios.get(`/api/club/${club.id}`).then(res => {
-      setMeta(res.data)
-    })
+    axios.get(`/api/club/${club.id}`)
+      .then(res => {
+        dispatch({type: "setMeta", payload: res.data})
+      })
   }, [])
 
   return (
@@ -44,8 +53,8 @@ export default function() {
         <div>
           <Switch>
             <Route exact path={["/"]}>
-              {loggedIn ? (
-                <Season defaultSeasonId={meta.season ? meta.season : "5e1f11fb73c95e11de2ea91e"}/>
+              {state.loggedIn ? (
+                <Season defaultSeasonId={state.meta.season ? state.meta.season : "5e1f11fb73c95e11de2ea91e"}/>
               ) : (
                 <Login login={() => authorise(true, false)} />
               )}
@@ -54,7 +63,7 @@ export default function() {
               <h1>ADMIN</h1>
             </Route>
             <Route exact path="/admin/login">
-              {loggedIn ? (
+              {state.loggedIn ? (
                 <Redirect to="/" />
               ) : (
                 <AdminLogin login={() => authorise(true, true)} />

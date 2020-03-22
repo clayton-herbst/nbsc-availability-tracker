@@ -16,7 +16,9 @@ interface FixtureContainer {
   emptyComponent?: any;
   admin: boolean;
   competition: string;
-  alert?: any;
+  success?: any;
+  error?: any;
+  reset?: any;
 }
 
 export default (props: FixtureContainer) => {
@@ -38,12 +40,12 @@ export default (props: FixtureContainer) => {
       <Container className="p-2">
         <BulkFixtures competition={props.competition}
           onError={() => {
-            props.alert({success: false, error: true})
-            setTimeout(props.alert, 2000, { success: false, error: false })
+            props.error()
+            setTimeout(props.reset, 2000)
           }}
           onSave={() => {
-            props.alert({success: true, error: false})
-            setTimeout(props.alert, 2000, { success: false, error: false })
+            props.success()
+            setTimeout(props.reset, 2000)
             props.onClose()
           }}
           title="Add Fixtures" />

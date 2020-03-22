@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useReducer } from "react"
 import Container from "react-bootstrap/Container"
 import Title from "../components/Title"
 import Button from "react-bootstrap/Button"
@@ -21,14 +21,9 @@ declare global {
   }
 }
 
-export default function(props: LoginPage) {
-  const [error, setError] = useState(undefined)
-  const [data, setData] = useState(undefined)
-  const [facebookSDK, setFacebookSDK] = useState(undefined) // facebook SDK load state
-  const [loginState, setLoginState] = useState(undefined)
-
-  useEffect(function(): void {
-    if (typeof facebookSDK !== "undefined" && facebookSDK === window.FB) {
+const reducerLogin =(state, action) => {
+  switch(action.type) {
+    case 'facebookReady': {
       window.FB.init({
         appId: facebook.id,
         status: true,
@@ -36,18 +31,28 @@ export default function(props: LoginPage) {
         version: "v2.7",
         frictionlessRequests: true
       })
-
-      // CURRENT LOGIN STATUS
+      return {... state, facebookReady: true}
+    }
+    case 'loginStatusUpdate': {
       window.FB.getLoginStatus(response => {
         if (response.status === "connected") {
           console.log(response.authResponse)
         }
       })
+      return {... state}
     }
-  }, [facebookSDK])
+    case 'error': {
+      return {...state, error: true}
+    }
+    default: throw new Error("unhandled dispatch: login page")
+  }
+}
+
+export default function(props: LoginPage) {
+  const [state, dispatch] = useReducer(reducerLogin, {facebookSDK: false, error: false})
 
   useEffect(function(): void {
-    if (typeof window.FB !== "undefined") setFacebookSDK(window.FB)
+    if (typeof window.FB !== "undefined") dispatch({type: "facebookReady"})
   }, [window.FB])
 
   const handleFacebookLogin = async function(userId: string, tokenId: string) {
@@ -81,24 +86,25 @@ export default function(props: LoginPage) {
   }
 
   // RENDER
-  if (typeof error !== "undefined")
-    return <h1>THERE HAS BEEN AN ERROR! {error.toString()}</h1>
-  else if (typeof facebookSDK === "undefined") {
+  if (state.error)
+    return <h1>THERE HAS BEEN AN ERROR!</h1>
+  /*else if (typeof facebookSDK === "undefined") {
     setTimeout(() => {
       setFacebookSDK(window.FB)
     }, 1000)
     return (
       <div>
         <Container className="my-5 p-5 mx-auto">
-          <Title title="North Beach Soccer Club" style={{ color: "#800000" }} />
+          <Title size="lg" title="North Beach Soccer Club" style={{ color: "#800000" }} />
           <Loading text="Loading page ..." />
         </Container>
       </div>
     )
-  } else
+  }*/
+  else
     return (
       <Container className="my-5 p-5 mx-auto">
-        <Title title="North Beach Soccer Club" style={{ color: "#800000" }} />
+        <Title size="lg" title="North Beach Soccer Club" style={{ color: "#800000" }} />
         <p className="text-weight-ligher text-center">
           Welcome to the player availability tracker.
           <br />

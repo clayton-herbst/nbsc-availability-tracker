@@ -62,8 +62,12 @@ export default function(props: AdminLogin): any {
     validationSchema: schema
   })
 
+  let style = {
+    maxWidth: 400
+  }
+
   return (
-    <Container className="my-5 p-5 mx-auto">
+    <Container className="my-5 mx-auto" style={style}>
       <Form
         className="w-100 mx-auto"
         onReset={formik.handleReset}
@@ -102,7 +106,7 @@ export default function(props: AdminLogin): any {
             </Form.Control.Feedback>
           )}
         </Form.Group>
-        <div className="m-auto p-2 w-50 d-flex justify-content-between">
+        <div className="m-auto p-2 d-sm-flex justify-content-around">
           <Button size="lg" variant="outline-info" type="submit">
             Submit
           </Button>
