@@ -11,6 +11,7 @@ import Col from "react-bootstrap/Col"
 import Loading from "./Loading"
 import Badge from "react-bootstrap/Badge"
 import axios from "axios"
+import Title from "./Title"
 
 interface BulkFixtures {
   title?: string; // display default title formating
@@ -140,12 +141,7 @@ export default (props: BulkFixtures) => {
     <Container>
       {props.title ? (
         <Container>
-          <h4
-            className="mx-auto py-2 mt-2 text-center align-middle"
-            style={{ color: club.color }}
-          >
-            {props.title}
-          </h4>
+          <Title style={{ color: club.color }} title="Add Bulk Fixtures" size="sm"/>
         </Container>
       ) : (
         ""

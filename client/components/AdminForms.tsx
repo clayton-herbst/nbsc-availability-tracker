@@ -13,6 +13,7 @@ import { club } from "../constants"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import axios from "axios"
+import Title from "./Title"
 
 
 const fixtureSchema = object({
@@ -132,12 +133,7 @@ export const FixtureForm = (props: FixtureForm) => {
     <Container style={style}>
       {props.title ? (
         <Container>
-          <h4
-            className="mx-auto pt-2 text-center align-middle"
-            style={{ color: club.color }}
-          >
-            Add Fixture
-          </h4>
+          <Title style={{ color: club.color }} title="Add Fixture" size="sm"/>
         </Container>
       ) : (
         ""
@@ -301,12 +297,7 @@ export const SeasonForm = (props: SeasonForm) => {
     <Container style={style}>
       {props.title ? (
         <Container>
-          <h4
-            className="mx-auto pt-2 text-center align-middle"
-            style={{ color: club.color }}
-          >
-            Add Season
-          </h4>
+          <Title style={{ color: club.color }} title="Add Season" size="sm"/>
         </Container>
       ) : (
         ""
@@ -403,8 +394,6 @@ const competitionSchema = object({
 })
 
 export const CompetitionForm = (props: CompetitionForm) => {
-
-  let titleStyle = {color: "maroon"}
   let style = { maxWidth: 300 }
 
   let formik = useFormik({
@@ -447,12 +436,7 @@ export const CompetitionForm = (props: CompetitionForm) => {
     <Container style={style}>
       {props.title ? (
         <Container>
-          <h4
-            className="mx-auto pt-2 text-center align-middle"
-            style={{ color: club.color }}
-          >
-            Add Season
-          </h4>
+          <Title style={{ color: club.color }} title="Add Competition" size="sm"/>
         </Container>
       ) : (
         ""
