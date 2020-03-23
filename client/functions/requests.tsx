@@ -103,9 +103,7 @@ export const requestSave = (
       status: meta.status
     })
     .then(resp => {
-      if (typeof resp.data.ok === "undefined") {
-        functions.error()
-      } else if (resp.data.ok === true) {
+      if (resp.data.ok === true && resp.data.change === true) {
         functions.success()
       } else {
         functions.error()

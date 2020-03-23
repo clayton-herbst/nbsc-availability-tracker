@@ -114,9 +114,7 @@ export const FixtureForm = (props: FixtureForm) => {
       console.log(`------------\nvalue save id: ${values.index} : ${values.title}\n-----------`)
       requestAddFixture({competition: props.competition, fixture: values})
         .then(resp => {
-          if (typeof resp.data.ok === "undefined") {
-            props.onError()
-          } else if (resp.data.ok === true) {
+          if (resp.data.ok === true && resp.data.change === true) {
             props.onSave()
             if(typeof props.onClose !== "undefined")
               props.onClose()
@@ -277,9 +275,7 @@ export const SeasonForm = (props: SeasonForm) => {
     onSubmit: (values) => {
       requestAddSeason({season: values})
         .then(resp => {
-          if (typeof resp.data.ok === "undefined") {
-            props.onError()
-          } else if (resp.data.ok === true) {
+          if (resp.data.ok === true && resp.data.change === true) {
             props.onSave()
             if(typeof props.onClose !== "undefined")
               props.onClose()
@@ -418,9 +414,7 @@ export const CompetitionForm = (props: CompetitionForm) => {
       }
       requestAddCompetition({competition: competition, season: props.season})
         .then(resp => {
-          if (typeof resp.data.ok === "undefined") {
-            props.onError()
-          } else if (resp.data.ok === true) {
+          if (resp.data.ok === true && resp.data.change === true) {
             props.onSave()
             if(typeof props.onClose !== "undefined")
               props.onClose()

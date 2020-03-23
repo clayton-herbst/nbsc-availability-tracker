@@ -81,11 +81,11 @@ const reducerSeason = (state, action) => {
       return {...state, fetch: fetch}
     }
     case "fetchCompetitions": {
-      let fetch = {...state.fetch, competitions: !state.fetch.competitions}
+      let fetch = {...state.fetch, competitions: !state.fetch.competitions} // toogle
       return {...state, fetch: fetch}
     }
     case "fetchSeasons": {
-      let fetch = {...state.fetch, seasons: !state.fetch.seasons}
+      let fetch = {...state.fetch, seasons: !state.fetch.seasons} // toggle
       return {...state, fetch: fetch}
     }
     case "fixtureModal": {
@@ -99,14 +99,14 @@ const reducerSeason = (state, action) => {
       if(typeof action.payload === "undefined")
         throw new Error("No action payload specified :: seasonModal")
       let addSeason = {...state.modal.addSeason, show: action.payload.show}
-      let modal = {...state.modal, addSeason: action.payload}
+      let modal = {...state.modal, addSeason: addSeason}
       return {...state, modal: modal}
     }
     case "competitionModal": {
       if(typeof action.payload === "undefined")
         throw new Error("No action payload specified :: competitionModal")
       let addCompetition = {...state.modal.addCompetition, show: action.payload.show}
-      let modal = {...state.modal, addCompetition: action.payload}
+      let modal = {...state.modal, addCompetition: addCompetition}
       return {...state, modal: modal}
     }
     case "updateAvailability": {
@@ -160,7 +160,7 @@ export default (props: Season) => {
   console.log(`season id: ${state.season}`)
   console.log(`active: ${state.competition}`)
 
-  const save = () => {
+  const saveAvailability = () => {
     if (typeof state.competitions === "undefined" || typeof state.competition === "undefined")
       return
 
@@ -322,7 +322,7 @@ export default (props: Season) => {
                 <PlayerSearch fixtureTitle="fixture" seasonTitle="season" competitionTitle="competition" />
               </Container>
               <Container hidden={state.pane !== "fixtures"}>
-                <FixtureContainer admin={true} fixtures={fixtureList} onAvailabilitySave={save} competition={state.competition} onClose={() => dispatch({type: "fetchFixtures"})} reset={() => dispatch({type: "clearAlert"})} success={() => dispatch({type: "alertSuccess"})} error={() => dispatch({type: "alertError"})} />
+                <FixtureContainer admin={true} fixtures={fixtureList} onAvailabilitySave={saveAvailability} competition={state.competition} onClose={() => dispatch({type: "fetchFixtures"})} reset={() => dispatch({type: "clearAlert"})} success={() => dispatch({type: "alertSuccess"})} error={() => dispatch({type: "alertError"})} />
               </Container>
             </Tab.Content>
           </Col>
@@ -351,7 +351,7 @@ export default (props: Season) => {
         }  
       />
       <ModalForm
-        show={state.modal.season}
+        show={state.modal.addSeason.show}
         onHide={() => dispatch({type: "seasonModal", payload: {show: false}})}
         title="Add Season"
         component={
