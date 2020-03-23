@@ -322,22 +322,71 @@ router.post("/admin/addFixture", async (req, res, next) => {
 
     let competition = await Competition.findById(req.body.competition)
 
-    let fixtureDoc = {
-      title: req.body.fixture.title,
-      home: {
-        title: req.body.fixture.home
-      },
-      away: {
-        title: req.body.fixture.away
-      },
-      date: req.body.fixture.date,
-      location: req.body.fixture.location
+    if (req.body.fixture.index !== -1) {
+      consola.info(req.body)
+      let removeId = competition.fixtures[req.body.fixture.index]._id
+      //let doc = competition.toObject()
+      //let res = await competition.update({$pull: {fixtures: {_id: req.body.index}}}, {overwrite: true})
+      let queryRes = await competition.updateOne({
+        $push: {
+          fixtures: {
+            $each: [
+              {
+                title: req.body.fixture.title,
+                home: {
+                  title: req.body.fixture.home
+                },
+                away: {
+                  title: req.body.fixture.away
+                },
+                date: req.body.fixture.date,
+                location: req.body.fixture.location
+              }
+            ],
+            $position: req.body.fixture.index
+          }
+        }
+      })
+      consola.info(queryRes)
+      if (queryRes.ok === 1 && queryRes.n === 1 && queryRes.nModified >= 1) {
+        queryRes = await competition.updateOne({
+          $pull: {
+            fixtures: { _id: removeId }
+          }
+        })
+        if (queryRes.ok === 1 && queryRes.n === 1 && queryRes.nModified === 1)
+          res.locals.data = { ok: true, change: true }
+        else if (queryRes.ok !== 1 || queryRes.n !== 1)
+          res.locals.data = { ok: false, change: false }
+        else res.locals.data = { ok: true, change: false }
+      } else res.locals.data = { ok: false, change: false }
+    } else {
+      consola.info("not edited!")
+      let queryRes = await competition.updateOne({
+        $push: {
+          fixtures: {
+            title: req.body.fixture.title,
+            home: {
+              title: req.body.fixture.home
+            },
+            away: {
+              title: req.body.fixture.away
+            },
+            date: req.body.fixture.date,
+            location: req.body.fixture.location
+          }
+        }
+      })
+      consola.info(queryRes)
+
+      if (queryRes.ok === 1 && queryRes.n === 1 && queryRes.nModified === 1)
+        res.locals.data = { ok: true, change: true }
+      else if (queryRes.ok !== 1 || queryRes.n !== 1)
+        res.locals.data = { ok: false, change: false }
+      else res.locals.data = { ok: true, change: false }
     }
-    competition.fixtures.push(fixtureDoc)
 
-    await competition.save()
-
-    res.status(200).json({ ok: true, change: true })
+    res.status(200).json(res.locals.data)
   } catch (err) {
     consola.error(err)
     next(err)

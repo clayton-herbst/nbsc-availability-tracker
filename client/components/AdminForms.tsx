@@ -31,6 +31,7 @@ interface FixtureForm {
   onError: any; // alert and state management
   onClose?: any; // visibility management
   initialValues?: {
+    index: number,
     title: string,
     home: string,
     away: string,
@@ -66,6 +67,9 @@ export const FixtureForm = (props: FixtureForm) => {
   let setFormInitialValues = () => {
     if (typeof props.initialValues !== "undefined") {
       return {
+        index: typeof props.initialValues.index !== "undefined"
+          ? props.initialValues.index
+          : -1,
         title:
           typeof props.initialValues.title !== "undefined"
             ? props.initialValues.title
@@ -93,6 +97,7 @@ export const FixtureForm = (props: FixtureForm) => {
       }
     } else {
       return {
+        index: -1,
         title: "",
         home: "",
         away: "",
@@ -106,6 +111,7 @@ export const FixtureForm = (props: FixtureForm) => {
   let formik = useFormik({
     initialValues: setFormInitialValues(),
     onSubmit: (values) => {
+      console.log(`------------\nvalue save id: ${values.index} : ${values.title}\n-----------`)
       requestAddFixture({competition: props.competition, fixture: values})
         .then(resp => {
           if (typeof resp.data.ok === "undefined") {
@@ -195,7 +201,6 @@ export const FixtureForm = (props: FixtureForm) => {
             value={formik.values.date}
             onChange={formik.handleChange}
             isInvalid={formik.errors.date ? true : false}
-            placeholder="Date"
           />
           {formik.errors.date ? (
             <Form.Control.Feedback type="invalid">
