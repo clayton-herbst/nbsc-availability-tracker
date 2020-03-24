@@ -118,38 +118,36 @@ const reducerSeason = (state, action) => {
   }
 }
 
-const initState = (values: {season?: string, competition?: string, seasons?: object, competitions?: object, fixtures?: object, pane?: string}) => {
-  return {
-    season: values.season,
-    competition: values.competition,
-    fixtures: values.fixtures,
-    competitions: values.competitions,
-    seasons: values.seasons,
-    pane: values.pane,
-    availability: [],
-    alert: {
-      success: false,
-      error: false
+const initState = (values: {season?: string, competition?: string, seasons?: object, competitions?: object, fixtures?: object, pane?: string}) => ({
+  season: values.season,
+  competition: values.competition,
+  fixtures: values.fixtures,
+  competitions: values.competitions,
+  seasons: values.seasons,
+  pane: values.pane,
+  availability: [],
+  alert: {
+    success: false,
+    error: false
+  },
+  fetch: {
+    seasons: false,
+    competitions: false,
+    fixtures: false
+  },
+  modal: {
+    addFixture: {
+      show: false,
+      values: undefined
     },
-    fetch: {
-      seasons: false,
-      competitions: false,
-      fixtures: false
+    addSeason: {
+      show: false
     },
-    modal: {
-      addFixture: {
-        show: false,
-        values: undefined
-      },
-      addSeason: {
-        show: false
-      },
-      addCompetition: {
-        show: false
-      }
+    addCompetition: {
+      show: false
     }
   }
-}
+})
 
 export default (props: Season) => {
 
@@ -231,7 +229,7 @@ export default (props: Season) => {
               date={dateString}
               title={item.title}
               color={meta.availabilityColors[meta.availability[index]]}
-              onSearch={() => functions.onSearch}
+              onSearch={functions.onSearch}
               onEdit={() => functions.onEdit({
                 index: index,
                 title: item.title,
@@ -289,7 +287,7 @@ export default (props: Season) => {
       <Header player="Clayton" title={club.name} seasons={state.seasons} onHome={() => dispatch({type: "reset", payload: {seasons: state.seasons}})} defaultSeasonId={props.defaultSeasonId}
         onSeasonSelect={(id: string) => {
           dispatch({type: "setSeason", payload: id})
-          dispatch({type: "setCompetition", payload: "0"}) // don't pre-select :: => action.type: competitionPage?
+          //dispatch({type: "setCompetition", payload: "-1"}) // don't pre-select :: => action.type: competitionPage?
           dispatch({type: "view", payload: "none"})
         }}
       />
@@ -318,12 +316,12 @@ export default (props: Season) => {
               <Tab.Pane eventKey="0">
                 <CompetitionSelectStatic />
               </Tab.Pane>
-              <Container hidden={state.pane !== "search"}>
-                <PlayerSearch fixtureTitle="fixture" seasonTitle="season" competitionTitle="competition" />
-              </Container>
-              <Container hidden={state.pane !== "fixtures"}>
+              <Tab.Pane eventKey={state.competition} active={state.pane === "search"}>
+                <PlayerSearch fixture={{title:"fixtures", index: 0}} season={{title: "season"}} competition={{title: "competition", id: state.competition}} onError={() => {dispatch({type: "alertError"}); setTimeout(() => dispatch({type: "clearAlert"}), 2000)}} />
+              </Tab.Pane>
+              <Tab.Pane eventKey={state.competition} active={state.pane === "fixtures"}>
                 <FixtureContainer admin={true} fixtures={fixtureList} onAvailabilitySave={saveAvailability} competition={state.competition} onClose={() => dispatch({type: "fetchFixtures"})} reset={() => dispatch({type: "clearAlert"})} success={() => dispatch({type: "alertSuccess"})} error={() => dispatch({type: "alertError"})} />
-              </Container>
+              </Tab.Pane>
             </Tab.Content>
           </Col>
         </Row>

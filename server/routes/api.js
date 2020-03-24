@@ -74,29 +74,31 @@ router.get("/season/:id", async (req, res, next) => {
       typeof req.params.id === "undefined"
     )
       throw new Error("Incorrect paramaters")
-    else if (req.params.id === "all")
+    else if (req.params.id === "-1")
       // INITIAL EMPTY SEASON ID REQUEST
-      return res.json({ status: "WAIT", competitions: [] })
+      return res.json({ ok: true, competitions: [] })
 
-    const compDocuments = await Competition.find({ season: req.params.id })
-    consola.info(compDocuments)
-    if (compDocuments === null)
+    let competitions = await Competition.find({ season: req.params.id })
+    consola.info(competitions)
+    if (competitions === null)
       res.locals.data = {
         ok: false,
         msg: "Error processing request",
         competitions: []
       }
     else {
-      let competitions = compDocuments.map(doc => {
-        return {
-          title: doc.title,
-          startDate: doc.timelines.start,
-          endDate: doc.timelines.start,
-          description: doc.description,
-          id: doc._id
-        }
-      })
-      res.locals.data = { competitions: competitions }
+      let competitions = await Competition.find({ season: req.params.id })
+      res.locals.data = {
+        competitions: competitions.map(doc => {
+          return {
+            title: doc.title,
+            startDate: doc.timelines.start,
+            endDate: doc.timelines.start,
+            description: doc.description,
+            id: doc._id
+          }
+        })
+      }
       consola.info(res.locals.data.competitions)
       if (res.locals.data.competitions.length > 0) res.locals.data.ok = true
       else res.locals.data.ok = false
@@ -463,4 +465,42 @@ router.post("/admin/addBulkFixtures", async (req, res, next) => {
     next(err)
   }
 })
+
+router.post("/admin/fixturePlayers", async (req, res, next) => {
+  try {
+    if (
+      typeof req.body.competition === "undefined" ||
+      typeof req.body.index === "undefined"
+    )
+      throw new Error("Incorrect paramaters: fixturePlayers")
+
+    let players = await Player.find({
+      "availability._id": { $eq: req.body.competition }
+    }).exec()
+    if (players.length > 0) {
+      res.locals.data = { ok: true, players: [] }
+      for (let i = 0; i < players.length; i++) {
+        if (typeof players[i].availability[req.body.index] === "undefined")
+          continue
+        res.locals.data.players.push({
+          name: players[i].first_name,
+          surname: players[i].last_name,
+          fullname: players[i].name,
+          availability: players[i].availability.id(req.body.competition)
+            .fixtures[req.body.index]
+        })
+      }
+      res.locals.data.length = res.locals.data.players.length
+    } else {
+      res.locals.data = { ok: true, length: players.length }
+    }
+    consola.info(res.locals.data.players)
+    consola.info(res.locals.data)
+    res.status(200).json(res.locals.data)
+  } catch (err) {
+    consola.error(err)
+    next(err)
+  }
+})
+
 module.exports = router
