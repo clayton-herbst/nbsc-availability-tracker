@@ -114,11 +114,16 @@ const reducerSeason = (state, action) => {
         throw new Error("No action payload specified :: updateAvailability")
       return {...state, availability: action.payload}
     }
+    case "setPlayers": {
+      if(typeof action.payload === "undefined")
+        throw new Error("No action payload specified :: setPlayers")
+      return {...state, players: action.payload}
+    }
     default: throw new Error("dispatch action error: season reducer. " + action.type)
   }
 }
 
-const initState = (values: {season?: string, competition?: string, seasons?: object, competitions?: object, fixtures?: object, pane?: string}) => ({
+const initState = (values: {season?: string, competition?: string, seasons?: object, competitions?: object, fixtures?: object, pane?: string, players?: object}) => ({
   season: values.season,
   competition: values.competition,
   fixtures: values.fixtures,
@@ -146,7 +151,8 @@ const initState = (values: {season?: string, competition?: string, seasons?: obj
     addCompetition: {
       show: false
     }
-  }
+  },
+  players: values.players
 })
 
 export default (props: Season) => {
@@ -229,7 +235,7 @@ export default (props: Season) => {
               date={dateString}
               title={item.title}
               color={meta.availabilityColors[meta.availability[index]]}
-              onSearch={functions.onSearch}
+              onSearch={() => functions.onSearch(index)}
               onEdit={() => functions.onEdit({
                 index: index,
                 title: item.title,
@@ -265,7 +271,11 @@ export default (props: Season) => {
     let functions = {
       setFixtureList: setFixtureList,
       setAvailability: (payload) => dispatch({type: "updateAvailability", payload: payload}),
-      onSearch: () => dispatch({type: "view", payload: "search"}),
+      onSearch: (index) => {
+        fetchPlayers({competition: state.competition, index: index}, {setPlayers: (payload) => dispatch({type: "setPlayers", payload: payload})})
+        dispatch({type: "view", payload: "search"})
+        
+      },
       onEdit: (values) => dispatch({type: "fixtureModal", payload: {show: true, values: values}})
     }
 
@@ -317,7 +327,7 @@ export default (props: Season) => {
                 <CompetitionSelectStatic />
               </Tab.Pane>
               <Tab.Pane eventKey={state.competition} active={state.pane === "search"}>
-                <PlayerSearch fixture={{title:"fixtures", index: 0}} season={{title: "season"}} competition={{title: "competition", id: state.competition}} onError={() => {dispatch({type: "alertError"}); setTimeout(() => dispatch({type: "clearAlert"}), 2000)}} />
+                <PlayerSearch players={state.players} fixture={{title:"fixtures", index: 0}} season={{title: "season"}} competition={{title: "competition", id: state.competition}} onError={() => {dispatch({type: "alertError"}); setTimeout(() => dispatch({type: "clearAlert"}), 2000)}} />
               </Tab.Pane>
               <Tab.Pane eventKey={state.competition} active={state.pane === "fixtures"}>
                 <FixtureContainer admin={true} fixtures={fixtureList} onAvailabilitySave={saveAvailability} competition={state.competition} onClose={() => dispatch({type: "fetchFixtures"})} reset={() => dispatch({type: "clearAlert"})} success={() => dispatch({type: "alertSuccess"})} error={() => dispatch({type: "alertError"})} />
@@ -419,3 +429,15 @@ export default (props: Season) => {
 // -- CONSTANTS --
 const status = ["maybe", "yes", "no"]
 const availabilityColors: ["warning", "success", "danger"] = ["warning", "success", "danger"]
+
+const fetchPlayers = (meta: {competition: string, index: number}, functions: {setPlayers: any}) => {
+  axios
+    .post("/api/admin/fixturePlayers", {
+      competition: meta.competition,
+      index: meta.index
+    })
+    .then((resp: any) => {
+      functions.setPlayers(resp.data.players)
+    })
+    .catch((err) => console.log(err))
+}
