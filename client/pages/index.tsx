@@ -26,7 +26,7 @@ const reducerHome = (state, action) => {
 }
 
 export default function() {
-  const [state, dispatch] = useReducer(reducerHome, {loggedIn: true, meta: {}, admin: true})
+  const [state, dispatch] = useReducer(reducerHome, {loggedIn: false, meta: {}, admin: true})
 
   const logout = function(): void {
     dispatch({type: "logout", payload: {admin: false}})

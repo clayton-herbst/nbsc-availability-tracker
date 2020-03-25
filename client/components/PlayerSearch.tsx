@@ -60,20 +60,17 @@ const reducerSearch = (state, action) => {
       
       return {...state, display: display}
     }
-    case "showUnavailable": {
+    case "toggleDisplay": {
       if(typeof action.payload === "undefined")
-        throw new Error("No action payload specified!: showUnavailable")
-      let display = action.payload.forEach(value => { // initial display
-        if(value.availability !== 1) // unavailable and maybe only
-          return {name: value.fullname, availability: value.availability}
+        throw new Error("No action payload specified!: setDisplay")
+
+      let display = action.payload.filter(value => { // initial display
+        if(!state.checked) // not checked
+          return value.availability === 1
+        else
+          return value.availability !== 1
       })
-      return {...state, display: display}
-    }
-    case "showAll": {
-      let display = action.payload.forEach(value => { // initial display
-        return {name: value.fullname, availability: value.availability}
-      })
-      return {...state, display: display}
+      return {...state, checked: !state.checked, display: display}
     }
     case "updateList": {
       if(typeof action.payload === "undefined" || action.payload.length === 0)
@@ -97,6 +94,7 @@ const initSearchState = (values: {players?: object}) => ({
   fetch: {
     players: false
   },
+  checked: false,
   display: [],
   list: undefined
 })
@@ -113,7 +111,6 @@ export default (props: PlayerSearch) => {
     
     dispatch({type: "setDisplay", payload: props.players})
   }, [props.players, props.show])
-  //state.fetch.players, props.competition.id
 
   useEffect(() => {
     console.log(state.display)
@@ -122,14 +119,14 @@ export default (props: PlayerSearch) => {
     
     let list = state.display.map((value, index) => {
       return (
-        <ListGroup.Item key={index} className="d-flex">
-          <Col xs={9} sm={9} className="align-middle"><p className="text-capitalize font-weight-bold">{value.fullname}</p></Col>
+        <Row key={index} className="d-flex py-2">
+          <Col xs={9} sm={9} className="align-middle"><p className="text-capitalize font-italic">{value.fullname}</p></Col>
           <Col className="text-capitalize text-center">
             <Button variant="info" disabled={true} block={true} size="sm" className="text-capitalize">
               {availabilityString[value.availability]}
             </Button>
           </Col>
-        </ListGroup.Item>
+        </Row>
       )
     })
 
@@ -173,16 +170,24 @@ export default (props: PlayerSearch) => {
         </Form>
       </Container>
       <Container className="d-flex justify-content-center">
-        <input className="font-italic m-2" id="showAll" type="checkbox" checked={true} value="Available Change" onChange={() => alert("change")} />
+        <input className="font-italic m-2" id="showAll" type="checkbox" checked={state.checked} onChange={() => dispatch({type: "toggleDisplay", payload: props.players})} />
         <span>Available Players</span>
       </Container>
       <Container style={{maxWidth: 500}}>
+        <Row className="border-bottom">
+          <Col xs={9} sm={9} className="align-middle"><span className="text-capitalize font-weight-bold">Player Name</span></Col>
+          <Col className="text-capitalize text-center">
+            <p className="text-capitalize font-weight-bold">
+              Available
+            </p>
+          </Col>
+        </Row>
         {typeof state.list === "undefined" ? (
           <Container className="my-2 p-1 text-center">No Results</Container>
         ) : (
-          <ListGroup variant="flush" className="p-2">
+          <Container className="p-2">
             {state.list}
-          </ListGroup>
+          </Container>
         )}
         
       </Container>

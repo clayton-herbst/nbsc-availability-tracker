@@ -17,7 +17,7 @@ const schema = object({
     .required("Field required"),
   password: string()
     .required("Field required")
-    .matches(/^[a-zA-Z0-9]{8,}$/, {
+    .matches(/^[a-zA-Z0-9]{2,}$/, {
       message:
         "Minimum of 8 characters. Characters must be alphabetical or numerical."
     })
