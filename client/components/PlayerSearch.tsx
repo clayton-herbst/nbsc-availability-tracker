@@ -10,6 +10,7 @@ import { useFormik } from "formik"
 import { object, string, required, boolean } from "yup"
 import ListGroup from "react-bootstrap/ListGroup"
 import axios from "axios"
+import ToggleButton from "react-bootstrap/ToggleButton"
 
 interface PlayerSearch {
   fixture: {
@@ -26,14 +27,14 @@ interface PlayerSearch {
   };
   players: any,
   onError: any;
+  show: boolean
 }
 
 const playerSearchSchema = object().shape({
   search: string()
     .max(20, "Maximum of 20 characters")
     .trim()
-    .ensure(),
-  available: boolean()
+    .ensure()
 })
 
 const reducerSearch = (state, action) => {
@@ -55,13 +56,8 @@ const reducerSearch = (state, action) => {
       if(typeof action.payload === "undefined")
         throw new Error("No action payload specified!: setDisplay")
       
-      let display = action.payload.map(value => { // initial display
-        console.log(value)
-        if(value.availability !== 1)
-          return {name: value.fullname, availability: value.availability}
-      })
-      console.log("------------")
-      console.log(display)
+      let display = action.payload.filter(value => value.availability !== 1)
+      
       return {...state, display: display}
     }
     case "showUnavailable": {
@@ -80,9 +76,11 @@ const reducerSearch = (state, action) => {
       return {...state, display: display}
     }
     case "updateList": {
-      if(typeof action.payload === "undefined")
-        throw new Error("No action payload specified!: updateList")
-      return {...state, list: action.payload}
+      if(typeof action.payload === "undefined" || action.payload.length === 0)
+        return {...state, list: undefined}
+      
+      let list = action.payload.filter((value) => typeof value !== "undefined")
+        return {...state, list: list}
     }
     default: throw new Error("dispatch action error: season reducer. " + action.type)
   }
@@ -114,19 +112,23 @@ export default (props: PlayerSearch) => {
     console.log(props.players)
     
     dispatch({type: "setDisplay", payload: props.players})
-  }, [props.players])
+  }, [props.players, props.show])
   //state.fetch.players, props.competition.id
 
   useEffect(() => {
     console.log(state.display)
-    if(state.display.length === 0)
-      return
+    if(typeof state.display === "undefined" || state.display.length === 0)
+      return dispatch({type: "updateList", payload: undefined})
     
     let list = state.display.map((value, index) => {
       return (
         <ListGroup.Item key={index} className="d-flex">
-          <Col xs={9} sm={9} className="text-capitalize">{state.display[index].name}</Col>
-          <Col className="text-capitalize text-center">{availabilityString[state.display[index].availability]}</Col>
+          <Col xs={9} sm={9} className="align-middle"><p className="text-capitalize font-weight-bold">{value.fullname}</p></Col>
+          <Col className="text-capitalize text-center">
+            <Button variant="info" disabled={true} block={true} size="sm" className="text-capitalize">
+              {availabilityString[value.availability]}
+            </Button>
+          </Col>
         </ListGroup.Item>
       )
     })
@@ -138,10 +140,9 @@ export default (props: PlayerSearch) => {
   let formik = useFormik({
     initialValues: {
       search: "",
-      available: false
     },
     onSubmit: (values) => {
-      alert(`${values.search} | ${values.available}`)
+      alert(`${values.search}`)
     },
     validateOnBlur: true,
     validateOnChange: false,
@@ -169,15 +170,21 @@ export default (props: PlayerSearch) => {
               <Button size="sm" type="submit" variant="outline-secondary">Search</Button>
             </InputGroup.Append>
           </InputGroup>
-          <InputGroup className="py-2 mx-auto d-flex justify-content-sm-center" style={searchBarStyle}>
-            <Form.Check className="font-italic" name="available" type="checkbox" checked={formik.values.available} label="Show All" onChange={formik.handleChange} isInvalid={formik.errors.available ? true : false}/>
-          </InputGroup>
         </Form>
       </Container>
+      <Container className="d-flex justify-content-center">
+        <input className="font-italic m-2" id="showAll" type="checkbox" checked={true} value="Available Change" onChange={() => alert("change")} />
+        <span>Available Players</span>
+      </Container>
       <Container style={{maxWidth: 500}}>
-        <ListGroup variant="flush" className="p-2">
-          {typeof state.list === "undefined" ? "No Results" : state.list}
-        </ListGroup>
+        {typeof state.list === "undefined" ? (
+          <Container className="my-2 p-1 text-center">No Results</Container>
+        ) : (
+          <ListGroup variant="flush" className="p-2">
+            {state.list}
+          </ListGroup>
+        )}
+        
       </Container>
     </Container>
   )

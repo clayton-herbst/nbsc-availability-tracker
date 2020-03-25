@@ -327,7 +327,7 @@ export default (props: Season) => {
                 <CompetitionSelectStatic />
               </Tab.Pane>
               <Tab.Pane eventKey={state.competition} active={state.pane === "search"}>
-                <PlayerSearch players={state.players} fixture={{title:"fixtures", index: 0}} season={{title: "season"}} competition={{title: "competition", id: state.competition}} onError={() => {dispatch({type: "alertError"}); setTimeout(() => dispatch({type: "clearAlert"}), 2000)}} />
+                <PlayerSearch show={state.pane === "search"} players={state.players} fixture={{title:"fixtures", index: 0}} season={{title: "season"}} competition={{title: "competition", id: state.competition}} onError={() => {dispatch({type: "alertError"}); setTimeout(() => dispatch({type: "clearAlert"}), 2000)}} />
               </Tab.Pane>
               <Tab.Pane eventKey={state.competition} active={state.pane === "fixtures"}>
                 <FixtureContainer admin={true} fixtures={fixtureList} onAvailabilitySave={saveAvailability} competition={state.competition} onClose={() => dispatch({type: "fetchFixtures"})} reset={() => dispatch({type: "clearAlert"})} success={() => dispatch({type: "alertSuccess"})} error={() => dispatch({type: "alertError"})} />

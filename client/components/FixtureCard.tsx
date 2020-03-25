@@ -61,7 +61,7 @@ export default (props: FixtureCard) => {
               onClick={props.onSearch}
               size="sm"
             >
-              Available
+              Not Available
             </Button>
             <Button
               className="text-capitalize"
