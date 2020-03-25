@@ -26,6 +26,14 @@ import ModalForm from "../components/ModalForm"
 
 interface Season {
   defaultSeasonId: string;
+  user: {
+    id: string,
+    firstName: string,
+    lastName: string,
+    name: string,
+    email: string,
+    admin: boolean
+  };
 }
 
 
@@ -157,6 +165,7 @@ const initState = (values: {season?: string, competition?: string, seasons?: obj
 
 export default (props: Season) => {
 
+  console.log(props.user)
   // STATE
   const [state, dispatch] = useReducer(reducerSeason, {season: props.defaultSeasonId}, initState)
   const [fixtureList, setFixtureList] = useState(undefined)
@@ -174,7 +183,7 @@ export default (props: Season) => {
 
     // SAVE EVENT
     let meta = {
-      player: player.id,
+      player: props.user.id,
       season: state.season,
       competition: state.competition,
       availability: state.availability,
@@ -205,7 +214,7 @@ export default (props: Season) => {
   useEffect(() => {
     // RETRIEVE SELECTED COMPETITION FIXTURE DATA AND PLAYER AVAILABILITY
 
-    let info = { competitions: state.competitions, competition: state.competition, season: state.season, player: player }
+    let info = { competitions: state.competitions, competition: state.competition, season: state.season, player: props.user }
     let functions = {setFixtures: (payload: object) => dispatch({type: "updateFixtures", payload: payload}), setAvailability: (payload) => dispatch({type: "updateAvailability", payload: payload})}
     requestFixture(info, functions) // update fixtures
   }, [state.competition, state.fetch.fixtures])
@@ -285,7 +294,7 @@ export default (props: Season) => {
   if(typeof state.season === "undefined" || state.season === "") {
     return (
       <div>
-        <Header player="Clayton" title={club.name} seasons={state.seasons} onHome={() => dispatch({type: "reset", payload: {seasons: state.seasons}})} defaultSeasonId={props.defaultSeasonId} onSeasonSelect={(id: string) => dispatch({type: "setSeason", payload: id})}/>
+        <Header user={props.user} title={club.name} seasons={state.seasons} onHome={() => dispatch({type: "reset", payload: {seasons: state.seasons}})} defaultSeasonId={props.defaultSeasonId} onSeasonSelect={(id: string) => dispatch({type: "setSeason", payload: id})}/>
         <Container>
           <SeasonSelectStatic />
         </Container>
@@ -294,7 +303,7 @@ export default (props: Season) => {
   } else
   return (
     <div>
-      <Header player="Clayton" title={club.name} seasons={state.seasons} onHome={() => dispatch({type: "reset", payload: {seasons: state.seasons}})} defaultSeasonId={props.defaultSeasonId}
+      <Header user={props.user} title={club.name} seasons={state.seasons} onHome={() => dispatch({type: "reset", payload: {seasons: state.seasons}})} defaultSeasonId={props.defaultSeasonId}
         onSeasonSelect={(id: string) => {
           dispatch({type: "setSeason", payload: id})
           //dispatch({type: "setCompetition", payload: "-1"}) // don't pre-select :: => action.type: competitionPage?

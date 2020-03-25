@@ -15,13 +15,21 @@ interface Header {
   defaultSeasonId?: string; // function
   seasons: any;
   title: string;
-  player?: string;
+  user: {
+    name: string,
+    firstName: string,
+    lastName: string,
+    id: string,
+    email: string
+  };
   onHome?: any; // function
 }
 
 export default function(props: Header): any {
   const [seasonComponents, setSeasonComponents] = useState()
   const [active, setActive] = useState(props.defaultSeasonId)
+
+  console.log(props.user)
 
   useEffect(() => {
     if (typeof props.seasons === "undefined") return
@@ -63,6 +71,7 @@ export default function(props: Header): any {
           <Nav.Link className="text-decoration-none text-secondary" onClick={() => {props.onHome(); setActive("")}}>
             Home
           </Nav.Link>
+          <span>{props.user.name}</span>
         </div>
       </Container>
     </Navbar>

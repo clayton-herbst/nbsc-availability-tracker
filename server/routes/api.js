@@ -483,9 +483,9 @@ router.post("/admin/fixturePlayers", async (req, res, next) => {
         if (typeof players[i].availability[req.body.index] === "undefined")
           continue
         res.locals.data.players.push({
-          name: players[i].first_name,
-          surname: players[i].last_name,
-          fullname: players[i].name,
+          firstName: players[i].first_name,
+          lastName: players[i].last_name,
+          name: players[i].name,
           availability: players[i].availability.id(req.body.competition)
             .fixtures[req.body.index]
         })

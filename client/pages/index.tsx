@@ -2,7 +2,7 @@ import React, { useState, useEffect, useReducer } from "react"
 import { HashRouter, Switch, Route, Redirect } from "react-router-dom"
 import Login from "./Login"
 import Season from "./Season"
-import Error from "./Error"
+import ErrorPage from "./Error"
 import AdminLogin from "./AdminLogin"
 import axios from "axios"
 import { club } from "../constants"
@@ -14,31 +14,60 @@ import Test from "./Test"
 const reducerHome = (state, action) => {
   switch(action.type) {
     case "login": {
-      return { ...state, loggedIn: true, admin: action.payload.admin}
+      if(typeof action.payload === "undefined")
+        throw new Error("Action payload not specified: login")
+
+      let user = action.payload
+      return { ...state, loggedIn: true, user: user}
     }
     case "logout": {
-      return { ...state, loggedIn: false, admin: false}
+      return { ...state, loggedIn: false, user: {}}
     }
     case "setMeta": {
+      if(typeof action.payload === "undefined")
+        throw new Error("Action payload not specified: login")
       return { ...state, meta: action.payload}
     }
+    default: throw new Error("Action type not recognised!: reducerHome")
   }
 }
 
-export default function() {
-  const [state, dispatch] = useReducer(reducerHome, {loggedIn: false, meta: {}, admin: true})
+const initState = (init: {loggedIn: boolean}) => ({
+  loggedIn: init.loggedIn,
+  meta: {
+    season: undefined
+  },
+  user: {
+    admin: undefined,
+    id: undefined,
+    firstName: undefined,
+    lastName: undefined,
+    name: undefined,
+    email: undefined
+  }
+})
 
-  const logout = function(): void {
+export default function() {
+  const [state, dispatch] = useReducer(reducerHome, {loggedIn: false}, initState)
+  const [homeElement, setHomeElement] = useState(null)
+
+  const logout = () => {
     dispatch({type: "logout", payload: {admin: false}})
   }
 
-  const authorise = function(authorised: boolean, admin: boolean): void {
+  const authorise = (authorised: boolean, user: {admin: boolean, firstName: string, lastName: string, name: string, id: string}) => {
     if(authorised)
-      dispatch({type: "login", payload: {admin: admin}})
+      dispatch({type: "login", payload: user})
     else {
       dispatch({type: "logout"})
     }
   }
+
+  /*useEffect(() => {
+    setHomeElement( 
+      
+    )
+  }, [state.user])*/
 
   useEffect(function(): void {
     axios.get(`/api/club/${club.id}`)
@@ -54,9 +83,9 @@ export default function() {
           <Switch>
             <Route exact path={["/"]}>
               {state.loggedIn ? (
-                <Season defaultSeasonId={state.meta.season ? state.meta.season : "5e1f11fb73c95e11de2ea91e"}/>
+                <Season user={state.user} defaultSeasonId={state.meta.season ? state.meta.season : "5e1f11fb73c95e11de2ea91e"}/>
               ) : (
-                <Login login={() => authorise(true, false)} />
+                <Login login={(user) => authorise(true, user)} />
               )}
             </Route>
             <Route exact path="/admin">
@@ -66,14 +95,14 @@ export default function() {
               {state.loggedIn ? (
                 <Redirect to="/" />
               ) : (
-                <AdminLogin login={() => authorise(true, true)} />
+                <AdminLogin onLogin={(user) => authorise(true, user)} onError={(err) => alert("Error Loggin in: " + err.toString())}/>
               )}
             </Route>
             <Route exact path="/test">
               <Test />
             </Route>
             <Route exact path="/error">
-              <Error />
+              <ErrorPage />
             </Route>
             <Route path="*">
               <Redirect to="/error" />

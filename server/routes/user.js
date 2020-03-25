@@ -39,7 +39,7 @@ router.post("/admin/register", isAdmin, (req, res, next) => {
     consola.info(token)
     res.cookie("auth", token, { maxAge: 60 * 60 * 1000 })
     res.cookie("player_id", res.locals.user.id, { maxAge: 60 * 60 * 1000 })
-    res.status(200).json({ ok: res.locals.status, id: res.locals.user.id })
+    res.status(200).json({ ok: res.locals.status, ...res.locals.user })
   } catch (err) {
     consola.error(err)
     next(err)

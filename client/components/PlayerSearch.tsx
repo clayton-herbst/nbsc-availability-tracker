@@ -72,6 +72,21 @@ const reducerSearch = (state, action) => {
       })
       return {...state, checked: !state.checked, display: display}
     }
+    case "search": {
+      if(typeof action.payload === "undefined")
+        throw new Error("No action payload specified: search")
+      let regex = new RegExp(`${action.payload.search}`, 'i')
+      let display = action.payload.players.filter(value => {
+        console.log(value)
+        console.log(regex.exec(value.firstName))
+        if(state.checked) // not checked
+          return value.availability === 1 && regex.test(value.name)
+        else
+          return value.availability !== 1 && regex.test(value.name)
+      })
+      console.log(display)
+      return {...state, display: display}
+    }
     case "updateList": {
       if(typeof action.payload === "undefined" || action.payload.length === 0)
         return {...state, list: undefined}
@@ -120,7 +135,7 @@ export default (props: PlayerSearch) => {
     let list = state.display.map((value, index) => {
       return (
         <Row key={index} className="d-flex py-2">
-          <Col xs={9} sm={9} className="align-middle"><p className="text-capitalize font-italic">{value.fullname}</p></Col>
+          <Col xs={9} sm={9} className="align-middle"><p className="text-capitalize font-italic">{value.name}</p></Col>
           <Col className="text-capitalize text-center">
             <Button variant="info" disabled={true} block={true} size="sm" className="text-capitalize">
               {availabilityString[value.availability]}
@@ -140,6 +155,7 @@ export default (props: PlayerSearch) => {
     },
     onSubmit: (values) => {
       alert(`${values.search}`)
+      dispatch({type: "search", payload: {players: props.players, search: values.search}})
     },
     validateOnBlur: true,
     validateOnChange: false,

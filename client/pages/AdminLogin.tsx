@@ -24,7 +24,8 @@ const schema = object({
 })
 
 interface AdminLogin {
-  login: any;
+  onLogin: any;
+  onError: any;
 }
 
 export default function(props: AdminLogin): any {
@@ -35,30 +36,33 @@ export default function(props: AdminLogin): any {
       username: "",
       password: ""
     },
-    onSubmit: function(values, actions) {
-      axios
-        .post("/user/admin/register", {
-          email: values.username,
-          password: values.password
-        })
+    onSubmit: (values, actions) => {
+      requestAdminLogin(values)
         .then(function(response: any): any{
-          console.log(response.data)
 
-          if (!response.data.ok) console.log("error")
+          if (!response.data.ok) {
+            console.log("error logging in")
+            props.onError("err")
+          }
           else {
             actions.setSubmitting(false)
-            console.log("navigate to home")
-            props.login()
+            let user = {
+              id: response.data.id,
+              firstName: response.data.first_name,
+              lastName: response.data.last_name,
+              name: response.data.name,
+              admin: response.data.role === "admin",
+              email: response.data.email
+            }
+            props.onLogin(user)
           }
         })
-        .catch(err => console.log(err))
+        .catch(err => props.onError(err))
 
       actions.setSubmitting(false)
-
-      setTimeout(() => {
-        alert(JSON.stringify(values, null, 2))
-      }, 1000)
     },
+    validateOnBlur: true,
+    validateOnChange: false,
     validationSchema: schema
   })
 
@@ -123,4 +127,12 @@ export default function(props: AdminLogin): any {
       </Form>
     </Container>
   )
+}
+
+
+const requestAdminLogin = (meta: {username: string, password: string}) => {
+  return axios.post("/user/admin/register", {
+      email: meta.username,
+      password: meta.password
+    })
 }
