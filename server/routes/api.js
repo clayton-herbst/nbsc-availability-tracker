@@ -477,17 +477,18 @@ router.post("/admin/fixturePlayers", async (req, res, next) => {
     let players = await Player.find({
       "availability._id": { $eq: req.body.competition }
     }).exec()
+    consola.info(players)
     if (players.length > 0) {
       res.locals.data = { ok: true, players: [] }
       for (let i = 0; i < players.length; i++) {
-        if (typeof players[i].availability[req.body.index] === "undefined")
+        let competition = players[i].availability.id(req.body.competition)
+        if (typeof competition.fixtures[req.body.index] === "undefined")
           continue
         res.locals.data.players.push({
           firstName: players[i].first_name,
           lastName: players[i].last_name,
           name: players[i].name,
-          availability: players[i].availability.id(req.body.competition)
-            .fixtures[req.body.index]
+          availability: competition.fixtures[req.body.index]
         })
       }
       res.locals.data.length = res.locals.data.players.length
