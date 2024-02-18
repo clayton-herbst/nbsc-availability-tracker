@@ -1,101 +1,26 @@
 {
-  "name": "nbsc-player-tracker",
-  "version": "1.0.0",
-  "description": "Player availability tracker",
-  "main": "server/app.js",
+  "name": "player-availability-tracker",
+  "version": "0.0.1",
+  "description": "Player availability tracker for sporting clubs.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:build": "npx webpack-cli --config webpack.config.js --no-cache --mode development",
-    "dev:watch": "npx webpack-cli --config webpack.config.js --no-cache --mode development --watch",
-    "client": "webpack-dev-server",
-    "dev": "node ./server/app.js"
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/clayton-herbst/nbsc-availability-tracker.git"
+    "url": "git+https://github.com/cherbie/player-availability-tracker.git"
   },
-  "keywords": [
-    "AvailabilityTracker",
-    "Sports",
-    "React",
-    "Social Plugins",
-    "ExpressJS",
-    "Webpack"
-  ],
   "author": "Clayton Herbst",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/clayton-herbst/nbsc-availability-tracker/issues"
+    "url": "https://github.com/cherbie/player-availability-tracker/issues"
   },
-  "homepage": "https://github.com/clayton-herbst/nbsc-availability-tracker#readme",
-  "dependencies": {
-    "axios": "^0.19.1",
-    "bootstrap": "^4.4.1",
-    "consola": "^2.11.3",
-    "cookie-parser": "^1.4.4",
-    "debug": "~2.6.9",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "express-jwt": "^5.3.1",
-    "formik": "^2.1.2",
-    "http-errors": "~1.6.3",
-    "jquery": "^3.4.1",
-    "jsonwebtoken": "^8.5.1",
-    "jstransformer": "^1.0.0",
-    "mongodb": "^3.4.1",
-    "mongoose": "^5.8.6",
-    "morgan": "~1.9.1",
-    "npm": "^6.13.4",
-    "popper.js": "^1.16.0",
-    "react": "^16.12.0",
-    "react-bootstrap": "^1.0.0-beta.16",
-    "react-dom": "^16.12.0",
-    "react-router-dom": "^5.1.2",
-    "yup": "^0.28.0"
-  },
+  "homepage": "https://github.com/cherbie/player-availability-tracker#readme",
   "devDependencies": {
-    "@babel/core": "^7.7.7",
-    "@babel/preset-es2015": "^7.0.0-beta.53",
-    "@babel/preset-react": "^7.7.4",
-    "@types/react-dom": "^16.9.5",
-    "@types/react-router-dom": "^5.1.3",
-    "@typescript-eslint/eslint-plugin": "^2.22.0",
-    "@typescript-eslint/parser": "^2.22.0",
-    "babel-loader": "^8.0.6",
-    "css-loader": "^3.4.0",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.9.0",
-    "eslint-config-standard": "^14.1.0",
-    "eslint-loader": "^3.0.3",
-    "eslint-plugin-node": "^11.0.0",
-    "eslint-plugin-prettier": "^3.1.2",
-    "eslint-plugin-react": "^7.18.3",
-    "eslint-plugin-standard": "^4.0.1",
-    "husky": ">=1",
-    "lint-staged": ">=8",
-    "node-sass": "^4.13.0",
-    "prettier": "^1.19.1",
-    "sass-loader": "^8.0.0",
-    "style-loader": "^1.1.1",
-    "ts-loader": "^6.2.1",
-    "typescript": "^3.8.3",
-    "webpack": "^4.41.4",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.10.1"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,jsx,css,json,md}": [
-      "prettier --write",
-      "git add"
-    ],
-    "*.js": [
-      "eslint --fix",
-      "git add"
-    ]
+    "@commitlint/cli": "^18.6.1",
+    "@commitlint/config-conventional": "^18.6.2",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5"
   }
 }
