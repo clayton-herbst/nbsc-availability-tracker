@@ -4,7 +4,7 @@
   "description": "Player availability tracker for sporting clubs.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky"
+    "prepare": "is-ci || husky"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
     "@commitlint/cli": "^18.6.1",
     "@commitlint/config-conventional": "^18.6.2",
     "husky": "^9.0.11",
+    "is-ci": "^3.0.1",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5"
   }
