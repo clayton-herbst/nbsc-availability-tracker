@@ -13,21 +13,8 @@ spec:
         deployment: hello
     spec:
       containers:
-      - name: the-container
-        image: monopole/hello:1
-        command: ["/hello",
-                  "--port=8080",
-                  "--enableRiskyFeature=$(ENABLE_RISKY)"]
-        ports:
-        - containerPort: 8080
-        env:
-        - name: ALT_GREETING
-          valueFrom:
-            configMapKeyRef:
-              name: the-map
-              key: altGreeting
-        - name: ENABLE_RISKY
-          valueFrom:
-            configMapKeyRef:
-              name: the-map
-              key: enableRisky
+        - name: the-container
+          image: e2e-test-images/agnhost:2.39
+          command: ["/agnhost", "netExec"]
+          ports:
+            - containerPort: 8080
