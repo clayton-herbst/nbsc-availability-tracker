@@ -8,38 +8,41 @@
 
 ## Requirements
 
-- [Kubectl]()
-- [Minikube]()
-- [Kustomize]()
+- [Kubectl](https://kubectl.docs.kubernetes.io/)
+- [Colima](https://github.com/abiosoft/colima)
+- [Kustomize](https://kubectl.docs.kubernetes.io/)
 
 ## Getting Started
 
-The repository makes use of [Minikube](https://minikube.sigs.k8s.io/docs/start/) to run the application stack locally. The `packages/orchestration` folder defines the [Kustomize](https://kubectl.docs.kubernetes.io/) _'Kubernetes Resource Object (KRO)'_ files to orchestrate the _k8's_ application.
+The `packages/orchestration` folder defines the [Kustomize](https://kubectl.docs.kubernetes.io/) _'Kubernetes Resource Object (KRO)'_ files to orchestrate the _k8's_ application.
 
 See this [guide](https://github.com/kubernetes-sigs/kustomize/blob/master/examples/helloWorld/README.md) to get started creating the _k8's_ resources.
 
-### Running Minikube
+### Running with Colima
 
-This repository makes use of the [podman](https://podman.io/docs/installation) containerization tooling. You can initialize the _Podman_ virtual machine like so:
+> Note: for MacOS users
 
-Running _Minikube_ using the [qemu driver](https://minikube.sigs.k8s.io/docs/drivers/qemu/) requires the installation and running of the [socket_vmnet](https://github.com/lima-vm/socket_vmnet) service.
+Install [Colima](https://github.com/abiosoft/colima) which makes use of [Lima](https://lima-vm.io/) to run a linux virtual machines running [containerd](https://containerd.io/) containers.
 
 ```bash
-brew install socket_vmnet
-sudo brew service start socket_vmnet
+brew install colima
 ```
 
+Start your _Colima_ server instance making sure you have the [nerdctl](https://github.com/containerd/nerdctl) tooling installed.
+
 ```bash
-podman machine init --cpus 2 --disk-size 20 --memory 2048 --rootful
-podman machine start
+colima nerdctl install
+colima start --runtime=containerd --kubernetes
 ```
 
-Once you have _Podman_ installed you can should start minikube like so:
+You should be able to interact with [kubectl](https://kubectl.docs.kubernetes.io/) to create a deployment.
 
-> Note: there is an issue using the experimental driver _Podman_. A solution that has worked for me is described in issue [#15021](https://github.com/kubernetes/minikube/issues/15021#issuecomment-1261499686)
+### Kubernetes
+
+We make use of [Kustomize](https://kubectl.docs.kubernetes.io/) to describe kubernetes resources. To build the development stack use a command similar to:
 
 ```bash
-minikube start --driver=qemu --container-runtime=containerd --network socket_vmnet
+kustomize build ./packages/orchestration/overlays/dev | kubectl apply -f -
 ```
 
 ## Style Guide

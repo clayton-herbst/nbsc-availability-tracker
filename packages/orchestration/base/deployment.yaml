@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: the-container
-          image: e2e-test-images/agnhost:2.39
-          command: ["/agnhost", "netExec"]
+          image: hashicorp/http-echo
+          args: ["-listen=:8080", "-text='hello world'"]
           ports:
             - containerPort: 8080
