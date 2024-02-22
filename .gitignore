@@ -6,3 +6,6 @@ node_modules
 
 # Local .terraform directories
 **/.terraform/*
+
+# local secrets
+/.secrets

@@ -1,25 +1,69 @@
 terraform {
   required_providers {
-    docker = {
-      source  = "kreuzwerker/docker"
-      version = "~> 3.0.1"
+    google = {
+      source  = "hashicorp/google"
+      version = "4.51.0"
     }
   }
 }
 
-provider "docker" {}
+provider "google" {
+  credentials = file(var.credentials_file)
 
-resource "docker_image" "nginx" {
-  name         = "nginx"
-  keep_locally = false
+  project = var.project
+  region  = var.region
+  zone    = var.zone
 }
 
-resource "docker_container" "nginx" {
-  image = docker_image.nginx.image_id
-  name  = "tutorial"
+resource "google_compute_network" "vpc_network" {
+  name = "terraform-network"
+}
 
-  ports {
-    internal = 80
-    external = 8000
+resource "google_compute_instance" "vm_instance" {
+  name         = "terraform-tutorial-instance"
+  machine_type = "f1-micro"
+  tags         = ["web", "dev"]
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+    }
+  }
+
+  network_interface {
+    network = google_compute_network.vpc_network.name
+
+    access_config {
+      // make instance accessible over network
+    }
+  }
+}
+
+resource "google_compute_firewall" "vpc_firewall" {
+  name    = "internet-tcp"
+  network = google_compute_network.vpc_network.name
+
+  source_ranges = ["0.0.0.0/0"]
+  source_tags   = ["web"]
+
+  allow {
+    protocol = "icmp"
+  }
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+}
+
+resource "google_compute_firewall" "default_firewall" {
+  name    = "default-rule"
+  project = var.project
+  network = "default"
+
+  source_ranges = ["0.0.0.0/0"]
+
+  deny {
+    protocol = "tcp"
   }
 }
