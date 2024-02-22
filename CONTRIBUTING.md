@@ -45,6 +45,24 @@ We make use of [Kustomize](https://kubectl.docs.kubernetes.io/) to describe kube
 kustomize build ./packages/orchestration/overlays/dev | kubectl apply -f -
 ```
 
+### Terraform
+
+Install [Terraform](https://developer.hashicorp.com/terraform) from homebrew or any equivalent package manager.
+
+You can initialize the project with
+
+```bash
+terraform -chdir=infra init
+```
+
+Provision the resources by applying the resource file.
+
+```bash
+terraform -chdir=infra apply
+```
+
+See this useful [getting-started](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/install-cli) guide for more info.
+
 ## Style Guide
 
 The repository follows the [conventional-commits](https://www.conventionalcommits.org/) specification. This commit syntax in enforced through git hooks registered with [Husky](https://github.com/typicode/husky/).
