@@ -15,6 +15,3 @@ COPY . .
 RUN go build -v -o /usr/local/bin/app ./src
 
 ENTRYPOINT [ "app" ]
-
-LABEL org.opencontainers.image.source=https://github.com/cherbie/player-availability-tracker
-LABEL org.opencontainers.image.description="golang gin REST api service"
