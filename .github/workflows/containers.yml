@@ -24,6 +24,7 @@ jobs:
       packages: write
     env:
       IMAGE_NAME: goserver
+      IMAGE_NAMESPACE: ${{ github.repository }}
 
     steps:
       - name: Checkout repository
@@ -51,7 +52,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
