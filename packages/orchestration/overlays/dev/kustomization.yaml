@@ -1,10 +1,14 @@
+kind: Kustomization
+
 namePrefix: dev-
 commonLabels:
   variant: dev
   org: acmeCorporation
 commonAnnotations:
   note: Hello, I am development!
+
 resources:
-- ../../base
+  - ../../base
+
 patchesStrategicMerge:
-- map.yaml
+  - map.yaml
