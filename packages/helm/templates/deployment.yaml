@@ -1,0 +1,20 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ .Release.Name }}-deployment
+spec:
+  replicas: {{ .Values.ReplicaCount }}
+  selector:
+    matchLabels:
+      deployment: hello
+  template:
+    metadata:
+      labels:
+        deployment: hello
+    spec:
+      containers:
+        - name: the-container
+          image: {{ .Values.image.repository }}
+          args: ["-listen=:8080", "-text='hello world'"]
+          ports:
+            - containerPort: 8080
