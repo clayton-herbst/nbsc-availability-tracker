@@ -2,7 +2,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "4.51.0"
+      version = "5.0.0"
     }
   }
 }
@@ -10,60 +10,48 @@ terraform {
 provider "google" {
   credentials = file(var.credentials_file)
 
-  project = var.project
+  project = var.project_id
   region  = var.region
   zone    = var.zone
 }
 
-resource "google_compute_network" "vpc_network" {
-  name = "terraform-network"
+provider "google-beta" {
+  credentials = file(var.credentials_file)
 }
 
-resource "google_compute_instance" "vm_instance" {
-  name         = "terraform-tutorial-instance"
-  machine_type = "f1-micro"
-  tags         = ["web", "dev"]
-
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-11"
-    }
-  }
-
-  network_interface {
-    network = google_compute_network.vpc_network.name
-
-    access_config {
-      // make instance accessible over network
-    }
-  }
+module "iap_bastion" {
+  source                = "./modules/iap_bastion"
+  project               = var.project_id
+  network               = google_compute_network.network.self_link
+  subnet                = google_compute_subnetwork.subnet.self_link
+  service_account_email = "terraform-tutorial@terraform-gcp-tutorial-415108.iam.gserviceaccount.com"
 }
 
-resource "google_compute_firewall" "vpc_firewall" {
-  name    = "internet-tcp"
-  network = google_compute_network.vpc_network.name
+resource "google_compute_network" "network" {
+  project                 = var.project_id
+  name                    = "test-network"
+  auto_create_subnetworks = false
+}
 
-  source_ranges = ["0.0.0.0/0"]
-  source_tags   = ["web"]
+resource "google_compute_subnetwork" "subnet" {
+  project                  = var.project_id
+  name                     = "test-subnet"
+  region                   = var.region
+  ip_cidr_range            = "10.127.0.0/20"
+  network                  = google_compute_network.network.self_link
+  private_ip_google_access = true
+}
 
-  allow {
-    protocol = "icmp"
-  }
+resource "google_compute_firewall" "allow_access_from_bastion" {
+  project = var.project_id
+  name    = "allow-bastion-ssh"
+  network = google_compute_network.network.self_link
 
   allow {
     protocol = "tcp"
     ports    = ["22"]
   }
-}
 
-resource "google_compute_firewall" "default_firewall" {
-  name    = "default-rule"
-  project = var.project
-  network = "default"
-
-  source_ranges = ["0.0.0.0/0"]
-
-  deny {
-    protocol = "tcp"
-  }
+  # Allow SSH only from IAP Bastion
+  source_service_accounts = [module.iap_bastion.service_account_email]
 }
