@@ -1,5 +1,8 @@
-## Player Availability Tracker REST API
+# Player CMS REST API
 
-## Golang Package
+## Table Of Contents
 
-`package pat` stands for player availability tracker.
+1. [Getting Started](#getting-started)
+
+## Getting Started
+
