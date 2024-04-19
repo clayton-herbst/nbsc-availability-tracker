@@ -19,8 +19,7 @@ func newConnection(client *mongo.Client) Connection {
 }
 
 type ConnectionOpts struct {
-	uri  string
-	name string
+	uri string
 }
 
 type Disposable interface {
@@ -39,12 +38,12 @@ type inMemoryPool struct {
 
 // -- ConnectionPool --
 
-type ConnectionPoolGetter interface {
+type ConnectionGetter interface {
 	Get() (*Connection, error)
 }
 
 type ConnectionPool interface {
-	ConnectionPoolGetter
+	ConnectionGetter
 	Disposable
 	Connect(opts ConnectionOpts) error
 }
