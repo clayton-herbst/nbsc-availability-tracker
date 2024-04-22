@@ -10,7 +10,7 @@ import (
 )
 
 type ConnectionOpts struct {
-	uri string
+	Uri string
 }
 
 type ConnectionPool interface {
@@ -19,15 +19,15 @@ type ConnectionPool interface {
 	Connect(opts ConnectionOpts) error
 }
 
-type inMemoryPool struct {
+type InMemoryPool struct {
 	resources []Connection
 }
 
 func NewConnectionPool() ConnectionPool {
-	return &inMemoryPool{make([]Connection, 0)}
+	return &InMemoryPool{make([]Connection, 0)}
 }
 
-func (pool *inMemoryPool) Get() (*Connection, error) {
+func (pool *InMemoryPool) Get() (*Connection, error) {
 	if len(pool.resources) == 0 {
 		return nil, errors.New("empty connection pool")
 	}
@@ -35,8 +35,8 @@ func (pool *inMemoryPool) Get() (*Connection, error) {
 	return conn, nil
 }
 
-func (pool *inMemoryPool) Connect(opts ConnectionOpts) error {
-	client, err := connectToMongoClient(opts.uri)
+func (pool *InMemoryPool) Connect(opts ConnectionOpts) error {
+	client, err := connectToMongoClient(opts.Uri)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (pool *inMemoryPool) Connect(opts ConnectionOpts) error {
 	return nil
 }
 
-func (pool *inMemoryPool) Close() error {
+func (pool *InMemoryPool) Close() error {
 	errList := make([]error, 0)
 	for _, conn := range pool.resources {
 		errList = append(errList, conn.Close())

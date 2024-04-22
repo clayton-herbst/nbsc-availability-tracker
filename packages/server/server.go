@@ -36,6 +36,8 @@ func RunServer(engine *gin.Engine) {
 		}
 	}()
 
+	go getConnectionPoolSingleton()
+
 	// Listen for the interrupt signal.
 	<-ctx.Done()
 
