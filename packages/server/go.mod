@@ -6,6 +6,7 @@ toolchain go1.22.2
 
 require (
 	github.com/gin-gonic/gin v1.9.1
+	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.9.0
 	go.mongodb.org/mongo-driver v1.15.0
 )

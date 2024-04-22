@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/cherbie/player-cms/internal/config"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,7 +26,7 @@ func RunServer(engine *gin.Engine) {
 	defer stop()
 
 	srv := http.Server{
-		Addr:    ":3333",
+		Addr:    serverConnectionString(),
 		Handler: engine,
 	}
 
@@ -50,4 +52,9 @@ func RunServer(engine *gin.Engine) {
 	}
 
 	log.Println("Server exiting")
+}
+
+func serverConnectionString() string {
+	port := config.GetServerPort()
+	return fmt.Sprint(":", port)
 }
