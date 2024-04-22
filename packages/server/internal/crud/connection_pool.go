@@ -20,18 +20,18 @@ type ConnectionPool interface {
 }
 
 type InMemoryPool struct {
-	resources []Connection
+	resources []*Connection
 }
 
-func NewConnectionPool() ConnectionPool {
-	return &InMemoryPool{make([]Connection, 0)}
+func NewInMemoryPool() *InMemoryPool {
+	return &InMemoryPool{make([]*Connection, 0)}
 }
 
 func (pool *InMemoryPool) Get() (*Connection, error) {
 	if len(pool.resources) == 0 {
 		return nil, errors.New("empty connection pool")
 	}
-	conn := &pool.resources[len(pool.resources)-1]
+	conn := pool.resources[len(pool.resources)-1]
 	return conn, nil
 }
 
@@ -42,7 +42,7 @@ func (pool *InMemoryPool) Connect(opts ConnectionOpts) error {
 	}
 
 	connection := NewConnection(client)
-	pool.resources = append(pool.resources, connection)
+	pool.resources = append(pool.resources, &connection)
 
 	return nil
 }
