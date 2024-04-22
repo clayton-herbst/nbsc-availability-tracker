@@ -9,7 +9,6 @@ import (
 )
 
 func TestHealthOk(t *testing.T) {
-	testGinEngine := gin.Default()
 	w := httptest.NewRecorder()
 	testContext := gin.CreateTestContextOnly(w, testGinEngine)
 
