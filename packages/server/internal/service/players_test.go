@@ -12,7 +12,9 @@ import (
 func TestPlayersFindByEmail(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	mt.Run("test", func(mt *mtest.T) {
-		service := NewPlayerService(crud.NewCollection(mt.Coll))
+		dbService := NewDatabaseServiceMock(crud.NewCollection(mt.Coll))
+		service, err := NewPlayerService(dbService)
+		assert.Nil(t, err)
 
 		successResp := createSuccessCursorResponse()
 		mt.AddMockResponses(successResp)
@@ -26,12 +28,14 @@ func TestPlayersFindByEmail(t *testing.T) {
 func TestPlayersFindByEmail_Err(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	mt.Run("test", func(mt *mtest.T) {
-		service := NewPlayerService(crud.NewCollection(mt.Coll))
+		dbService := NewDatabaseServiceMock(crud.NewCollection(mt.Coll))
+		service, err := NewPlayerService(dbService)
+		assert.Nil(t, err)
 
 		errorResponse := mtest.CreateCommandErrorResponse(mockCommandError)
 		mt.AddMockResponses(errorResponse)
 
-		_, err := service.FindByEmail("test@email.com")
+		_, err = service.FindByEmail("test@email.com")
 		assert.NotNil(t, err)
 	})
 }
@@ -39,12 +43,14 @@ func TestPlayersFindByEmail_Err(t *testing.T) {
 func TestPlayersCreate(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	mt.Run("test", func(mt *mtest.T) {
-		service := NewPlayerService(crud.NewCollection(mt.Coll))
+		dbService := NewDatabaseServiceMock(crud.NewCollection(mt.Coll))
+		service, err := NewPlayerService(dbService)
+		assert.Nil(t, err)
 
 		okResponse := mtest.CreateSuccessResponse()
 		mt.AddMockResponses(okResponse)
 
-		err := service.Create(&Player{FirstName: "Mike", LastName: "Tyson", Email: "mike.tyson@gmail.com"})
+		err = service.Create(&Player{FirstName: "Mike", LastName: "Tyson", Email: "mike.tyson@gmail.com"})
 		assert.Nil(t, err)
 	})
 }
@@ -52,12 +58,14 @@ func TestPlayersCreate(t *testing.T) {
 func TestPlayersCreate_Err(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	mt.Run("test", func(mt *mtest.T) {
-		service := NewPlayerService(crud.NewCollection(mt.Coll))
+		dbService := NewDatabaseServiceMock(crud.NewCollection(mt.Coll))
+		service, err := NewPlayerService(dbService)
+		assert.Nil(t, err)
 
 		errorResponse := mtest.CreateWriteErrorsResponse(mockWriteError)
 		mt.AddMockResponses(errorResponse)
 
-		err := service.Create(&Player{FirstName: "Mike", LastName: "Tyson", Email: "mike.tyson@gmail.com"})
+		err = service.Create(&Player{FirstName: "Mike", LastName: "Tyson", Email: "mike.tyson@gmail.com"})
 		assert.NotNil(t, err)
 	})
 }

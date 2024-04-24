@@ -14,7 +14,7 @@ func TestGetPlayerOk(t *testing.T) {
 	playerController := NewPlayerController(&mockService)
 
 	w := httptest.NewRecorder()
-	testContext := gin.CreateTestContextOnly(w, testGinEngine)
+	testContext := gin.CreateTestContextOnly(w, &gin.Engine{})
 
 	err := playerController.GetPlayer(testContext)
 	assert.Nil(t, err)

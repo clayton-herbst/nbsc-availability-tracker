@@ -10,7 +10,7 @@ import (
 
 func TestHealthOk(t *testing.T) {
 	w := httptest.NewRecorder()
-	testContext := gin.CreateTestContextOnly(w, testGinEngine)
+	testContext := gin.CreateTestContextOnly(w, &gin.Engine{})
 
 	healthController := NewHealthController()
 	err := healthController.GetHealth(testContext)
