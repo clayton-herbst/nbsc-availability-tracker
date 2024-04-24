@@ -1,4 +1,4 @@
-name: Container Image Build
+name: Server Image Build
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -59,6 +59,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
+          
           context: ./packages/server/
           file: ./packages/server/Containerfile
           platforms: linux/amd64,linux/arm64
