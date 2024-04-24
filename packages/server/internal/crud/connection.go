@@ -15,8 +15,8 @@ type Connection struct {
 	*mongo.Client
 }
 
-func NewConnection(client *mongo.Client) Connection {
-	return Connection{nil, client}
+func NewConnection(client *mongo.Client) *Connection {
+	return &Connection{nil, client}
 }
 
 type Disposable interface {

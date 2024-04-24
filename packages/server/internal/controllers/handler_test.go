@@ -16,7 +16,7 @@ func TestHandlerOk(t *testing.T) {
 	}
 
 	w := httptest.NewRecorder()
-	testContext := gin.CreateTestContextOnly(w, testGinEngine)
+	testContext := gin.CreateTestContextOnly(w, &gin.Engine{})
 
 	HandlerWrapper(okHandlerFunc)(testContext)
 
@@ -30,7 +30,7 @@ func TestHandler_InternalServerError(t *testing.T) {
 	}
 
 	w := httptest.NewRecorder()
-	testContext := gin.CreateTestContextOnly(w, testGinEngine)
+	testContext := gin.CreateTestContextOnly(w, &gin.Engine{})
 
 	HandlerWrapper(okHandlerFunc)(testContext)
 

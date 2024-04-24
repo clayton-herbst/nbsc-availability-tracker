@@ -17,6 +17,10 @@ type (
 	}
 )
 
+func NewPlayerModel(collection Collection) *PlayerModel {
+	return &PlayerModel{collection}
+}
+
 func (model *PlayerModel) FindByEmail(email string) (player *PlayerRecord, err error) {
 	result, err := model.Collection.FindOne(context.Background(), bson.D{{"email", email}})
 	if err != nil {

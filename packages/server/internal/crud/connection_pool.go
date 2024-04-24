@@ -9,21 +9,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-type ConnectionOpts struct {
-	Uri string
-}
+type (
+	ConnectionOpts struct {
+		Uri string
+	}
 
-type ConnectionPool interface {
-	ConnectionGetter
-	Disposable
-	Connect(opts ConnectionOpts) error
-}
+	ConnectionPool interface {
+		ConnectionGetter
+		Disposable
+		Connect(opts ConnectionOpts) error
+	}
 
-type InMemoryPool struct {
-	resources []*Connection
-}
+	InMemoryPool struct {
+		resources []*Connection
+	}
+)
 
-func NewInMemoryPool() *InMemoryPool {
+func NewInMemoryPool() ConnectionPool {
 	return &InMemoryPool{make([]*Connection, 0)}
 }
 
@@ -42,7 +44,7 @@ func (pool *InMemoryPool) Connect(opts ConnectionOpts) error {
 	}
 
 	connection := NewConnection(client)
-	pool.resources = append(pool.resources, &connection)
+	pool.resources = append(pool.resources, connection)
 
 	return nil
 }
@@ -71,4 +73,24 @@ func connectToMongoClient(uri string) (*mongo.Client, error) {
 
 func makeMongoClientConfig(uri string) *options.ClientOptions {
 	return options.Client().ApplyURI(uri)
+}
+
+type mockConnectionPool struct {
+	conn *Connection
+}
+
+func NewConnectionPoolMock(conn *Connection) ConnectionPool {
+	return &mockConnectionPool{conn}
+}
+
+func (p *mockConnectionPool) Get() (*Connection, error) {
+	return p.conn, nil
+}
+
+func (p *mockConnectionPool) Connect(ConnectionOpts) error {
+	return nil
+}
+
+func (p *mockConnectionPool) Close() error {
+	return nil
 }

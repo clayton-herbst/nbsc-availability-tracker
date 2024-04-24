@@ -16,6 +16,10 @@ type (
 		model *crud.PlayerModel
 	}
 
+	mockPlayerService struct {
+		crud.Collection
+	}
+
 	Player struct {
 		FirstName string
 		LastName  string
@@ -27,9 +31,13 @@ var (
 	ErrInvalidArgument = errors.New("invalid argument provided")
 )
 
-func NewPlayerService(collection crud.Collection) PlayerService {
-	model := &crud.PlayerModel{collection}
-	return &playerService{model}
+func NewPlayerService(dbService DatabaseService) (PlayerService, error) {
+	model, err := dbService.GetPlayerModel()
+	if err != nil {
+		return nil, err
+	}
+
+	return &playerService{model}, nil
 }
 
 func (service *playerService) FindByEmail(email string) (*Player, error) {
@@ -57,5 +65,18 @@ func (service *playerService) Create(player *Player) error {
 		return err
 	}
 
+	return nil
+}
+
+func NewPlayerServiceMock() PlayerService {
+	return &mockPlayerService{}
+}
+
+func (mock *mockPlayerService) FindByEmail(email string) (*Player, error) {
+	player := Player{Email: email, FirstName: "John"}
+	return &player, nil
+}
+
+func (mock *mockPlayerService) Create(player *Player) error {
 	return nil
 }
