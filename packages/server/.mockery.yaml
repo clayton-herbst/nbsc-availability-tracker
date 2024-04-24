@@ -1,0 +1,6 @@
+with-expecter: True
+dir: "internal/__generated__/{{ .PackageName}}"
+outpkg: "{{ .PackageName}}_mocks"
+packages:
+  github.com/cherbie/player-cms/internal/service:
+  github.com/cherbie/player-cms/internal/crud:

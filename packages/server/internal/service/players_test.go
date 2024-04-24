@@ -1,10 +1,14 @@
-package service
+package service_test
 
 import (
 	"testing"
 
+	. "github.com/cherbie/player-cms/internal/service"
+
+	mocks "github.com/cherbie/player-cms/internal/__generated__/service"
 	"github.com/cherbie/player-cms/internal/crud"
 	"github.com/stretchr/testify/assert"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 )
@@ -12,8 +16,8 @@ import (
 func TestPlayersFindByEmail(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	mt.Run("test", func(mt *mtest.T) {
-		dbService := NewDatabaseServiceMock(crud.NewCollection(mt.Coll))
-		service, err := NewPlayerService(dbService)
+		mockDbService := defaultMockDbService(mt)
+		service, err := NewPlayerService(mockDbService)
 		assert.Nil(t, err)
 
 		successResp := createSuccessCursorResponse()
@@ -28,8 +32,8 @@ func TestPlayersFindByEmail(t *testing.T) {
 func TestPlayersFindByEmail_Err(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	mt.Run("test", func(mt *mtest.T) {
-		dbService := NewDatabaseServiceMock(crud.NewCollection(mt.Coll))
-		service, err := NewPlayerService(dbService)
+		mockDbService := defaultMockDbService(mt)
+		service, err := NewPlayerService(mockDbService)
 		assert.Nil(t, err)
 
 		errorResponse := mtest.CreateCommandErrorResponse(mockCommandError)
@@ -43,8 +47,8 @@ func TestPlayersFindByEmail_Err(t *testing.T) {
 func TestPlayersCreate(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	mt.Run("test", func(mt *mtest.T) {
-		dbService := NewDatabaseServiceMock(crud.NewCollection(mt.Coll))
-		service, err := NewPlayerService(dbService)
+		mockDbService := defaultMockDbService(mt)
+		service, err := NewPlayerService(mockDbService)
 		assert.Nil(t, err)
 
 		okResponse := mtest.CreateSuccessResponse()
@@ -58,8 +62,10 @@ func TestPlayersCreate(t *testing.T) {
 func TestPlayersCreate_Err(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	mt.Run("test", func(mt *mtest.T) {
-		dbService := NewDatabaseServiceMock(crud.NewCollection(mt.Coll))
-		service, err := NewPlayerService(dbService)
+		mockDbService := defaultMockDbService(mt)
+		mockDbService.On("GetPlayerModel").Return(crud.NewPlayerModel(crud.NewCollection(mt.Coll)), nil)
+
+		service, err := NewPlayerService(mockDbService)
 		assert.Nil(t, err)
 
 		errorResponse := mtest.CreateWriteErrorsResponse(mockWriteError)
@@ -87,4 +93,10 @@ var (
 
 func createSuccessCursorResponse() bson.D {
 	return mtest.CreateCursorResponse(1, "DbName.CollectionName", mtest.FirstBatch, bson.D{})
+}
+
+func defaultMockDbService(mt *mtest.T) *mocks.MockDatabaseService {
+	mock := mocks.NewMockDatabaseService(mt)
+	mock.On("GetPlayerModel").Return(crud.NewPlayerModel(crud.NewCollection(mt.Coll)), nil)
+	return mock
 }
