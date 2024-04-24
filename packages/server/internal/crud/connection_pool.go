@@ -14,9 +14,13 @@ type (
 		Uri string
 	}
 
+	Disposable interface {
+		Close() error
+	}
+
 	ConnectionPool interface {
-		ConnectionGetter
 		Disposable
+		Get() (*Connection, error)
 		Connect(opts ConnectionOpts) error
 	}
 
