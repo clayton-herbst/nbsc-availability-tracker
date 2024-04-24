@@ -15,7 +15,7 @@ import (
 
 func SetupServer() *gin.Engine {
 	r := gin.Default()
-	SetupRoutes(r)
+	setupRoutes(r)
 
 	return r
 }

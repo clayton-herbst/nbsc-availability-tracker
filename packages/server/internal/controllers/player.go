@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/cherbie/player-cms/internal/crud"
+	"github.com/cherbie/player-cms/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,16 +13,16 @@ type (
 	}
 
 	playerController struct {
-		crud.ConnectionPool
+		service service.PlayerService
 	}
 )
 
-func NewPlayerController(connectionPool crud.ConnectionPool) (PlayerController, error) {
-	return &playerController{connectionPool}, nil
+func NewPlayerController(playerService service.PlayerService) PlayerController {
+	return &playerController{playerService}
 }
 
 func (controller *playerController) GetPlayer(ctx *gin.Context) error {
-	_, err := controller.ConnectionPool.Get()
+	_, err := controller.service.FindByEmail("test@gmail.com")
 	if err != nil {
 		return err
 	}
