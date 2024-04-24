@@ -16,10 +16,6 @@ type (
 		model *crud.PlayerModel
 	}
 
-	mockPlayerService struct {
-		crud.Collection
-	}
-
 	Player struct {
 		FirstName string
 		LastName  string
@@ -65,18 +61,5 @@ func (service *playerService) Create(player *Player) error {
 		return err
 	}
 
-	return nil
-}
-
-func NewPlayerServiceMock() PlayerService {
-	return &mockPlayerService{}
-}
-
-func (mock *mockPlayerService) FindByEmail(email string) (*Player, error) {
-	player := Player{Email: email, FirstName: "John"}
-	return &player, nil
-}
-
-func (mock *mockPlayerService) Create(player *Player) error {
 	return nil
 }
