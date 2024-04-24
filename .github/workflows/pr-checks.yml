@@ -6,14 +6,16 @@ on:
 jobs:
   test-server:
     runs-on: ubuntu-latest
+    container: vektra/mockery
     env:
       WORKING_DIR: ./packages/server
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version-file: ${{ env.WORKING_DIR }}/go.mod
       - name: Unit Test
         working-directory: ${{ env.WORKING_DIR }}
-        run: go test -v ./...
+        run: |
+          apk add make
+          make test
