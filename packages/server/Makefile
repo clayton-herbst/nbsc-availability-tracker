@@ -1,5 +1,7 @@
-test:
+generate:
 	mockery --all
+
+test: generate
 	go test ./...
 
 .phony: clean test
