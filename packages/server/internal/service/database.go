@@ -10,10 +10,6 @@ type (
 	databaseService struct {
 		pool crud.ConnectionPool
 	}
-
-	mockDatabaseService struct {
-		crud.Collection
-	}
 )
 
 func NewDatabaseService(connectionPool crud.ConnectionPool) DatabaseService {
@@ -30,12 +26,4 @@ func (ds *databaseService) GetPlayerModel() (*crud.PlayerModel, error) {
 	model := crud.NewPlayerModel(collection)
 
 	return model, nil
-}
-
-func NewDatabaseServiceMock(collection crud.Collection) DatabaseService {
-	return &mockDatabaseService{collection}
-}
-
-func (mock *mockDatabaseService) GetPlayerModel() (*crud.PlayerModel, error) {
-	return crud.NewPlayerModel(mock.Collection), nil
 }
