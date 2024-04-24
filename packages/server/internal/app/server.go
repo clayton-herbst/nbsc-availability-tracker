@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"context"
@@ -10,17 +10,39 @@ import (
 	"time"
 
 	"github.com/cherbie/player-cms/internal/config"
+	"github.com/cherbie/player-cms/internal/crud"
+	"github.com/cherbie/player-cms/internal/provider"
+	"github.com/cherbie/player-cms/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
-func SetupServer() *gin.Engine {
-	r := gin.Default()
-	setupRoutes(r)
-
-	return r
+type App interface {
+	Run() error
 }
 
-func RunServer(engine *gin.Engine) {
+type appCore struct {
+	resources *provider.ResourceManager
+}
+
+func NewApp() App {
+	resources := provider.NewResourceManager()
+
+	resources.RegisterSingleton(ConnectionPoolResourceId, newConnectionPoolSingleton())
+	resources.RegisterSingleton(DatabaseServiceResourceId, service.NewDatabaseService(resources.Resolve(ConnectionPoolResourceId).(crud.ConnectionPool)))
+	resources.RegisterSingleton(PlayerServiceResourceId, newPlayerServiceSingleton(resources.Resolve(DatabaseServiceResourceId).(service.DatabaseService)))
+	resources.RegisterSingleton(AppEngineResourceId, gin.Default())
+
+	setupRoutes(resources)
+	return &appCore{resources}
+}
+
+func (app *appCore) Run() error {
+	engine := app.resources.Resolve(AppEngineResourceId).(*gin.Engine)
+	runServer(engine)
+	return nil
+}
+
+func runServer(engine *gin.Engine) error {
 	// Create context that listens for the interrupt signal from the OS.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
@@ -52,6 +74,7 @@ func RunServer(engine *gin.Engine) {
 	}
 
 	log.Println("Server exiting")
+	return nil
 }
 
 func serverConnectionString() string {
