@@ -1,17 +1,11 @@
 name: Server Image Build
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 on:
   push:
     branches: [main]
-    # Publish semver tags as releases.
+    # publish semver tags as releases.
     tags: ["v*.*.*"]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -59,7 +53,6 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          
           context: ./packages/server/
           file: ./packages/server/Containerfile
           platforms: linux/amd64,linux/arm64
