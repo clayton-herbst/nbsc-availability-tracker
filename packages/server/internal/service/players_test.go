@@ -95,8 +95,8 @@ func createSuccessCursorResponse() bson.D {
 	return mtest.CreateCursorResponse(1, "DbName.CollectionName", mtest.FirstBatch, bson.D{})
 }
 
-func defaultMockDbService(mt *mtest.T) *mocks.MockDatabaseService {
-	mock := mocks.NewMockDatabaseService(mt)
+func defaultMockDbService(mt *mtest.T) *mocks.MockMongoDatabaseService {
+	mock := mocks.NewMockMongoDatabaseService(mt)
 	mock.On("GetPlayerModel").Return(crud.NewPlayerModel(crud.NewCollection(mt.Coll)), nil)
 	return mock
 }

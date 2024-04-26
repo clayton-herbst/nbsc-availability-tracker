@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/cherbie/player-cms/internal/config"
-	"github.com/cherbie/player-cms/internal/crud"
 	"github.com/cherbie/player-cms/internal/provider"
 	"github.com/cherbie/player-cms/internal/service"
 	"github.com/gin-gonic/gin"
@@ -27,9 +26,15 @@ type appCore struct {
 func NewApp() App {
 	resources := provider.NewResourceManager()
 
-	resources.RegisterSingleton(ConnectionPoolResourceId, newConnectionPoolSingleton())
-	resources.RegisterSingleton(DatabaseServiceResourceId, service.NewDatabaseService(resources.Resolve(ConnectionPoolResourceId).(crud.ConnectionPool)))
-	resources.RegisterSingleton(PlayerServiceResourceId, newPlayerServiceSingleton(resources.Resolve(DatabaseServiceResourceId).(service.DatabaseService)))
+	resources.RegisterSingleton(DatabaseConfigServiceResourceId, service.NewDatabaseConfigService())
+	dbService, err := service.NewMongoDatabaseService(resources.Resolve(DatabaseConfigServiceResourceId).(service.DatabaseConfigService),
+		newConnectionPoolSingleton)
+	if err != nil {
+		panic(err)
+	}
+	resources.RegisterSingleton(MongoDatabaseServiceResourceId, dbService)
+	resources.RegisterSingleton(PlayerServiceResourceId,
+		newPlayerServiceSingleton(resources.Resolve(MongoDatabaseServiceResourceId).(service.MongoDatabaseService)))
 	resources.RegisterSingleton(AppEngineResourceId, gin.Default())
 
 	setupRoutes(resources)
