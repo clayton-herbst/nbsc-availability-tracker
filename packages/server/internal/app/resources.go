@@ -7,13 +7,14 @@ import (
 )
 
 var (
-	PlayerServiceResourceId   = "playerService"
-	DatabaseServiceResourceId = "databaseService"
-	AppEngineResourceId       = "appEngine"
-	ConnectionPoolResourceId  = "connectionPool"
+	PlayerServiceResourceId         = "playerService"
+	MongoDatabaseServiceResourceId  = "mongoDatabaseService"
+	AppEngineResourceId             = "appEngine"
+	ConnectionPoolResourceId        = "connectionPool"
+	DatabaseConfigServiceResourceId = "databaseConfigService"
 )
 
-func newPlayerServiceSingleton(dbService service.DatabaseService) service.PlayerService {
+func newPlayerServiceSingleton(dbService service.MongoDatabaseService) service.PlayerService {
 	service, err := service.NewPlayerService(dbService)
 	if err != nil {
 		panic(err)

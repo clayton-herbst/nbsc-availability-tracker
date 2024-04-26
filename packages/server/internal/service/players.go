@@ -27,7 +27,7 @@ var (
 	ErrInvalidArgument = errors.New("invalid argument provided")
 )
 
-func NewPlayerService(dbService DatabaseService) (PlayerService, error) {
+func NewPlayerService(dbService MongoDatabaseService) (PlayerService, error) {
 	model, err := dbService.GetPlayerModel()
 	if err != nil {
 		return nil, err

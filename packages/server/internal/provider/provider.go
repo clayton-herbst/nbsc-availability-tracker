@@ -13,11 +13,12 @@ func (p *SingletonProvider) Provide() any {
 }
 
 type TransientProvider struct {
-	factory func() any
+	resources *ResourceManager
+	factory   func(*ResourceManager) any
 }
 
 func (p *TransientProvider) Provide() any {
-	return p.factory()
+	return p.factory(p.resources)
 }
 
 type ResourceManager struct {
@@ -28,16 +29,16 @@ func NewResourceManager() *ResourceManager {
 	return &ResourceManager{providers: make(map[string]Provider)}
 }
 
-func (c *ResourceManager) RegisterSingleton(name string, instance any) {
-	c.providers[name] = &SingletonProvider{instance: instance}
+func (r *ResourceManager) RegisterSingleton(name string, instance any) {
+	r.providers[name] = &SingletonProvider{instance: instance}
 }
 
-func (c *ResourceManager) RegisterTransient(name string, factory func() any) {
-	c.providers[name] = &TransientProvider{factory: factory}
+func (r *ResourceManager) RegisterTransient(name string, factory func(*ResourceManager) any) {
+	r.providers[name] = &TransientProvider{resources: r, factory: factory}
 }
 
-func (c *ResourceManager) Resolve(name string) any {
-	provider, ok := c.providers[name]
+func (r *ResourceManager) Resolve(name string) any {
+	provider, ok := r.providers[name]
 	if !ok {
 		panic("No provider registered with name: " + name)
 	}

@@ -20,7 +20,7 @@ func TestResourceManager_RegisterSingleton(t *testing.T) {
 func TestResourceManager_RegisterTransient(t *testing.T) {
 	mockTransient := "mocked transient"
 	manager := NewResourceManager()
-	manager.RegisterTransient("mockName", func() any {
+	manager.RegisterTransient("mockName", func(*ResourceManager) any {
 		return mockTransient
 	})
 
