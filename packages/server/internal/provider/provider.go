@@ -1,15 +1,26 @@
 package provider
 
+import "errors"
+
+var (
+	ErrProviderUndefined = errors.New("provider is undefined")
+	ErrProviderNotFound  = errors.New("provider not found")
+)
+
 type Provider interface {
-	Provide() any
+	Provide() (any, error)
 }
 
 type SingletonProvider struct {
 	instance any
 }
 
-func (p *SingletonProvider) Provide() any {
-	return p.instance
+func (p *SingletonProvider) Provide() (any, error) {
+	if p.instance == nil {
+		return nil, ErrProviderUndefined
+	}
+
+	return p.instance, nil
 }
 
 type ProviderFactoryFunc func(*ResourceManager) (any, error)
@@ -19,12 +30,15 @@ type TransientProvider struct {
 	factory   ProviderFactoryFunc
 }
 
-func (p *TransientProvider) Provide() any {
+func (p *TransientProvider) Provide() (any, error) {
 	instance, err := p.factory(p.resources)
 	if err != nil {
-		panic(err)
+		return nil, err
+	} else if instance == nil {
+		return nil, ErrProviderUndefined
 	}
-	return instance
+
+	return instance, nil
 }
 
 type ResourceManager struct {
@@ -47,10 +61,10 @@ func (r *ResourceManager) RegisterTransient(name string, factory ProviderFactory
 	r.providers[name] = &TransientProvider{resources: r, factory: factory}
 }
 
-func (r *ResourceManager) Resolve(name string) any {
+func (r *ResourceManager) Resolve(name string) (any, error) {
 	provider, ok := r.providers[name]
 	if !ok {
-		panic("No provider registered with name: " + name)
+		return nil, ErrProviderNotFound
 	}
 	return provider.Provide()
 }
