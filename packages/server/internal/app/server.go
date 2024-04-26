@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/cherbie/player-cms/internal/config"
+	"github.com/cherbie/player-cms/internal/crud"
 	"github.com/cherbie/player-cms/internal/provider"
 	"github.com/cherbie/player-cms/internal/service"
 	"github.com/gin-gonic/gin"
@@ -26,16 +27,10 @@ type appCore struct {
 func NewApp() App {
 	resources := provider.NewResourceManager()
 
-	resources.RegisterSingleton(DatabaseConfigServiceResourceId, service.NewDatabaseConfigService())
-	dbService, err := service.NewMongoDatabaseService(resources.Resolve(DatabaseConfigServiceResourceId).(service.DatabaseConfigService),
-		newConnectionPoolSingleton)
-	if err != nil {
-		panic(err)
-	}
-	resources.RegisterSingleton(MongoDatabaseServiceResourceId, dbService)
-	resources.RegisterSingleton(PlayerServiceResourceId,
-		newPlayerServiceSingleton(resources.Resolve(MongoDatabaseServiceResourceId).(service.MongoDatabaseService)))
-	resources.RegisterSingleton(AppEngineResourceId, gin.Default())
+	resources.RegisterSingleton(DatabaseConfigServiceResourceId, defaultFactoryFunc(service.NewDatabaseConfigService()))
+	resources.RegisterSingleton(MongoDatabaseServiceResourceId, newMongoDatabaseServiceFactoryFunc())
+	resources.RegisterSingleton(PlayerServiceResourceId, newPlayerServiceFactoryFunc())
+	resources.RegisterSingleton(AppEngineResourceId, defaultFactoryFunc(gin.Default()))
 
 	setupRoutes(resources)
 	return &appCore{resources}
@@ -82,7 +77,45 @@ func runServer(engine *gin.Engine) error {
 	return nil
 }
 
+// TODO: use config service injected instead
 func serverConnectionString() string {
 	port := config.GetServerPort()
 	return fmt.Sprint(":", port)
+}
+
+func newPlayerServiceFactoryFunc() provider.ProviderFactoryFunc {
+	factoryFunc := func(resources *provider.ResourceManager) (any, error) {
+		mongoDbService := resources.Resolve(MongoDatabaseServiceResourceId).(service.MongoDatabaseService)
+		service, err := service.NewPlayerService(mongoDbService)
+		if err != nil {
+			return nil, err
+		}
+		return service, nil
+	}
+	return factoryFunc
+}
+
+func newMongoDatabaseServiceFactoryFunc() provider.ProviderFactoryFunc {
+	factoryFunc := func(resources *provider.ResourceManager) (any, error) {
+		instance, err := service.NewMongoDatabaseService(resources.Resolve(DatabaseConfigServiceResourceId).(service.DatabaseConfigService), connectionPoolFactory)
+		if err != nil {
+			return nil, err
+		}
+		return instance, nil
+	}
+	return factoryFunc
+}
+
+func connectionPoolFactory() crud.ConnectionPool {
+	pool := crud.NewInMemoryPool()
+	if err := pool.Connect(crud.ConnectionOpts{Uri: config.GetMongoDbUri()}); err != nil {
+		panic(err)
+	}
+	return pool
+}
+
+func defaultFactoryFunc(instance any) provider.ProviderFactoryFunc {
+	return func(resources *provider.ResourceManager) (any, error) {
+		return instance, nil
+	}
 }
