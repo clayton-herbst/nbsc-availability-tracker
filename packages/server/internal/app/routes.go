@@ -8,12 +8,20 @@ import (
 )
 
 func setupRoutes(resources *provider.ResourceManager) {
-	engine := resources.Resolve(AppEngineResourceId).(*gin.Engine)
-	playerService := resources.Resolve(PlayerServiceResourceId).(service.PlayerService)
+	engine := unwrapErr(func() (any, error) { return resources.Resolve(AppEngineResourceId) }).(*gin.Engine)
+	playerService := unwrapErr(func() (any, error) { return resources.Resolve(PlayerServiceResourceId) }).(service.PlayerService)
 
 	healthController := controllers.NewHealthController()
 	playerController := controllers.NewPlayerController(playerService)
 
 	engine.GET("/health", controllers.HandlerWrapper(healthController.GetHealth))
 	engine.GET("/player", controllers.HandlerWrapper(playerController.GetPlayer))
+}
+
+func unwrapErr(factory func() (any, error)) any {
+	instance, err := factory()
+	if err != nil {
+		panic(err)
+	}
+	return instance
 }

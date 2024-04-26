@@ -37,8 +37,11 @@ func NewApp() App {
 }
 
 func (app *appCore) Run() error {
-	engine := app.resources.Resolve(AppEngineResourceId).(*gin.Engine)
-	runServer(engine)
+	instance, err := app.resources.Resolve(AppEngineResourceId)
+	if err != nil {
+		return err
+	}
+	runServer(instance.(*gin.Engine))
 	return nil
 }
 
@@ -84,24 +87,25 @@ func serverConnectionString() string {
 }
 
 func newPlayerServiceFactoryFunc() provider.ProviderFactoryFunc {
-	factoryFunc := func(resources *provider.ResourceManager) (any, error) {
-		mongoDbService := resources.Resolve(MongoDatabaseServiceResourceId).(service.MongoDatabaseService)
-		service, err := service.NewPlayerService(mongoDbService)
-		if err != nil {
-			return nil, err
+	factoryFunc := func(resources *provider.ResourceManager) (instance any, err error) {
+		mongoDbService, err := resources.Resolve(MongoDatabaseServiceResourceId)
+		if err == nil {
+			instance, err = service.NewPlayerService(mongoDbService.(service.MongoDatabaseService))
 		}
-		return service, nil
+
+		return
 	}
 	return factoryFunc
 }
 
 func newMongoDatabaseServiceFactoryFunc() provider.ProviderFactoryFunc {
-	factoryFunc := func(resources *provider.ResourceManager) (any, error) {
-		instance, err := service.NewMongoDatabaseService(resources.Resolve(DatabaseConfigServiceResourceId).(service.DatabaseConfigService), connectionPoolFactory)
-		if err != nil {
-			return nil, err
+	factoryFunc := func(resources *provider.ResourceManager) (instance any, err error) {
+		configService, err := resources.Resolve(DatabaseConfigServiceResourceId)
+		if err == nil {
+			instance, err = service.NewMongoDatabaseService(configService.(service.DatabaseConfigService), connectionPoolFactory)
 		}
-		return instance, nil
+
+		return
 	}
 	return factoryFunc
 }
