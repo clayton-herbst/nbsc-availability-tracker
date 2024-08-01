@@ -2,11 +2,16 @@ package service
 
 import (
 	"github.com/cherbie/player-cms/internal/crud"
+	"github.com/cherbie/player-cms/internal/provider"
 )
 
 type (
 	MongoDatabaseService interface {
 		GetPlayerModel() (*crud.PlayerModel, error)
+	}
+
+	Disposable interface {
+		provider.Disposable
 	}
 
 	mongoDatabaseService struct {
@@ -33,4 +38,8 @@ func (s *mongoDatabaseService) GetPlayerModel() (*crud.PlayerModel, error) {
 	model := crud.NewPlayerModel(collection)
 
 	return model, nil
+}
+
+func (s *mongoDatabaseService) Close() error {
+	return nil
 }

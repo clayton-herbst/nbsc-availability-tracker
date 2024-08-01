@@ -7,15 +7,33 @@ var (
 	ErrProviderNotFound  = errors.New("provider not found")
 )
 
-type Provider interface {
-	Provide() (any, error)
-}
+type (
+	Disposable interface {
+		Close() error
+	}
 
-type SingletonProvider struct {
-	instance any
-}
+	Provider interface {
+		Disposable
+		Provide() (Disposable, error)
+	}
 
-func (p *SingletonProvider) Provide() (any, error) {
+	ProviderFactoryFunc func(*ResourceManager) (Disposable, error)
+
+	SingletonProvider struct {
+		instance Disposable
+	}
+
+	TransientProvider struct {
+		resources *ResourceManager
+		factory   ProviderFactoryFunc
+	}
+
+	ResourceManager struct {
+		providers map[string]Provider
+	}
+)
+
+func (p *SingletonProvider) Provide() (Disposable, error) {
 	if p.instance == nil {
 		return nil, ErrProviderUndefined
 	}
@@ -23,14 +41,11 @@ func (p *SingletonProvider) Provide() (any, error) {
 	return p.instance, nil
 }
 
-type ProviderFactoryFunc func(*ResourceManager) (any, error)
-
-type TransientProvider struct {
-	resources *ResourceManager
-	factory   ProviderFactoryFunc
+func (p *SingletonProvider) Close() error {
+	return p.instance.Close()
 }
 
-func (p *TransientProvider) Provide() (any, error) {
+func (p *TransientProvider) Provide() (Disposable, error) {
 	instance, err := p.factory(p.resources)
 	if err != nil {
 		return nil, err
@@ -41,9 +56,7 @@ func (p *TransientProvider) Provide() (any, error) {
 	return instance, nil
 }
 
-type ResourceManager struct {
-	providers map[string]Provider
-}
+func (p *TransientProvider) Close() error { return nil }
 
 func NewResourceManager() *ResourceManager {
 	return &ResourceManager{providers: make(map[string]Provider)}
@@ -67,4 +80,19 @@ func (r *ResourceManager) Resolve(name string) (any, error) {
 		return nil, ErrProviderNotFound
 	}
 	return provider.Provide()
+}
+
+func (r *ResourceManager) Close() error {
+	errList := make([]error, 0)
+	for key, provider := range r.providers {
+		if disposable, ok := provider.(Disposable); ok {
+			if err := disposable.Close(); err != nil {
+				errList = append(errList, err)
+			} else {
+				delete(r.providers, key)
+			}
+		}
+	}
+
+	return errors.Join(errList...)
 }

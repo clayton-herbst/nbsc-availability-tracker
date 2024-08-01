@@ -87,10 +87,12 @@ func serverConnectionString() string {
 }
 
 func newPlayerServiceFactoryFunc() provider.ProviderFactoryFunc {
-	factoryFunc := func(resources *provider.ResourceManager) (instance any, err error) {
+	factoryFunc := func(resources *provider.ResourceManager) (instance provider.Disposable, err error) {
 		mongoDbService, err := resources.Resolve(MongoDatabaseServiceResourceId)
 		if err == nil {
-			instance, err = service.NewPlayerService(mongoDbService.(service.MongoDatabaseService))
+			service, serviceErr := service.NewPlayerService(mongoDbService.(service.MongoDatabaseService))
+			instance = service.(provider.Disposable)
+			err = serviceErr
 		}
 
 		return
@@ -99,10 +101,12 @@ func newPlayerServiceFactoryFunc() provider.ProviderFactoryFunc {
 }
 
 func newMongoDatabaseServiceFactoryFunc() provider.ProviderFactoryFunc {
-	factoryFunc := func(resources *provider.ResourceManager) (instance any, err error) {
+	factoryFunc := func(resources *provider.ResourceManager) (instance provider.Disposable, err error) {
 		configService, err := resources.Resolve(DatabaseConfigServiceResourceId)
 		if err == nil {
-			instance, err = service.NewMongoDatabaseService(configService.(service.DatabaseConfigService), connectionPoolFactory)
+			service, serviceErr := service.NewMongoDatabaseService(configService.(service.DatabaseConfigService), connectionPoolFactory)
+			instance = service.(provider.Disposable) // TODO: check correctness of explicit cast here. Used to silence compilation error but could be masking greater issue
+			err = serviceErr
 		}
 
 		return
@@ -119,7 +123,7 @@ func connectionPoolFactory() crud.ConnectionPool {
 }
 
 func defaultFactoryFunc(instance any) provider.ProviderFactoryFunc {
-	return func(resources *provider.ResourceManager) (any, error) {
-		return instance, nil
+	return func(resources *provider.ResourceManager) (provider.Disposable, error) {
+		return instance.(provider.Disposable), nil
 	}
 }

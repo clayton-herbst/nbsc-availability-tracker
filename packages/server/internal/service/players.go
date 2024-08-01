@@ -63,3 +63,8 @@ func (service *playerService) Create(player *Player) error {
 
 	return nil
 }
+
+// TODO: check correctness of depending on interfaces across packages
+func (service *playerService) Close() error {
+	return nil
+}

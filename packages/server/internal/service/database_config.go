@@ -17,3 +17,7 @@ func NewDatabaseConfigService() DatabaseConfigService {
 func (c *databaseConfigService) MongoURI() string {
 	return config.GetMongoDbUri()
 }
+
+func (c *databaseConfigService) Close() error {
+	return nil
+}
