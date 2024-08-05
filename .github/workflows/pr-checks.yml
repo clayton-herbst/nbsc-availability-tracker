@@ -19,3 +19,17 @@ jobs:
         run: |
           apk add make
           make test
+  k8s-lint:
+    runs-on: ubuntu-latest
+    env:
+      TEMPLATE_OUTPUT: ./template_out
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@4.2.0
+      - name: Run Helm Template
+        run: helm template ./packages/helm --output-directory ${{ env.TEMPLATE_OUTPUT }} --namespace namespace --set environment.name=actions
+      - name: Lint K8s YAMLs
+        uses: stackrox/kube-linter-action@v1
+        with:
+          directory: ${{ env.TEMPLATE_OUTPUT }}
+
