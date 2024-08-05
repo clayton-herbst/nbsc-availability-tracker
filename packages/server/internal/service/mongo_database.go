@@ -7,6 +7,7 @@ import (
 
 type (
 	MongoDatabaseService interface {
+		provider.Disposable
 		GetPlayerModel() (*crud.PlayerModel, error)
 	}
 

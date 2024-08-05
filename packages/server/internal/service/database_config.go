@@ -1,9 +1,13 @@
 package service
 
-import "github.com/cherbie/player-cms/internal/config"
+import (
+	"github.com/cherbie/player-cms/internal/config"
+	"github.com/cherbie/player-cms/internal/provider"
+)
 
 type (
 	DatabaseConfigService interface {
+		provider.Disposable
 		MongoURI() string
 	}
 

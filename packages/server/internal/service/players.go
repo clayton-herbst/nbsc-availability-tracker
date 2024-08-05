@@ -4,10 +4,12 @@ import (
 	"errors"
 
 	"github.com/cherbie/player-cms/internal/crud"
+	"github.com/cherbie/player-cms/internal/provider"
 )
 
 type (
 	PlayerService interface {
+		provider.Disposable
 		FindByEmail(string) (*Player, error)
 		Create(*Player) error
 	}
@@ -64,7 +66,6 @@ func (service *playerService) Create(player *Player) error {
 	return nil
 }
 
-// TODO: check correctness of depending on interfaces across packages
 func (service *playerService) Close() error {
 	return nil
 }

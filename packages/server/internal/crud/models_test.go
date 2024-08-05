@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 )
 
-func Test_PlayerModel_FindByEmail(t *testing.T) {
+func TestPlayerModel_FindByEmail(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 
 	mt.Run("test", func(mt *mtest.T) {
@@ -26,7 +26,7 @@ func Test_PlayerModel_FindByEmail(t *testing.T) {
 	})
 }
 
-func Test_PlayerModel_FindByEmailWithErr(t *testing.T) {
+func TestPlayerModel_FindByEmailWithErr(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 
 	mt.Run("test", func(mt *mtest.T) {
@@ -41,7 +41,7 @@ func Test_PlayerModel_FindByEmailWithErr(t *testing.T) {
 	})
 }
 
-func Test_PlayerModel_Create(t *testing.T) {
+func TestPlayerModel_Create(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 
 	mt.Run("test", func(mt *mtest.T) {
@@ -57,7 +57,7 @@ func Test_PlayerModel_Create(t *testing.T) {
 	})
 }
 
-func Test_PlayerModel_CreateWithErr(t *testing.T) {
+func TestPlayerModel_CreateWithErr(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 
 	mt.Run("test", func(mt *mtest.T) {
