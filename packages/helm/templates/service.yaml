@@ -2,6 +2,9 @@ kind: Service
 apiVersion: v1
 metadata:
   name: {{ .Release.Name }}-service
+  namespace: {{ .Release.Namespace }}
+  labels:
+    environment: {{ .Values.environment.name }}
 spec:
   selector:
     deployment: hello

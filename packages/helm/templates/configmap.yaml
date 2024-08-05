@@ -2,6 +2,9 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: {{ .Release.Name }}-configmap
+  namespace: {{ .Release.Namespace }}
+  labels:
+    environment: {{ .Values.environment.name }}
 data:
   altGreeting: "Good Morning!"
   enableRisky: "false"

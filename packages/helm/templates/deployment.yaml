@@ -2,8 +2,11 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: {{ .Release.Name }}-deployment
+  namespace: {{ .Release.Namespace }}
+  labels:
+    environment: {{ .Values.environment.name }}
 spec:
-  replicas: {{ .Values.ReplicaCount }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       deployment: hello

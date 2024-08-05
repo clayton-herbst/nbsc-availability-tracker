@@ -11,7 +11,7 @@
 #### Install Helm Chart Release
 
 ```bash
-helm install (release-name|--generate-name) [--dry-run|debug] .
+helm install (release-name|--generate-name) . [--dry-run|debug] --namespace "prd" --create-namespace
 ```
 
 #### Listing Helm Chart Releases
