@@ -16,8 +16,8 @@ spec:
         deployment: hello
     spec:
       containers:
-        - name: the-container
+        - name: {{ .Values.image.repository }}-container
           image: {{ .Values.image.repository }}
-          args: ["-listen=:8080", "-text='hello world'"]
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.image.containerPort }}
