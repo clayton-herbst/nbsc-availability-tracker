@@ -21,3 +21,24 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.image.containerPort }}
+          env:
+            - name: MONGODB_URI
+              value: mongodb://{{ .Release.Name }}-mongodb:27017
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.image.containerPort }}
+              httpHeaders:
+                - name: X-Requested-By
+                  value: readinessProbe
+            initialDelaySeconds: 5
+            periodSeconds: 500
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.image.containerPort }}
+              httpHeaders:
+                - name: X-Requested-By
+                  value: livenessProbe
+            initialDelaySeconds: 5
+            periodSeconds: 30
