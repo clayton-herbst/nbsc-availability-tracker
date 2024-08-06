@@ -5,8 +5,9 @@
 replicaCount: 1
 
 image:
-  repository: hashicorp/http-echo
-  pullPolicy: IfNotPresent
+  repository: goserver
+  pullPolicy: Never
+  containerPort: 3333
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
