@@ -1,5 +1,5 @@
 ARG STAGE "local"
-ARG VERSION "0.0.0-alpha"
+ARG VERSION "0.0.1-alpha"
 
 FROM golang:1.22 as base
 
