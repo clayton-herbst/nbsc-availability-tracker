@@ -6,10 +6,13 @@ replicaCount: 1
 
 image:
   repository: goserver
-  pullPolicy: Never
+  pullPolicy: IfNotPresent
   containerPort: 3333
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
 environment:
   name: "prd"
+
+mongodb:
+  enabled: true
